@@ -1,1 +1,141 @@
-<p>sidebar works!</p>
+<div class="flex h-screen flex-col">
+    <!-- Top Navigation Menu -->
+  
+    <div class="flex flex-1">
+      <!-- Sidebar (Drawer) -->
+      <div
+        class="w-72 bg-gray-900 text-white p-4 flex flex-col justify-between"
+        *ngIf="isDrawerOpen"
+      >
+        <p-drawer
+          [(visible)]="isDrawerOpen"
+          [closable]="true"
+          [dismissible]="false"
+          [autoZIndex]="true"
+          [modal]="false"
+        >
+          <ng-template #header>
+            <div class="flex items-center gap-2">
+              <p-avatar
+                image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+                shape="circle"
+              />
+              <span class="font-bold">Amy Elsner</span>
+            </div>
+          </ng-template>
+
+          <p-panelmenu *ngFor="let tab of sideBarTabs; let i = index"
+          (click)="toggleMenu(tab.label)" 
+          [model]="[tab]" 
+          styleClass="w-full" 
+          [ngClass]="{'cstm-panel': tab.expanded, 'border0': !tab.expanded}"
+          [transitionOptions]="'0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55)'"
+  
+  >
+          
+            <ng-template #item let-item>
+                <ng-container *ngIf="item.route; else urlRef">
+                    <a [routerLink]="item.route" class="flex items-center
+                        cursor-pointer text-color px-3 py-2">
+                        <span [class]="item.icon"></span>
+                        <span class="ml-2">{{ item.label }}</span>
+                    </a>
+                </ng-container>
+                <ng-template #urlRef>
+                    <a *ngIf="item.url; else noLink" [href]="item.url" class="flex items-center
+                        cursor-pointer text-color px-3 py-2">
+                        <span [class]="item.icon"></span>
+                        <span class="ml-2">{{ item.label }}</span>
+                    </a>
+                    <ng-template #noLink>
+                        <span class="flex items-center cursor-pointer text-surface-700 dark:text-surface-0 px-4 py-2 ">
+                            <span [class]="item.icon"></span>
+                            <span class="ml-2">{{ item.label }}</span>
+                            <i *ngIf="item.items" class="pi  text-primary ml-auto" [ngClass]="{'pi-angle-left': tab.expanded, 'pi-angle-down': !tab.expanded}"></i>
+                        </span>
+                    </ng-template>
+                </ng-template>
+            </ng-template>
+        </p-panelmenu>
+        
+          
+          <ng-template #footer>
+            <div class="flex items-center gap-2">
+              <button
+                pButton
+                label="Account"
+                icon="pi pi-user"
+                class="w-full"
+                outlined
+              ></button>
+              <button
+                pButton
+                label="Logout"
+                icon="pi pi-sign-out"
+                class="w-full"
+                severity="danger"
+                text
+              ></button>
+            </div>
+          </ng-template>
+        </p-drawer>
+      </div>
+  
+      <!-- Main Content -->
+      <div class="flex-1">
+        <p-menubar [model]="topMenuItems">
+          <ng-template #start>
+            <svg
+              width="33"
+              height="35"
+              viewBox="0 0 33 35"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="..." fill="var(--primary-color)" />
+            </svg>
+          </ng-template>
+          <ng-template #item let-item let-root="root">
+            <a pRipple class="flex items-center p-menubar-item-link">
+              <span>{{ item.label }}</span>
+              <p-badge
+                *ngIf="item.badge"
+                [ngClass]="{ 'ml-auto': !root, 'ml-2': root }"
+              />
+              <span
+                *ngIf="item.shortcut"
+                class="ml-auto border border-surface rounded bg-emphasis text-muted-color text-xs p-1"
+                >{{ item.shortcut }}</span
+              >
+              <i
+                *ngIf="item.items"
+                [ngClass]="[
+                  'ml-auto pi',
+                  root ? 'pi-angle-down' : 'pi-angle-right'
+                ]"
+              ></i>
+            </a>
+          </ng-template>
+          <ng-template #end>
+            <div class="flex items-center gap-2">
+              <input type="text" pInputText placeholder="Search" class="w-36" />
+              <p-avatar
+                image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+                shape="circle"
+              />
+  
+              <p-togglebutton
+                [(ngModel)]="checked"
+                onLabel="Dark Theme"
+                offLabel="Light Theme"
+                styleClass="w-36"
+                ariaLabel="Change theme"
+                (onChange)="toggleTheme()"
+              />
+            </div>
+          </ng-template>
+        </p-menubar>
+      </div>
+    </div>
+  </div>
+  

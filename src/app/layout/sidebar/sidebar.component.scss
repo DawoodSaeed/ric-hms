@@ -1,0 +1,43 @@
+.border0 .p-panelmenu-panel {
+    border: 0;
+  }
+  .cstm-panel .p-panelmenu-panel {
+    border: 1px solid #2929b9;
+  }
+  .cstm-panel .pi-circle-off,
+  .pi-circle-on {
+    font-size: 4px !important;
+  }
+  
+  .cstm-panel .p-panelmenu-header-content {
+    font-size: 15px !important;
+  }
+  .cstm-panel .p-panelmenu-header-active .p-panelmenu-header-content{
+    color: #2929b9;
+   
+  }
+  .p-panelmenu-header-content{
+    font-size: 15px !important;
+  
+  }
+  .cstm-panel .p-panelmenu-item-content {
+    font-size: 14px;
+  }
+  .cstm-panel {
+    .p-panelmenu-header-label,
+    .p-panelmenu-submenu-icon {
+      color: #2929b9;
+     
+    }
+    
+  }
+  
+  // .cstm-panel .p-panelmenu-header-label{
+  //   color: red;
+  // }
+  
+  // .cstm-panel  span:first-of-type{
+  //   color: red;
+  
+  // }
+  
