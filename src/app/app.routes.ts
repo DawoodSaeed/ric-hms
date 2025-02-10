@@ -3,7 +3,7 @@ import { LoginComponent } from './features/auth/login.component'; // Ensure this
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  // { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent },
   {
     path: 'admin',
     loadChildren: () =>
