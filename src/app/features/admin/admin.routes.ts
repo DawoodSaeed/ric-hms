@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { AdminDashboardComponent } from './admin-dashboard.component';
-import { RoleGuard } from '../../core/role.guard';
+import { RoleGuard } from '../../core/guards/role.guard';
 
 export const adminRoutes: Routes = [
   {
