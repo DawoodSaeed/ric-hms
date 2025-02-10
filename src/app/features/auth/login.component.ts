@@ -5,7 +5,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
-import { ThemeService } from '../../core/theme.service';
+import { ThemeService } from '../../core/services/theme.service';
 @Component({
   selector: 'app-login',
   imports: [
@@ -22,3 +22,6 @@ import { ThemeService } from '../../core/theme.service';
 export class LoginComponent {
   commonService = inject(ThemeService);
 }
+
+// Authentication set - up .
+// Layout steup
