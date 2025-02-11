@@ -1,17 +1,9 @@
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-sidebar',
-//   imports: [],
-//   templateUrl: './sidebar.component.html',
-//   styleUrl: './sidebar.component.scss'
-// })
-// export class SidebarComponent {
-
-// }
-
-
-import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  ViewEncapsulation,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { MenuModule } from 'primeng/menu';
@@ -25,10 +17,8 @@ import { Drawer } from 'primeng/drawer';
 import { RouterModule } from '@angular/router';
 import { ToggleButton } from 'primeng/togglebutton';
 import { FormsModule } from '@angular/forms';
-// import { LoginComponent } from './auth/components/login/login.component';
 import { StyleClass } from 'primeng/styleclass';
 import { expand } from 'rxjs';
-// import { LayoutsComponent } from './layouts/layouts.component';
 @Component({
   selector: 'app-sidebar',
 
@@ -38,17 +28,14 @@ import { expand } from 'rxjs';
     MenuModule,
     ButtonModule,
     AvatarModule,
-    Menubar,
     BadgeModule,
-    InputText,
     Drawer,
-    ToggleButton,
     FormsModule,
-    RouterModule
+    RouterModule,
   ],
-   templateUrl: './sidebar.component.html',
+  templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class SidebarComponent implements OnInit {
   sideBarTabs: any[] = [];
@@ -67,8 +54,7 @@ export class SidebarComponent implements OnInit {
         label: 'Admin & HR',
         icon: 'pi pi-user',
         expanded: false, // Track expanded state
-        items: [{ label: 'Employee Registry', icon: 'pi pi-circle-on'
-         }],
+        items: [{ label: 'Employee Registry', icon: 'pi pi-circle-on' }],
         // command:()=>{
         //   alert('clicked')
         // }
