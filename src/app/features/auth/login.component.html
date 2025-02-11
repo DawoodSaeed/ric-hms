@@ -1,10 +1,9 @@
 <div
   class="flex justify-center items-center min-h-screen bg-gradient-to-r w-full"
   [class.from-blue-50]="!commonService.isDarkMode"
-  [class.from-blue-100]="!commonService.isDarkMode"
-  [ngClass]="{
-    'from-gray-800 to-gray-900': commonService.isDarkMode
-  }"
+  [class.to-blue-100]="!commonService.isDarkMode"
+  [class.from-gray-500]="commonService.isDarkMode"
+  [class.to-gray-900]="commonService.isDarkMode"
 >
   <p-card class="w-full max-w-md">
     <!-- Logo Section -->
@@ -113,8 +112,8 @@
       <!-- Remember Me Section -->
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center">
-          <p-checkbox formControlName="city" value="New York" inputId="ny" />
-          <label for="ny" class="ml-2">Remember me</label>
+          <!-- <p-checkbox formControlName="city" value="New York" inputId="ny" />
+          <label for="ny" class="ml-2">Remember me</label> -->
         </div>
         <a href="#" class="text-[#2467AA] hover:underline">Forgot password?</a>
       </div>
