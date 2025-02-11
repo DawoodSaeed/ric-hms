@@ -13,6 +13,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { MessageModule } from 'primeng/message';
+import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-login',
   imports: [
@@ -30,6 +32,8 @@ import { MessageModule } from 'primeng/message';
 })
 export class LoginComponent {
   commonService = inject(ThemeService);
+  authService = inject(AuthService);
+  router = inject(Router);
   authForm = new FormGroup({
     username: new FormControl('', [
       Validators.required,
@@ -46,19 +50,19 @@ export class LoginComponent {
 
   login() {
     if (this.authForm.invalid) {
-      this.showError('Please Fix all the form errors.');
-      return null;
+      return;
     }
 
-    return;
-  }
-
-  showError(message: string) {
-    // this.messageService.add({
-    //   severity: 'error',
-    //   summary: 'Login Failed',
-    //   detail: message,
-    // });
+    this.authService
+      .login(
+        this.authForm.get('username')?.value || '',
+        this.authForm.get('password')?.value || ''
+      )
+      .subscribe({
+        next: (user) => {
+          console.log(user.token);
+        },
+      });
   }
 }
 
