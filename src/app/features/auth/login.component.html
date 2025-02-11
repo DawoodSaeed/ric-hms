@@ -36,10 +36,29 @@
 
         <ng-container *ngIf="authForm.controls.username as username">
           <div *ngIf="username.dirty && username.hasError('required')">
-            This field is required
+            <p-message
+              severity="error"
+              icon="pi pi-times-circle"
+              styleClass="mt-2"
+              >Username is required</p-message
+            >
           </div>
           <div *ngIf="username.dirty && username.hasError('minlength')">
-            Name must be at least 4 characters long.
+            <p-message
+              severity="error"
+              icon="pi pi-times-circle"
+              styleClass="mt-2"
+              >Name must be at least 4 characters long.</p-message
+            >
+          </div>
+
+          <div *ngIf="username.dirty && username.hasError('maxlength')">
+            <p-message
+              severity="error"
+              icon="pi pi-times-circle"
+              styleClass="mt-2"
+              >Username can't be longer then 20 characters.</p-message
+            >
           </div>
         </ng-container>
       </div>
@@ -61,6 +80,34 @@
           formControlName="password"
           required
         ></p-password>
+
+        <ng-container *ngIf="authForm.controls.password as password">
+          <div *ngIf="password.dirty && password.hasError('required')">
+            <p-message
+              severity="error"
+              icon="pi pi-times-circle"
+              styleClass="mt-2"
+              >password is required</p-message
+            >
+          </div>
+          <div *ngIf="password.dirty && password.hasError('minlength')">
+            <p-message
+              severity="error"
+              icon="pi pi-times-circle"
+              styleClass="mt-2"
+              >Password must be at least 4 characters long.</p-message
+            >
+          </div>
+
+          <div *ngIf="password.dirty && password.hasError('maxlength')">
+            <p-message
+              severity="error"
+              icon="pi pi-times-circle"
+              styleClass="mt-2"
+              >Password can't be longer then 20 characters.</p-message
+            >
+          </div>
+        </ng-container>
       </div>
 
       <!-- Remember Me Section -->
