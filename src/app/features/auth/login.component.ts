@@ -12,6 +12,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { MessageModule } from 'primeng/message';
 @Component({
   selector: 'app-login',
   imports: [
@@ -22,24 +23,43 @@ import {
     ButtonModule,
     CommonModule,
     ReactiveFormsModule,
+    MessageModule,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   commonService = inject(ThemeService);
-
   authForm = new FormGroup({
     username: new FormControl('', [
       Validators.required,
-      Validators.minLength(3),
+      Validators.minLength(4),
       Validators.maxLength(20),
       Validators.pattern(/^[a-z0-9]+$/),
     ]),
-    password: new FormControl(''),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(4),
+      Validators.maxLength(20),
+    ]),
   });
 
-  login() {}
+  login() {
+    if (this.authForm.invalid) {
+      this.showError('Please Fix all the form errors.');
+      return null;
+    }
+
+    return;
+  }
+
+  showError(message: string) {
+    // this.messageService.add({
+    //   severity: 'error',
+    //   summary: 'Login Failed',
+    //   detail: message,
+    // });
+  }
 }
 
 // Authentication set - up .
