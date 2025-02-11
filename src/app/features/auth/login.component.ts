@@ -12,6 +12,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { MessageModule } from 'primeng/message';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 @Component({
@@ -24,6 +25,7 @@ import { AuthService } from '../../core/services/auth.service';
     ButtonModule,
     CommonModule,
     ReactiveFormsModule,
+    MessageModule,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
@@ -35,13 +37,13 @@ export class LoginComponent {
   authForm = new FormGroup({
     username: new FormControl('', [
       Validators.required,
-      Validators.minLength(3),
+      Validators.minLength(4),
       Validators.maxLength(20),
       Validators.pattern(/^[a-z0-9]+$/),
     ]),
     password: new FormControl('', [
       Validators.required,
-      Validators.minLength(3),
+      Validators.minLength(4),
       Validators.maxLength(20),
     ]),
   });
