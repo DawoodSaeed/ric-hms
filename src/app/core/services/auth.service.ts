@@ -11,12 +11,14 @@ export class AuthService {
   private apiUrl = environment.apiUrl + 'auth';
   private user = signal<{ role: string } | null>(null);
 
+  // For user login...
   login(username: string, password: string) {
     return this.http.post<User>(`${this.apiUrl}/login`, {
       username: username,
       password: password,
     });
   }
+
   logout() {
     this.user.set(null);
   }
