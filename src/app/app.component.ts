@@ -1,26 +1,17 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
-import { Menubar } from 'primeng/menubar';
-import { InputText } from 'primeng/inputtext';
-import { ToggleButton } from 'primeng/togglebutton';
-import { Badge } from 'primeng/badge';
 import { CommonModule } from '@angular/common';
 import { MenuItem } from 'primeng/api';
-import { Avatar } from 'primeng/avatar';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from './layout/navbar/navbar.component';
+import { filter, map, Observable, startWith } from 'rxjs';
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
     SidebarComponent,
-    Menubar,
-    InputText,
-    ToggleButton,
-    Badge,
     CommonModule,
-    Avatar,
     FormsModule,
     NavbarComponent,
   ],
@@ -29,7 +20,8 @@ import { NavbarComponent } from './layout/navbar/navbar.component';
 })
 export class AppComponent {
   title = 'ric-hms';
-
+  isLoginPage$: Observable<boolean>;
+  private router = inject(Router);
   topMenuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },
     {
@@ -61,5 +53,17 @@ export class AppComponent {
   toggleTheme() {
     const element = document.querySelector('html');
     element?.classList.toggle('my-app-dark');
+  }
+
+  constructor() {
+    this.isLoginPage$ = this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map(() => this.isLoginRoute()),
+      startWith(this.isLoginRoute())
+    );
+  }
+
+  private isLoginRoute(): boolean {
+    return this.router.url === '/login' || this.router.url === '/';
   }
 }

@@ -1,6 +1,6 @@
 <div class="flex-1 p-0">
   <p-menubar [model]="topMenuItems">
-    <ng-template #start>
+    <!-- <ng-template #start>
       <svg
         width="33"
         height="35"
@@ -10,7 +10,7 @@
       >
         <path d="..." fill="var(--primary-color)" />
       </svg>
-    </ng-template>
+    </ng-template> -->
     <ng-template #item let-item let-root="root">
       <a pRipple class="flex items-center p-menubar-item-link">
         <span>{{ item.label }}</span>

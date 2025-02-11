@@ -10,19 +10,19 @@
   </div>
 </div> -->
 
+@if(!(isLoginPage$ | async)){
 <div class="flex flex-col">
-  <!-- Top Navigation Menu -->
-
   <div class="flex flex-1">
     <app-sidebar />
-    <!-- Main Div Container -->
+
     <div class="flex-1">
       <app-navbar />
-
-      <!-- Main COntent -->
       <div>
         <router-outlet />
       </div>
     </div>
   </div>
 </div>
+}@else {
+<router-outlet />
+}
