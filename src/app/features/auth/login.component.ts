@@ -12,6 +12,8 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-login',
   imports: [
@@ -28,7 +30,8 @@ import {
 })
 export class LoginComponent {
   commonService = inject(ThemeService);
-
+  authService = inject(AuthService);
+  router = inject(Router);
   authForm = new FormGroup({
     username: new FormControl('', [
       Validators.required,
@@ -36,10 +39,29 @@ export class LoginComponent {
       Validators.maxLength(20),
       Validators.pattern(/^[a-z0-9]+$/),
     ]),
-    password: new FormControl(''),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.maxLength(20),
+    ]),
   });
 
-  login() {}
+  login() {
+    if (this.authForm.invalid) {
+      return;
+    }
+
+    this.authService
+      .login(
+        this.authForm.get('username')?.value || '',
+        this.authForm.get('password')?.value || ''
+      )
+      .subscribe({
+        next: (user) => {
+          console.log(user.token);
+        },
+      });
+  }
 }
 
 // Authentication set - up .
