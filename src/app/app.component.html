@@ -1,14 +1,28 @@
-<div class="layout-container">
-  <!-- Sidebar -->
+<!-- <div class="layout-container">
   <aside class="sidebar">
     <app-sidebar></app-sidebar>
   </aside>
 
-  <!-- Main Content -->
   <div class="main-content">
-    <!-- Dynamic Content -->
     <div class="page-content">
       <router-outlet></router-outlet>
+    </div>
+  </div>
+</div> -->
+
+<div class="flex flex-col">
+  <!-- Top Navigation Menu -->
+
+  <div class="flex flex-1">
+    <app-sidebar />
+    <!-- Main Div Container -->
+    <div class="flex-1">
+      <app-navbar />
+
+      <!-- Main COntent -->
+      <div>
+        <router-outlet />
+      </div>
     </div>
   </div>
 </div>

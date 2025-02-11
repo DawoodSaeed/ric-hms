@@ -1,20 +1,16 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { SidebarComponent } from './layout/sidebar/sidebar.component';
-import { Menubar } from 'primeng/menubar';
-import { InputText } from 'primeng/inputtext';
-import { ToggleButton } from 'primeng/togglebutton';
-import { Badge } from 'primeng/badge';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MenuItem } from 'primeng/api';
 import { Avatar } from 'primeng/avatar';
-import { FormsModule } from '@angular/forms';
-import { NavbarComponent } from './layout/navbar/navbar.component';
+import { Badge } from 'primeng/badge';
+import { InputText } from 'primeng/inputtext';
+import { Menubar } from 'primeng/menubar';
+import { ToggleButton } from 'primeng/togglebutton';
+
 @Component({
-  selector: 'app-root',
+  selector: 'app-navbar',
   imports: [
-    RouterOutlet,
-    SidebarComponent,
     Menubar,
     InputText,
     ToggleButton,
@@ -22,14 +18,11 @@ import { NavbarComponent } from './layout/navbar/navbar.component';
     CommonModule,
     Avatar,
     FormsModule,
-    NavbarComponent,
   ],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+  templateUrl: './navbar.component.html',
+  styleUrl: './navbar.component.scss',
 })
-export class AppComponent {
-  title = 'ric-hms';
-
+export class NavbarComponent {
   topMenuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },
     {

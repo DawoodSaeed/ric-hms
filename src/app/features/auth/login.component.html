@@ -1,10 +1,9 @@
 <div
   class="flex justify-center items-center min-h-screen bg-gradient-to-r w-full"
   [class.from-blue-50]="!commonService.isDarkMode"
-  [class.from-blue-100]="!commonService.isDarkMode"
-  [ngClass]="{
-    'from-gray-800 to-gray-900': commonService.isDarkMode
-  }"
+  [class.to-blue-100]="!commonService.isDarkMode"
+  [class.from-gray-500]="commonService.isDarkMode"
+  [class.to-gray-900]="commonService.isDarkMode"
 >
   <p-card class="w-full max-w-md">
     <!-- Logo Section -->
