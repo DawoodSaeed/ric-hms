@@ -1,6 +1,7 @@
 import {
   ChangeDetectorRef,
   Component,
+  inject,
   OnInit,
   ViewEncapsulation,
 } from '@angular/core';
@@ -19,6 +20,7 @@ import { ToggleButton } from 'primeng/togglebutton';
 import { FormsModule } from '@angular/forms';
 import { StyleClass } from 'primeng/styleclass';
 import { expand } from 'rxjs';
+import { SidebarService } from '../../core/services/sidebar.service';
 @Component({
   selector: 'app-sidebar',
 
@@ -38,10 +40,12 @@ import { expand } from 'rxjs';
   encapsulation: ViewEncapsulation.None,
 })
 export class SidebarComponent implements OnInit {
+
   sideBarTabs: any[] = [];
   menuExpanded: boolean = false;
   // Variable to track the clicked menu
   clickedMenuIndex: number | null = null;
+  sidebarService=inject(SidebarService)
   constructor(private cdRef: ChangeDetectorRef) {}
   // Method to handle the click event
   onMenuClick(index: number) {
@@ -150,6 +154,7 @@ export class SidebarComponent implements OnInit {
 
   toggleDrawer() {
     this.isDrawerOpen = !this.isDrawerOpen;
+    this.sidebarService.toggleDrawer(this.isDrawerOpen)
   }
 
   logout() {

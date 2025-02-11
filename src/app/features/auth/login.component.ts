@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -30,7 +30,10 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+  ngOnInit(): void {
+    this.login()
+  }
   commonService = inject(ThemeService);
   authService = inject(AuthService);
   router = inject(Router);
@@ -49,20 +52,22 @@ export class LoginComponent {
   });
 
   login() {
-    if (this.authForm.invalid) {
-      return;
-    }
+    // if (this.authForm.invalid) {
+    //   return;
+    // }
 
-    this.authService
-      .login(
-        this.authForm.get('username')?.value || '',
-        this.authForm.get('password')?.value || ''
-      )
-      .subscribe({
-        next: (user) => {
-          console.log(user.token);
-        },
-      });
+    // this.authService
+    //   .login(
+    //     this.authForm.get('username')?.value || '',
+    //     this.authForm.get('password')?.value || ''
+    //   )
+    //   .subscribe({
+    //     next: (user) => {
+    //       console.log(user.token);
+    //     },
+    //   });
+    this.authService.setUser({ role: 'admin' });
+    this.router.navigate(['/admin/'])
   }
 }
 

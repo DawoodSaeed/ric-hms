@@ -10,14 +10,17 @@
     [autoZIndex]="true"
     [modal]="false"
   >
-    <ng-template #header>
-      <div class="flex items-center gap-2">
+    <ng-template #header >
+      <div class="flex items-center gap-2" (click)=" toggleDrawer()">
         <p-avatar
           image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
           shape="circle"
         />
         <span class="font-bold">Amy Elsner</span>
+
       </div>
+      <i class="pi pi-align-justify
+      "></i>
     </ng-template>
 
     <p-panelmenu
