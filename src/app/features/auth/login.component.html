@@ -1,5 +1,5 @@
 <div
-  class="flex justify-center items-center min-h-screen bg-gradient-to-r"
+  class="flex justify-center items-center min-h-screen bg-gradient-to-r w-full"
   [class.from-blue-50]="!commonService.isDarkMode"
   [class.from-blue-100]="!commonService.isDarkMode"
   [ngClass]="{
@@ -18,17 +18,30 @@
     </h2>
 
     <!-- Login Form -->
-    <form>
+    <form [formGroup]="authForm" (ngSubmit)="login()">
       <!-- Email Input -->
       <div class="mb-4">
-        <label for="email" class="block text-gray-700 font-medium">Email</label>
+        <label for="email" class="block text-gray-700 font-medium"
+          >Username</label
+        >
         <input
           pInputText
-          id="email"
-          type="email"
-          placeholder="Enter your email"
+          id="username"
+          type="text"
+          placeholder="Enter your username"
           class="w-full mt-1"
+          formControlName="username"
+          required
         />
+
+        <ng-container *ngIf="authForm.controls.username as username">
+          <div *ngIf="username.dirty && username.hasError('required')">
+            This field is required
+          </div>
+          <div *ngIf="username.dirty && username.hasError('minlength')">
+            Name must be at least 4 characters long.
+          </div>
+        </ng-container>
       </div>
 
       <!-- Password Input -->
@@ -45,6 +58,8 @@
           [inputStyle]="{ width: '100%' }"
           [toggleMask]="true"
           class="!w-full !mt-1"
+          formControlName="password"
+          required
         ></p-password>
       </div>
 
@@ -59,6 +74,7 @@
 
       <!-- Login Button -->
       <button
+        type="submit"
         pButton
         label="Login"
         class="w-full p-button-raised p-button-rounded p-button-primary text-white font-medium bg-[#2467AA] border-[#2467AA]"
