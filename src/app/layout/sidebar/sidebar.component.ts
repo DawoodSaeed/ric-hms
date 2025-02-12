@@ -21,6 +21,7 @@ import { FormsModule } from '@angular/forms';
 import { StyleClass } from 'primeng/styleclass';
 import { expand } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
+import { SidebarService } from '../../core/services/sidebar.service';
 @Component({
   selector: 'app-sidebar',
 
@@ -42,10 +43,12 @@ import { AuthService } from '../../core/services/auth.service';
 export class SidebarComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
+
   sideBarTabs: any[] = [];
   menuExpanded: boolean = false;
   // Variable to track the clicked menu
   clickedMenuIndex: number | null = null;
+  sidebarService = inject(SidebarService);
   constructor(private cdRef: ChangeDetectorRef) {}
   // Method to handle the click event
   onMenuClick(index: number) {
@@ -53,6 +56,9 @@ export class SidebarComponent implements OnInit {
     console.log(this.clickedMenuIndex);
   }
   ngOnInit(): void {
+    this.sidebarService.isDrawerOpen$.subscribe(
+      (state: boolean) => (this.isDrawerOpen = state)
+    );
     this.sideBarTabs = [
       {
         label: 'Admin & HR',
@@ -153,7 +159,8 @@ export class SidebarComponent implements OnInit {
   ];
 
   toggleDrawer() {
-    this.isDrawerOpen = !this.isDrawerOpen;
+    // this.isDrawerOpen = !this.isDrawerOpen;
+    this.sidebarService.toggleDrawer(!this.isDrawerOpen);
   }
 
   logout() {
