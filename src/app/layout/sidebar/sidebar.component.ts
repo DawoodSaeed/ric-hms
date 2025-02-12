@@ -1,6 +1,7 @@
 import {
   ChangeDetectorRef,
   Component,
+  inject,
   OnInit,
   ViewEncapsulation,
 } from '@angular/core';
@@ -14,11 +15,12 @@ import { Menubar } from 'primeng/menubar';
 import { BadgeModule } from 'primeng/badge';
 import { InputText } from 'primeng/inputtext';
 import { Drawer } from 'primeng/drawer';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ToggleButton } from 'primeng/togglebutton';
 import { FormsModule } from '@angular/forms';
 import { StyleClass } from 'primeng/styleclass';
 import { expand } from 'rxjs';
+import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-sidebar',
 
@@ -38,6 +40,8 @@ import { expand } from 'rxjs';
   encapsulation: ViewEncapsulation.None,
 })
 export class SidebarComponent implements OnInit {
+  private authService = inject(AuthService);
+  private router = inject(Router);
   sideBarTabs: any[] = [];
   menuExpanded: boolean = false;
   // Variable to track the clicked menu
@@ -153,7 +157,8 @@ export class SidebarComponent implements OnInit {
   }
 
   logout() {
-    console.log('User logged out');
+    this.authService.logout();
+    this.router.navigate(['/auth']);
   }
 
   checked: boolean = false;

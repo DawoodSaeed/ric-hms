@@ -61,6 +61,7 @@ export class LoginComponent {
       .subscribe({
         next: (user) => {
           console.log(user.token);
+
           this.authService.setUser({ role: 'admin' });
           this.router.navigate(['/admin/']);
         },
