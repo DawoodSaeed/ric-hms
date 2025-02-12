@@ -56,18 +56,35 @@ export class LoginComponent implements OnInit {
     //   return;
     // }
 
-    // this.authService
-    //   .login(
-    //     this.authForm.get('username')?.value || '',
-    //     this.authForm.get('password')?.value || ''
-    //   )
-    //   .subscribe({
-    //     next: (user) => {
-    //       console.log(user.token);
-    //     },
-    //   });
-    this.authService.setUser({ role: 'admin' });
-    this.router.navigate(['/admin/'])
+    this.authService
+      .login(
+        this.authForm.get('username')?.value || '',
+        this.authForm.get('password')?.value || ''
+      )
+      .subscribe({
+        
+        next: (user) => {
+          console.log(user.token);
+          this.authService.setUser({ role: 'admin' });
+          this.router.navigate(['/admin/']);
+        },
+
+        error: (err) => {
+          if (!err.status) {
+            this.authForm.setErrors({
+              noConnection: true,
+            });
+          } else if (err.status == 401) {
+            this.authForm.setErrors({
+              unAuth: true,
+            });
+          } else {
+            this.authForm.setErrors({
+              unknown: true,
+            });
+          }
+        },
+      });
   }
 }
 
