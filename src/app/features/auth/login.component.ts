@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -30,7 +30,10 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+  ngOnInit(): void {
+    this.login()
+  }
   commonService = inject(ThemeService);
   authService = inject(AuthService);
   router = inject(Router);
@@ -49,9 +52,9 @@ export class LoginComponent {
   });
 
   login() {
-    if (this.authForm.invalid) {
-      return;
-    }
+    // if (this.authForm.invalid) {
+    //   return;
+    // }
 
     this.authService
       .login(
@@ -59,11 +62,28 @@ export class LoginComponent {
         this.authForm.get('password')?.value || ''
       )
       .subscribe({
+        
         next: (user) => {
           console.log(user.token);
 
           this.authService.setUser({ role: 'admin' });
           this.router.navigate(['/admin/']);
+        },
+
+        error: (err) => {
+          if (!err.status) {
+            this.authForm.setErrors({
+              noConnection: true,
+            });
+          } else if (err.status == 401) {
+            this.authForm.setErrors({
+              unAuth: true,
+            });
+          } else {
+            this.authForm.setErrors({
+              unknown: true,
+            });
+          }
         },
       });
   }
