@@ -25,13 +25,15 @@ import { SidebarService } from '../../core/services/sidebar.service';
   styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent implements OnInit {
-  sidebarService=inject(SidebarService)
+  sidebarService = inject(SidebarService);
   ngOnInit(): void {
-    this.sidebarService.isDrawerOpen$.subscribe((state:boolean)=>this.isDrawerOpen=state)
+    this.sidebarService.isDrawerOpen$.subscribe(
+      (state: boolean) => (this.isDrawerOpen = state)
+    );
   }
-  isDrawerOpen:boolean=true
-  toggleSidebar(){
-    this.sidebarService.toggleDrawer(!this.isDrawerOpen)
+  isDrawerOpen: boolean = true;
+  toggleSidebar() {
+    this.sidebarService.toggleDrawer(!this.isDrawerOpen);
   }
   topMenuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },

@@ -32,7 +32,7 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class LoginComponent implements OnInit {
   ngOnInit(): void {
-    this.login()
+    this.login();
   }
   commonService = inject(ThemeService);
   authService = inject(AuthService);
@@ -52,9 +52,9 @@ export class LoginComponent implements OnInit {
   });
 
   login() {
-    // if (this.authForm.invalid) {
-    //   return;
-    // }
+    if (this.authForm.invalid) {
+      return;
+    }
 
     this.authService
       .login(
@@ -62,7 +62,6 @@ export class LoginComponent implements OnInit {
         this.authForm.get('password')?.value || ''
       )
       .subscribe({
-        
         next: (user) => {
           console.log(user.token);
 
@@ -88,6 +87,3 @@ export class LoginComponent implements OnInit {
       });
   }
 }
-
-// Authentication set - up .
-// Layout steup
