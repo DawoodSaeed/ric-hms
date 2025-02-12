@@ -30,6 +30,9 @@ export class NavbarComponent implements OnInit {
     this.sidebarService.isDrawerOpen$.subscribe((state:boolean)=>this.isDrawerOpen=state)
   }
   isDrawerOpen:boolean=true
+  toggleSidebar(){
+    this.sidebarService.toggleDrawer(!this.isDrawerOpen)
+  }
   topMenuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },
     {

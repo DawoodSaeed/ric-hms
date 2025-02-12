@@ -53,6 +53,7 @@ export class SidebarComponent implements OnInit {
     console.log(this.clickedMenuIndex);
   }
   ngOnInit(): void {
+    this.sidebarService.isDrawerOpen$.subscribe((state:boolean)=>this.isDrawerOpen=state)
     this.sideBarTabs = [
       {
         label: 'Admin & HR',
@@ -153,8 +154,8 @@ export class SidebarComponent implements OnInit {
   ];
 
   toggleDrawer() {
-    this.isDrawerOpen = !this.isDrawerOpen;
-    this.sidebarService.toggleDrawer(this.isDrawerOpen)
+    // this.isDrawerOpen = !this.isDrawerOpen;
+    this.sidebarService.toggleDrawer(!this.isDrawerOpen)
   }
 
   logout() {
