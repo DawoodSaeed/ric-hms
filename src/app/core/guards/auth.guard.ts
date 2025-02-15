@@ -20,9 +20,25 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean {
+    // check if the tokens are present
+    let navigateToLogin = true;
     if (this.authService.isLoggedIn()) {
-      this.router.navigate([`/${this.authService.getRole()}/`]);
-      return false;
+      this.authService.checkAuth().subscribe({
+        next: (valid) => {
+          if (valid) {
+            navigateToLogin = false;
+            console.log('##############', this.authService.getRole());
+            this.router.navigate([`/${this.authService.getRole()}/`]);
+          }
+
+          navigateToLogin = true;
+        },
+
+        error: () => {
+          navigateToLogin = true;
+        },
+      });
+      return navigateToLogin;
     } else {
       return true;
     }
