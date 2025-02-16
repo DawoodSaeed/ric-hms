@@ -1,0 +1,30 @@
+<!-- src/app/components/dynamic-form/dynamic-form.component.html -->
+<h2>{{ formStructure.title }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div *ngIf="formStructure.tabs; else flatForm">
+    <div *ngFor="let tab of formStructure.tabs" class="tab">
+      <h3>{{ tab.tabName }}</h3>
+      <div *ngFor="let field of tab.fields">
+        <label>{{ field.label }}</label>
+        <input *ngIf="field.type === 'text'" type="text" [formControlName]="field.name" />
+        <select *ngIf="field.type === 'select'" [formControlName]="field.name">
+          <option *ngFor="let option of field.options" [value]="option.value">{{ option.label }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flat form without tabs -->
+  <ng-template #flatForm>
+    <div *ngFor="let field of formStructure.fields">
+      <label>{{ field.label }}</label>
+      <input *ngIf="field.type === 'text'" type="text" [formControlName]="field.name" />
+      <select *ngIf="field.type === 'select'" [formControlName]="field.name">
+        <option *ngFor="let option of field.options" [value]="option.value">{{ option.label }}</option>
+      </select>
+    </div>
+  </ng-template>
+
+  <button type="submit">Submit</button>
+</form>
