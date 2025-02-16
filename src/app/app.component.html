@@ -11,22 +11,29 @@
 </div> -->
 
 @if(!(isLoginPage$ | async)){
-  <div class="flex h-screen">
-    <!-- Sidebar on the left -->
-    <app-sidebar class="w-1/5 min-w-[200px] bg-gray-100" />
-  
-    <!-- Main content area -->
-    <div class="flex flex-col flex-1">
-      <!-- Navbar on top -->
-      <app-navbar class="w-full h-16 border-b border-gray-200" />
-  
-      <!-- Router outlet content centered -->
-      <div class="flex-1 flex  p-4">
-        <router-outlet></router-outlet>
+<div class="flex flex-col h-full">
+  <div class="flex flex-1">
+    <app-sidebar />
+
+    <div
+      class="flex-1"
+      [ngStyle]="{
+        width: isDrawerOpen ? 'calc(100% - 20rem)' : '100%',
+      }"
+    >
+      <app-navbar />
+      <div
+        style="margin-top: 60px"
+        [ngStyle]="{
+        marginLeft: isDrawerOpen ? '30px' : '0',
+      }"
+      >
+        <router-outlet />
       </div>
     </div>
   </div>
-  
+</div>
+
 }@else {
 <router-outlet />
 }

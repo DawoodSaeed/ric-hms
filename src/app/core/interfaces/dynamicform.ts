@@ -1,19 +1,24 @@
 export interface FormField {
-    name: string;
-    type: string;
-    label: string;
-    required?: boolean;
-    options?: { value: string; label: string }[]; // For select/dropdowns
-  }
-  
-  export interface FormTab {
-    tabName: string;
-    fields: FormField[];
-  }
-  
-  export interface FormStructure {
-    title: string;
-    tabs?: FormTab[]; // Optional tabs
-    fields?: FormField[]; // Optional flat fields if no tabs
-  }
-  
+  name: string;
+  label: string;
+  type: string;
+  required?: boolean;
+  options?: { value: string; label: string }[];
+}
+
+export interface FormSection {
+  title: string;
+  fields: FormField[];
+}
+
+export interface FormTab {
+  tabName: string;
+  sections: FormSection[];
+}
+
+export interface FormStructure {
+  globalTitle: string;
+  tabs?: FormTab[];
+  sections?: FormSection[];
+  fields?:FormField[]
+}

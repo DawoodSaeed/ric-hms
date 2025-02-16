@@ -5,28 +5,35 @@ import { FormStructure } from '../interfaces/dynamicform';
   providedIn: 'root'
 })
 export class DynamicFormService {
+  constructor(private fb: FormBuilder) {}
 
-  constructor(private fb:FormBuilder) { }
+  createForm(formStructure: FormStructure): FormGroup {
+    const formGroup = this.fb.group({});
 
-
- // Create a form dynamically from FormStructure
- createForm(formStructure: FormStructure): FormGroup {
-  const formGroup = this.fb.group({});
-
-  const fields = formStructure.tabs 
-    ? formStructure.tabs.flatMap(tab => tab.fields) 
-    : formStructure.fields || [];
-
-  fields.forEach(field => {
-    formGroup.addControl(
-      field.name,
-      this.fb.control('', field.required ? Validators.required : null)
-    );
-  });
-
-  return formGroup;
+    if (formStructure.tabs) {
+      // Handle form with tabs and sections
+      formStructure.tabs.forEach(tab => {
+        tab.sections.forEach(section => {
+          section.fields.forEach(field => {
+            formGroup.addControl(
+              field.name,
+              this.fb.control('', field.required ? Validators.required : null)
+            );
+          });
+        });
+      });
+    } else if (formStructure.fields) {
+      // Handle simple flat form (no tabs, no sections)
+      formStructure.fields.forEach(field => {
+        formGroup.addControl(
+          field.name,
+          this.fb.control('', field.required ? Validators.required : null)
+        );
+      });
+    }
+    return formGroup;
+  }
 }
-
 
 
 //   addEmployeeForm():FormGroup{
@@ -99,4 +106,3 @@ export class DynamicFormService {
 //       nokRelation: ['', Validators.required],
 //     })
 //   }
-}

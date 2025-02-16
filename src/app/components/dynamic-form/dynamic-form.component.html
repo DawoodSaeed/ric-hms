@@ -1,30 +1,63 @@
-<!-- src/app/components/dynamic-form/dynamic-form.component.html -->
-<h2>{{ formStructure.title }}</h2>
+<h2>{{ formStructure.globalTitle }}</h2>
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+  <!-- Tabs View -->
   <div *ngIf="formStructure.tabs; else flatForm">
     <div *ngFor="let tab of formStructure.tabs" class="tab">
       <h3>{{ tab.tabName }}</h3>
-      <div *ngFor="let field of tab.fields">
-        <label>{{ field.label }}</label>
-        <input *ngIf="field.type === 'text'" type="text" [formControlName]="field.name" />
-        <select *ngIf="field.type === 'select'" [formControlName]="field.name">
-          <option *ngFor="let option of field.options" [value]="option.value">{{ option.label }}</option>
-        </select>
+      <div *ngFor="let section of tab.sections">
+        <h4>{{ section.title }}</h4>
+        <div *ngFor="let field of section.fields">
+          <label>{{ field.label }}</label>
+          <input *ngIf="field.type === 'text'" type="text" [formControlName]="field.name" />
+          <select *ngIf="field.type === 'select'" [formControlName]="field.name">
+            <option *ngFor="let option of field.options" [value]="option.value">{{ option.label }}</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Flat form without tabs -->
+  <!-- Flat Form View -->
   <ng-template #flatForm>
-    <div *ngFor="let field of formStructure.fields">
-      <label>{{ field.label }}</label>
-      <input *ngIf="field.type === 'text'" type="text" [formControlName]="field.name" />
-      <select *ngIf="field.type === 'select'" [formControlName]="field.name">
-        <option *ngFor="let option of field.options" [value]="option.value">{{ option.label }}</option>
-      </select>
+    <div  *ngIf="formStructure.sections; else simpleForm">
+
+      <div *ngFor="let section of formStructure.sections">
+        <h3>{{ section.title +' xx'}}</h3>
+        <div *ngFor="let field of section.fields">
+          <label>{{ field.label }}</label>
+          <input *ngIf="field.type === 'text'" type="text" [formControlName]="field.name" />
+          <select *ngIf="field.type === 'select'" [formControlName]="field.name">
+            <option *ngFor="let option of field.options" [value]="option.value">{{ option.label }}</option>
+          </select>
+        </div>
+      </div>
     </div>
   </ng-template>
 
+
+   <!-- Flat Form View (if no tabs and no sections) -->
+   <ng-template #simpleForm>
+    <div *ngFor="let field of formStructure.fields">
+      <label>{{ field.label }}</label>
+      <input 
+        *ngIf="field.type === 'text'" 
+        type="text" 
+        [formControlName]="field.name"
+      />
+      <select 
+        *ngIf="field.type === 'select'" 
+        [formControlName]="field.name"
+      >
+        <option 
+          *ngFor="let option of field.options" 
+          [value]="option.value"
+        >
+          {{ option.label }}
+        </option>
+      </select>
+    </div>
+  </ng-template>
   <button type="submit">Submit</button>
 </form>

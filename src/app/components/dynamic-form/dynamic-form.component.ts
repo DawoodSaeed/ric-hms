@@ -14,15 +14,15 @@ export class DynamicFormComponent {
   @Input() formStructure!: FormStructure;
   form!: FormGroup;
 
-  constructor(private formService: DynamicFormService) {}
+  constructor(private dynamicFormService: DynamicFormService) {}
 
   ngOnInit(): void {
-    this.form = this.formService.createForm(this.formStructure);
+    this.form = this.dynamicFormService.createForm(this.formStructure);
   }
 
   onSubmit(): void {
     if (this.form.valid) {
-      console.log(this.form.value);
+      console.log('Form Data:', this.form.value);
     } else {
       console.log('Form is invalid');
     }
