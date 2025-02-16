@@ -72,7 +72,6 @@
       class="custom-table"
       [rowsPerPageOptions]="[5, 10, 20]"
       dataKey="empId"
-      [loading]="loading()"
       [globalFilterFields]="[
         'firstName',
         'lastName',
@@ -84,6 +83,7 @@
       [(contextMenuSelection)]="selectedEmployee"
       [contextMenu]="cm"
       stateStorage="session"
+      [loading]="loading()"
       stateKey="statedemo-session"
     >
       <ng-template #caption>
@@ -125,7 +125,7 @@
       </ng-template>
 
       <ng-template pTemplate="body" let-employee>
-        <tr [pContextMenuRow]="employee">
+        <tr [pContextMenuRow]="employee" *ngIf="!loading()">
           <td>{{ employee.empId }}</td>
           <td>
             <div class="name-cell">
@@ -149,6 +149,20 @@
               ></p-speeddial>
             </div>
           </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="loadingBody">
+        <tr>
+          <td><p-skeleton /></td>
+          <td><p-skeleton /></td>
+          <td><p-skeleton /></td>
+          <td><p-skeleton /></td>
+          <td><p-skeleton /></td>
+          <td><p-skeleton /></td>
+          <td><p-skeleton /></td>
+          <td><p-skeleton /></td>
+          <td><p-skeleton /></td>
         </tr>
       </ng-template>
     </p-table>
