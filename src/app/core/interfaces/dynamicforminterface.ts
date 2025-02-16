@@ -3,6 +3,7 @@ export interface FormField {
   label: string;
   type: string;
   required?: boolean;
+  placeholder?:string;
   options?: { value: string; label: string }[];
 }
 
