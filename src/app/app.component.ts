@@ -6,6 +6,7 @@ import { MenuItem } from 'primeng/api';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from './layout/navbar/navbar.component';
 import { filter, map, Observable, startWith } from 'rxjs';
+import { SidebarService } from './core/services/sidebar.service';
 @Component({
   selector: 'app-root',
   imports: [
@@ -22,6 +23,14 @@ export class AppComponent {
   title = 'ric-hms';
   isLoginPage$: Observable<boolean>;
   private router = inject(Router);
+  sidebarService = inject(SidebarService);
+  ngOnInit(): void {
+    this.sidebarService.isDrawerOpen$.subscribe(
+      (state: boolean) => (this.isDrawerOpen = state)
+    );
+  }
+
+  isDrawerOpen: boolean = true;
   topMenuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },
     {
