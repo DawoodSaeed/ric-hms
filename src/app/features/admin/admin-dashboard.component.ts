@@ -20,12 +20,20 @@ import { RippleModule } from 'primeng/ripple';
 import { CustomSidebarComponent } from '../../core/components/custom-sidebar/custom-sidebar.component';
 import { map } from 'rxjs';
 import { TabViewModule } from 'primeng/tabview'; // For the tabs
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { MessageService } from 'primeng/api';
 import { Popover } from 'primeng/popover';
 import { PopoverModule } from 'primeng/popover';
 import { SpeedDial } from 'primeng/speeddial';
+import {
+  SelectButtonChangeEvent,
+  SelectButtonModule,
+} from 'primeng/selectbutton';
+import { FormsModule } from '@angular/forms';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { ContextMenuModule } from 'primeng/contextmenu';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -51,6 +59,11 @@ import { SpeedDial } from 'primeng/speeddial';
     ButtonModule,
     TagModule,
     SpeedDial,
+    SelectButtonModule,
+    FormsModule,
+    IconFieldModule,
+    InputIconModule,
+    ContextMenuModule,
   ],
   providers: [MessageService],
 })
@@ -60,6 +73,22 @@ export class AdminDashboardComponent {
   employees = signal<Employee[]>([]);
   selectedEmployee: Employee | null = null;
   employeeSidebarVisible = false;
+  // Options for SelectButton
+  viewOptions = [
+    {
+      label: 'Card View',
+      value: 'card',
+      icon: 'pi pi-th-large',
+    },
+    {
+      label: 'Table View',
+      value: 'table',
+      icon: 'pi pi-table',
+    },
+  ];
+
+  isCardView = signal(false);
+  loading = signal(true);
 
   constructor(private messageService: MessageService) {
     this.employeeService.employee$
@@ -69,12 +98,19 @@ export class AdminDashboardComponent {
           console.log(data.length);
           this.employees.set(data);
         },
+
+        complete: () => {
+          this.loading.set(false);
+        },
       });
   }
 
-  showDetails(employee: Employee) {
-    this.selectedEmployee = employee;
-    this.employeeSidebarVisible = true;
+  showDetails(employee: Employee | null) {
+    console.log(employee);
+    if (employee) {
+      this.selectedEmployee = employee;
+      this.employeeSidebarVisible = true;
+    }
   }
 
   closeDetails() {
@@ -110,37 +146,57 @@ export class AdminDashboardComponent {
 
   items: any[] = [];
 
+  contextItems = [
+    {
+      icon: 'pi pi-eye',
+      label: 'View Employee',
+      command: () => {
+        console.log(this.selectedEmployee);
+        this.employeeSidebarVisible = true;
+      },
+    },
+    {
+      icon: 'pi pi-refresh',
+      command: () => {
+        this.employeeSidebarVisible = true;
+      },
+      label: 'Refresh Employee',
+    },
+    {
+      icon: 'pi pi-trash',
+      command: () => {
+        this.employeeSidebarVisible = true;
+      },
+      label: 'Delete Employee',
+    },
+  ];
   getActionItems(employee: any) {
     return (this.items = [
       {
-        icon: 'pi pi-view',
+        icon: 'pi pi-eye',
+        label: 'View Employee',
         command: () => {
-          this.messageService.add({
-            severity: 'info',
-            summary: 'Add',
-            detail: 'Data Added',
-          });
+          console.log('Clicked');
+          this.showDetails(employee);
         },
       },
       {
         icon: 'pi pi-refresh',
         command: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Update',
-            detail: 'Data Updated',
-          });
+          console.log('Clicked');
+          this.showDetails(this.selectedEmployee);
         },
+
+        label: 'Refresh Employee',
       },
       {
         icon: 'pi pi-trash',
         command: () => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Delete',
-            detail: 'Data Deleted',
-          });
+          console.log('Clicked');
+          this.showDetails(this.selectedEmployee);
         },
+
+        label: 'Delete Employee',
       },
     ]);
   }
@@ -155,5 +211,43 @@ export class AdminDashboardComponent {
 
   deleteEmployee(employee: any) {
     console.log('Deleting', employee);
+  }
+
+  // Default View
+  toggleView(event: SelectButtonChangeEvent) {
+    const { value } = event.value;
+    if (value == 'card') {
+      this.isCardView.set(true);
+    } else {
+      this.isCardView.set(false);
+    }
+  }
+
+  searchValue: string | undefined;
+
+  clear(table: Table) {
+    this.searchValue = '';
+
+    // Clear sorting
+    table.sortField = null;
+    table.sortOrder = 1;
+    table.multiSortMeta = null;
+
+    // Clear filters
+    table.clear();
+
+    // Reset table state
+    table.reset();
+
+    // Clear session storage for this table
+    const storageKey = table.stateKey ? `${table.stateKey}` : null;
+
+    console.log(storageKey);
+    if (storageKey) {
+      sessionStorage.removeItem(storageKey);
+    }
+
+    // Force table to refresh
+    table.onLazyLoad.emit({});
   }
 }

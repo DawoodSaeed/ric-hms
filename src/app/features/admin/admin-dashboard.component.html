@@ -1,10 +1,22 @@
 <div class="employee-list-container">
   <header class="header">
     <h1>Employee Directory</h1>
-    <input pInputText class="search-box" placeholder="Search Employees..." />
+    <div>
+      <p-selectbutton
+        [options]="viewOptions"
+        optionLabel="card"
+        class="view-toggle ml-10"
+        (onChange)="toggleView($event)"
+      >
+        <ng-template let-item pTemplate="item">
+          <i [class]="item.icon" style="font-size: 1.2rem"></i>
+        </ng-template>
+      </p-selectbutton>
+    </div>
   </header>
 
-  <!-- <div class="employee-grid">
+  @if(isCardView()){
+  <div class="employee-grid">
     <p-card
       *ngFor="let employee of employees()"
       styleClass="shadow-xl"
@@ -40,10 +52,17 @@
         </div>
       </div>
     </p-card>
-  </div> -->
-
+  </div>
+  }@else {
   <div class="card">
+    <p-contextmenu #cm [model]="contextItems" />
+
     <p-table
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      [showCurrentPageReport]="true"
+      [size]="'large'"
+      #dt
+      showGridlines
       [value]="employees()"
       [tableStyle]="{ 'min-width': '60rem' }"
       [paginator]="true"
@@ -51,10 +70,48 @@
       stripedRows
       responsiveLayout="scroll"
       class="custom-table"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      dataKey="empId"
+      [loading]="loading()"
+      [globalFilterFields]="[
+        'firstName',
+        'lastName',
+        'cnic',
+        'email',
+        'mobileNo',
+        'address'
+      ]"
+      [(contextMenuSelection)]="selectedEmployee"
+      [contextMenu]="cm"
+      stateStorage="session"
+      stateKey="statedemo-session"
     >
+      <ng-template #caption>
+        <div class="flex">
+          <p-button
+            label="Clear"
+            [outlined]="true"
+            icon="pi pi-filter-slash"
+            (click)="clear(dt)"
+          />
+          <p-iconfield iconPosition="left" class="ml-auto">
+            <p-inputicon>
+              <i class="pi pi-search"></i>
+            </p-inputicon>
+            <input
+              pInputText
+              type="text"
+              [(ngModel)]="searchValue"
+              (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+              placeholder="Keyboard Search"
+            />
+          </p-iconfield>
+        </div>
+      </ng-template>
+
       <ng-template pTemplate="header">
         <tr>
-          <th>Emp ID</th>
+          <th pSortableColumn="empId">Emp ID <p-sortIcon field="empId" /></th>
           <th>Name</th>
           <th>CNIC</th>
           <th>Gender</th>
@@ -68,7 +125,7 @@
       </ng-template>
 
       <ng-template pTemplate="body" let-employee>
-        <tr>
+        <tr [pContextMenuRow]="employee">
           <td>{{ employee.empId }}</td>
           <td>
             <div class="name-cell">
@@ -85,10 +142,10 @@
             <div class="icon-group">
               <p-speeddial
                 [model]="getActionItems(employee)"
-                [radius]="80"
-                type="linear"
-                direction="up"
-                [style]="{ position: 'relative' }"
+                [radius]="50"
+                type="semi-circle"
+                direction="left"
+                [style]="{ position: 'relative',  }"
               ></p-speeddial>
             </div>
           </td>
@@ -96,6 +153,7 @@
       </ng-template>
     </p-table>
   </div>
+  }
 
   <app-custom-sidebar [(visible)]="employeeSidebarVisible">
     <div class="employee-profile">
