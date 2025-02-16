@@ -1,10 +1,10 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
-import { User } from '../../shared/models/auth';
+import { CheckAuth, User } from '../../shared/models/auth';
 import { TokenService } from './token.service';
 import { Router } from '@angular/router';
-import { tap } from 'rxjs';
+import { BehaviorSubject, map, tap } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
@@ -15,8 +15,11 @@ export class AuthService {
   private router = inject(Router);
 
   private apiUrl = environment.apiUrl + 'auth';
-  private user = signal<{ role: string } | null>(null);
 
+  private user = new BehaviorSubject<User | null>(null);
+  user$ = this.user.asObservable();
+
+  private role = '';
   login(username: string, password: string) {
     return this.http
       .post<User>(`${this.apiUrl}/login`, {
@@ -25,9 +28,26 @@ export class AuthService {
       })
       .pipe(
         tap((user) => {
+          this.setRole('Admin'.toLocaleLowerCase());
+
+          this.user.next({
+            ...user,
+            role: 'Admin',
+          });
+
+          // setting up the token.
           this.tokenService.setToken(user.token);
         })
       );
+  }
+
+  checkAuth() {
+    return this.http.get<CheckAuth>(`${this.apiUrl}/verify-token/`).pipe(
+      map(({ valid, role, username, userId }) => {
+        this.setRole(role.toLocaleLowerCase());
+        return valid;
+      })
+    );
   }
 
   logout() {
@@ -36,16 +56,18 @@ export class AuthService {
   }
 
   getRole(): string | null {
-    return this.user()?.role || null;
+    return this.role;
+  }
+
+  setRole(role: string) {
+    this.role = role;
   }
 
   isLoggedIn(): boolean {
-    // REMOVE THIS LINE ########################
-    this.setUser({ role: 'admin' });
     return !!this.tokenService.getAccessToken();
   }
 
-  setUser(user: { role: string } | null) {
-    this.user.set(user);
+  setUser(user: User | null) {
+    this.user.next(user);
   }
 }

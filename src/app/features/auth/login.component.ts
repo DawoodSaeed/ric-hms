@@ -63,9 +63,7 @@ export class LoginComponent implements OnInit {
       )
       .subscribe({
         next: (user) => {
-          console.log(user.token);
-
-          this.authService.setUser({ role: 'admin' });
+          // console.log(user.token);
           this.router.navigate(['/admin/']);
         },
 

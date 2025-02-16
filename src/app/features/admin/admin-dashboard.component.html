@@ -1,1 +1,68 @@
-<p>admin-dashboard works!</p>
+<div class="employee-list-container">
+  <header>
+    <h1>Employee Directory</h1>
+    <input type="text" placeholder="Search Employees..." />
+  </header>
+
+  <div class="employee-grid">
+    <div
+      *ngFor="let employee of employees()"
+      class="employee-card"
+      (click)="showDetails(employee)"
+    >
+      <img src="assets/placeholder-profile.png" alt="Profile Picture" />
+      <div class="card-content">
+        <h3>{{ employee.firstName }} {{ employee.lastName }}</h3>
+        <p class="employee-id">ID: {{ employee.empId }}</p>
+        <p class="employee-title">Some Title</p>
+      </div>
+    </div>
+  </div>
+
+  <aside *ngIf="selectedEmployee" class="employee-details">
+    <button class="close-button" (click)="closeDetails()">&times;</button>
+
+    <div class="employee-profile">
+      <img src="assets/placeholder-profile.png" alt="Employee Picture" />
+      <h2>{{ selectedEmployee.firstName }} {{ selectedEmployee.lastName }}</h2>
+      <p class="employee-title">Some Title</p>
+    </div>
+
+    <div class="details-section">
+      <h3>Personal Information</h3>
+      <p><strong>CNIC:</strong> {{ selectedEmployee.cnic }}</p>
+      <p>
+        <strong>Date of Birth:</strong> {{ formatDate(selectedEmployee.dob) }}
+      </p>
+      <p><strong>Gender:</strong> {{ selectedEmployee.gender }}</p>
+    </div>
+
+    <div class="details-section">
+      <h3>Contact Information</h3>
+      <p><strong>Email:</strong> {{ selectedEmployee.email }}</p>
+      <p><strong>Mobile:</strong> {{ selectedEmployee.mobileNo }}</p>
+      <p><strong>Address:</strong> {{ selectedEmployee.address }}</p>
+    </div>
+
+    <div class="details-section">
+      <h3>Employment Details</h3>
+      <p>
+        <strong>Joining Date:</strong>
+        {{ formatDate(selectedEmployee.joiningDate) }}
+      </p>
+      <p>
+        <strong>Retirement Date:</strong>
+        {{ formatDate(selectedEmployee.dateOfRetirement) }}
+      </p>
+    </div>
+
+    <div class="details-section">
+      <h3>Other Information</h3>
+      <p>
+        <strong>Personal Number:</strong> {{ selectedEmployee.personalNumber }}
+      </p>
+      <p><strong>Badge Number:</strong> {{ selectedEmployee.badgeNumber }}</p>
+      <p><strong>NTN:</strong> {{ selectedEmployee.ntn }}</p>
+    </div>
+  </aside>
+</div>
