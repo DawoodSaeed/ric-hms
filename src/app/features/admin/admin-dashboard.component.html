@@ -1,68 +1,246 @@
 <div class="employee-list-container">
-  <header>
+  <header class="header">
     <h1>Employee Directory</h1>
-    <input type="text" placeholder="Search Employees..." />
+    <input pInputText class="search-box" placeholder="Search Employees..." />
   </header>
 
-  <div class="employee-grid">
-    <div
+  <!-- <div class="employee-grid">
+    <p-card
       *ngFor="let employee of employees()"
-      class="employee-card"
-      (click)="showDetails(employee)"
+      styleClass="shadow-xl"
+      class="employee-card p-ripple"
     >
-      <img src="assets/placeholder-profile.png" alt="Profile Picture" />
-      <div class="card-content">
-        <h3>{{ employee.firstName }} {{ employee.lastName }}</h3>
-        <p class="employee-id">ID: {{ employee.empId }}</p>
-        <p class="employee-title">Some Title</p>
+      <div class="employee-card-content">
+        <p-avatar
+          image="assets/placeholder-profile.png"
+          shape="circle"
+          (onImageError)="setDefaultImage($event)"
+          styleClass="employee-avatar"
+        ></p-avatar>
+        <div class="employee-info">
+          <h3>{{ employee.firstName }} {{ employee.lastName }}</h3>
+          <p class="employee-email">{{ employee.email }}</p>
+          <p class="employee-gender">{{ employee.gender }}</p>
+
+          <div class="icon-group">
+            <i
+              class="pi pi-th-large"
+              title="Dashboard"
+              (click)="showDetails(employee)"
+            ></i>
+            <i class="pi pi-pencil" title="Edit"></i>
+            <i class="pi pi-print" title="Print"></i>
+            <i class="pi pi-check-circle" title="Approve"></i>
+            <i class="pi pi-check" title="Verify"></i>
+            <i class="pi pi-file" title="Documents"></i>
+            <i class="pi pi-eye" title="View"></i>
+            <i class="pi pi-book" title="Records"></i>
+            <i class="pi pi-cog" title="Settings"></i>
+          </div>
+        </div>
       </div>
-    </div>
+    </p-card>
+  </div> -->
+
+  <div class="card">
+    <p-table
+      [value]="employees()"
+      [tableStyle]="{ 'min-width': '60rem' }"
+      [paginator]="true"
+      [rows]="10"
+      stripedRows
+      responsiveLayout="scroll"
+      class="custom-table"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Emp ID</th>
+          <th>Name</th>
+          <th>CNIC</th>
+          <th>Gender</th>
+          <th>Email</th>
+          <th>Mobile No</th>
+          <th>Job Type</th>
+          <th>Address</th>
+          <th>Actions</th>
+          <!-- Icons Column -->
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-employee>
+        <tr>
+          <td>{{ employee.empId }}</td>
+          <td>
+            <div class="name-cell">
+              {{ employee.firstName }} {{ employee.lastName }}
+            </div>
+          </td>
+          <td>{{ employee.cnic }}</td>
+          <td>{{ employee.gender }}</td>
+          <td>{{ employee.email }}</td>
+          <td>{{ employee.mobileNo }}</td>
+          <td>{{ employee.jobTypeId }}</td>
+          <td>{{ employee.address }}</td>
+          <td>
+            <div class="icon-group">
+              <p-speeddial
+                [model]="getActionItems(employee)"
+                [radius]="80"
+                type="linear"
+                direction="up"
+                [style]="{ position: 'relative' }"
+              ></p-speeddial>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
   </div>
 
-  <aside *ngIf="selectedEmployee" class="employee-details">
-    <button class="close-button" (click)="closeDetails()">&times;</button>
-
+  <app-custom-sidebar [(visible)]="employeeSidebarVisible">
     <div class="employee-profile">
-      <img src="assets/placeholder-profile.png" alt="Employee Picture" />
-      <h2>{{ selectedEmployee.firstName }} {{ selectedEmployee.lastName }}</h2>
-      <p class="employee-title">Some Title</p>
-    </div>
-
-    <div class="details-section">
-      <h3>Personal Information</h3>
-      <p><strong>CNIC:</strong> {{ selectedEmployee.cnic }}</p>
-      <p>
-        <strong>Date of Birth:</strong> {{ formatDate(selectedEmployee.dob) }}
-      </p>
-      <p><strong>Gender:</strong> {{ selectedEmployee.gender }}</p>
-    </div>
-
-    <div class="details-section">
-      <h3>Contact Information</h3>
-      <p><strong>Email:</strong> {{ selectedEmployee.email }}</p>
-      <p><strong>Mobile:</strong> {{ selectedEmployee.mobileNo }}</p>
-      <p><strong>Address:</strong> {{ selectedEmployee.address }}</p>
-    </div>
-
-    <div class="details-section">
-      <h3>Employment Details</h3>
-      <p>
-        <strong>Joining Date:</strong>
-        {{ formatDate(selectedEmployee.joiningDate) }}
-      </p>
-      <p>
-        <strong>Retirement Date:</strong>
-        {{ formatDate(selectedEmployee.dateOfRetirement) }}
+      <p-avatar
+        image="assets/placeholder-profile.png"
+        shape="circle"
+        size="xlarge"
+        (onImageError)="setDefaultImage($event)"
+      ></p-avatar>
+      <h2>
+        {{ selectedEmployee?.firstName }} {{ selectedEmployee?.lastName }}
+      </h2>
+      <p class="employee-title primary">
+        {{ getJobTitle(selectedEmployee?.jobTypeId) }}
       </p>
     </div>
 
-    <div class="details-section">
-      <h3>Other Information</h3>
-      <p>
-        <strong>Personal Number:</strong> {{ selectedEmployee.personalNumber }}
-      </p>
-      <p><strong>Badge Number:</strong> {{ selectedEmployee.badgeNumber }}</p>
-      <p><strong>NTN:</strong> {{ selectedEmployee.ntn }}</p>
-    </div>
-  </aside>
+    <p-divider></p-divider>
+
+    <p-tabView scrollable>
+      <p-tabPanel header="Personal Information">
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">CNIC:</span>
+            <span class="info-value">{{ selectedEmployee?.cnic || "-" }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Date of Birth:</span>
+            <span class="info-value">{{
+              formatDate(selectedEmployee?.dob)
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Gender:</span>
+            <span class="info-value">{{
+              selectedEmployee?.gender || "-"
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Marital Status:</span>
+            <span class="info-value">{{
+              selectedEmployee?.maritalStatus || "-"
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Religion:</span>
+            <span class="info-value">{{
+              selectedEmployee?.religion || "-"
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Blood Group:</span>
+            <span class="info-value">{{
+              getBloodGroup(selectedEmployee?.bloodGroupId) || "-"
+            }}</span>
+          </div>
+        </div>
+      </p-tabPanel>
+
+      <p-tabPanel header="Contact Information">
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Email:</span>
+            <span class="info-value">{{ selectedEmployee?.email || "-" }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Mobile:</span>
+            <span class="info-value">{{
+              selectedEmployee?.mobileNo || "-"
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Phone:</span>
+            <span class="info-value">{{ selectedEmployee?.phone || "-" }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Address:</span>
+            <span class="info-value">{{
+              selectedEmployee?.address || "-"
+            }}</span>
+          </div>
+        </div>
+      </p-tabPanel>
+
+      <p-tabPanel header="Employment Details">
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Personal Number:</span>
+            <span class="info-value">{{
+              selectedEmployee?.personalNumber || "-"
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Badge Number:</span>
+            <span class="info-value">{{
+              selectedEmployee?.badgeNumber || "-"
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Joining Date:</span>
+            <span class="info-value">{{
+              formatDate(selectedEmployee?.joiningDate)
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Retirement Date:</span>
+            <span class="info-value">{{
+              formatDate(selectedEmployee?.dateOfRetirement)
+            }}</span>
+          </div>
+        </div>
+      </p-tabPanel>
+
+      <p-tabPanel header="Other Details">
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Passport:</span>
+            <span class="info-value">{{
+              selectedEmployee?.passport || "-"
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">NTN:</span>
+            <span class="info-value">{{ selectedEmployee?.ntn || "-" }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">License Number:</span>
+            <span class="info-value">{{
+              selectedEmployee?.licenseNumber || "-"
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Guardian Name:</span>
+            <span class="info-value">{{
+              selectedEmployee?.guadianName || "-"
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Next of Kin Name:</span>
+            <span class="info-value">{{
+              selectedEmployee?.nokname || "-"
+            }}</span>
+          </div>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+  </app-custom-sidebar>
 </div>
