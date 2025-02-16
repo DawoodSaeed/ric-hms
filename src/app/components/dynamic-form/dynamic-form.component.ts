@@ -4,9 +4,11 @@ import { FormStructure } from '../../core/interfaces/dynamicform';
 import { DynamicFormService } from '../../core/services/dynamic-form.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { DropdownModule } from 'primeng/dropdown';
+
 @Component({
   selector: 'app-dynamic-form',
-  imports: [CommonModule,FormsModule,ReactiveFormsModule],
+  imports: [CommonModule,FormsModule,ReactiveFormsModule,DropdownModule],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss'
 })
