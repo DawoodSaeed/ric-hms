@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
@@ -24,13 +24,13 @@ export class AppComponent {
   isLoginPage$: Observable<boolean>;
   private router = inject(Router);
   sidebarService = inject(SidebarService);
+  isDrawerOpen = signal(false);
   ngOnInit(): void {
-    this.sidebarService.isDrawerOpen$.subscribe(
-      (state: boolean) => (this.isDrawerOpen = state)
+    this.sidebarService.isDrawerOpen$.subscribe((state: boolean) =>
+      this.isDrawerOpen.set(state)
     );
   }
 
-  isDrawerOpen: boolean = true;
   topMenuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },
     {
