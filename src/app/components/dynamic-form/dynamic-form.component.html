@@ -1,0 +1,71 @@
+<h2 class="text-2xl font-semibold">{{ formStructure.globalTitle }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+  <!-- Tabs View -->
+  <div *ngIf="formStructure.tabs; else flatForm">
+    <div *ngFor="let tab of formStructure.tabs" class="tab">
+      <h3>{{ tab.tabName }}</h3>
+      <div *ngFor="let section of tab.sections">
+        <h4>{{ section.title }}</h4>
+        <div *ngFor="let field of section.fields">
+          <label>{{ field.label }}</label>
+          <input *ngIf="field.type === 'text'" type="text" [formControlName]="field.name" />
+          <select *ngIf="field.type === 'select'" [formControlName]="field.name">
+            <option *ngFor="let option of field.options" [value]="option.value">{{ option.label }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flat Form View -->
+  <ng-template #flatForm>
+    <div  *ngIf="formStructure.sections; else simpleForm">
+
+      <div *ngFor="let section of formStructure.sections">
+        <h3>{{ section.title +' xx'}}</h3>
+        <div *ngFor="let field of section.fields">
+          <label>{{ field.label }}</label>
+          <input *ngIf="field.type === 'text'" type="text" [formControlName]="field.name" />
+          <select *ngIf="field.type === 'select'" [formControlName]="field.name">
+            <option *ngFor="let option of field.options" [value]="option.value">{{ option.label }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+
+   <!-- Flat Form View (if no tabs and no sections) -->
+   <ng-template #simpleForm>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let field of formStructure.fields" class="flex flex-col">
+        <label class="text-sm font-medium mb-1 ">{{ field.label }}</label>
+  
+        <!-- Text Input -->
+        <input *ngIf="field.type === 'text'" 
+               type="text" 
+               [formControlName]="field.name" 
+               [placeholder]="field.placeholder || field.label"
+               class="p-inputtext p-component w-3/4 py-2 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+  
+        <!-- Select Input -->
+        <p-dropdown *ngIf="field.type === 'select'" 
+                    [options]="field.options" 
+                    optionLabel="label" 
+                    optionValue="value" 
+                    [formControlName]="field.name" 
+                    placeholder="Select {{ field.label }}" 
+                    class="w-3/4">
+        </p-dropdown>
+      </div>
+    </div>
+  </ng-template>
+  
+  <button type="submit" 
+          class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200">
+    Submit
+  </button>
+  
+</form>

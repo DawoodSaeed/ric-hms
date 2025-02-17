@@ -62,9 +62,10 @@ export class SidebarComponent implements OnInit {
     this.sideBarTabs = [
       {
         label: 'Admin & HR',
-        icon: 'pi pi-user',
+        icon: 'fas fa-users-cog blue',
         expanded: false, // Track expanded state
-        items: [{ label: 'Employee Registry', icon: 'pi pi-circle-on' }],
+        items: [{ label: 'Employee Registry', icon: 'pi pi-circle-on' },{ label: 'Add Employee', icon: 'pi pi-circle-on',route:'/admin/addEmployee' }],
+        
         // command:()=>{
         //   alert('clicked')
         // }
