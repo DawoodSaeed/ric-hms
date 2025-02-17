@@ -10,20 +10,17 @@
     [autoZIndex]="true"
     [modal]="false"
   >
-    <ng-template #header >
-      <div class="flex items-center justify-between w-full" >
+    <ng-template #header>
+      <div class="flex items-center justify-between w-full">
         <div class="flex items-center gap-2">
-
           <p-avatar
-          image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
-          shape="circle"
+            image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+            shape="circle"
           />
           <span class="font-bold">Amy Elsner</span>
         </div>
-        <i (click)="toggleDrawer()" class="pi pi-align-justify
-        " ></i>
+        <i (click)="toggleDrawer()" class="pi pi-align-justify"></i>
       </div>
-      
     </ng-template>
 
     <p-panelmenu
