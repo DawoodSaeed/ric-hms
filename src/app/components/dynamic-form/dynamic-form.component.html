@@ -1,40 +1,84 @@
+
 <h2 class="text-2xl font-semibold">{{ formStructure.globalTitle }}</h2>
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
   <!-- Tabs View -->
-  <div *ngIf="formStructure.tabs; else flatForm">
-    <div *ngFor="let tab of formStructure.tabs" class="tab">
-      <h3>{{ tab.tabName }}</h3>
-      <div *ngFor="let section of tab.sections">
-        <h4>{{ section.title }}</h4>
-        <div *ngFor="let field of section.fields">
-          <label>{{ field.label }}</label>
-          <input *ngIf="field.type === 'text'" type="text" [formControlName]="field.name" />
-          <select *ngIf="field.type === 'select'" [formControlName]="field.name">
-            <option *ngFor="let option of field.options" [value]="option.value">{{ option.label }}</option>
-          </select>
+  <p-tabs [value]="0" *ngIf="formStructure.tabs;else flatForm">
+    <p-tablist>
+      <p-tab *ngFor="let tab of formStructure.tabs; let i = index" [value]="i">
+        {{ tab.tabName }}
+      </p-tab>
+    </p-tablist>
+
+    <p-tabpanels >
+      <p-tabpanel *ngFor="let tab of formStructure.tabs; let i=index" [value]="i">
+        <div *ngFor="let section of tab.sections" class="mb-4">
+          <h3 class="text-xl font-semibold mb-2">{{ section.title }}</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div *ngFor="let field of section.fields" class="flex flex-col">
+              <label class="text-sm font-medium mb-1">{{ field.label }}</label>
+
+              <!-- Text Input -->
+              <input *ngIf="field.type === 'text'" 
+                     type="text" 
+                     [formControlName]="field.name" 
+                     [placeholder]="field.placeholder || field.label" 
+                     class="p-inputtext p-component w-full py-2 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+
+                     <p-select *ngIf="field.type === 'select'" 
+                     [options]="field.options" 
+                     optionLabel="label" 
+                     optionValue="value" 
+                     [formControlName]="field.name" 
+                     [placeholder]="field.placeholder || ('Select ' + field.label)" 
+                     class="w-full">
+           </p-select>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+  
+  
+  
 
   <!-- Flat Form View -->
   <ng-template #flatForm>
-    <div  *ngIf="formStructure.sections; else simpleForm">
-
-      <div *ngFor="let section of formStructure.sections">
-        <h3>{{ section.title +' xx'}}</h3>
-        <div *ngFor="let field of section.fields">
-          <label>{{ field.label }}</label>
-          <input *ngIf="field.type === 'text'" type="text" [formControlName]="field.name" />
-          <select *ngIf="field.type === 'select'" [formControlName]="field.name">
-            <option *ngFor="let option of field.options" [value]="option.value">{{ option.label }}</option>
-          </select>
+    <div *ngIf="formStructure.sections; else simpleForm" class="space-y-6">
+  
+      <div *ngFor="let section of formStructure.sections" class="bg-white p-4 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold mb-4">{{ section.title }}</h3>
+  
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div *ngFor="let field of section.fields" class="flex flex-col">
+  
+            <label class="text-sm font-medium mb-1">{{ field.label }}</label>
+  
+            <!-- Text Input -->
+            <input *ngIf="field.type === 'text'" 
+                   type="text" 
+                   [formControlName]="field.name" 
+                   [placeholder]="field.placeholder || field.label" 
+                   class="p-inputtext p-component w-full py-2 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+  
+            <!-- Select Input -->
+            <p-dropdown *ngIf="field.type === 'select'" 
+                        [options]="field.options" 
+                        optionLabel="label" 
+                        optionValue="value" 
+                        [formControlName]="field.name" 
+                        [placeholder]="field.placeholder || ('Select ' + field.label)" 
+                        class="w-full">
+            </p-dropdown>
+          </div>
         </div>
       </div>
     </div>
   </ng-template>
+  
 
 
    <!-- Flat Form View (if no tabs and no sections) -->
@@ -49,7 +93,18 @@
                [formControlName]="field.name" 
                [placeholder]="field.placeholder || field.label"
                class="p-inputtext p-component w-3/4 py-2 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-  
+               <!-- Number Input -->
+        <input *ngIf="field.type === 'number'" 
+        type="number" 
+        [formControlName]="field.name" 
+        [placeholder]="field.placeholder || field.label"
+        class="p-inputtext p-component w-3/4 py-2 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+          <!-- Date Input -->
+          <input *ngIf="field.type === 'date'" 
+          type="date" 
+          [formControlName]="field.name" 
+          [placeholder]="field.placeholder || field.label"
+          class="p-inputtext p-component w-3/4 py-2 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>
         <!-- Select Input -->
         <p-dropdown *ngIf="field.type === 'select'" 
                     [options]="field.options" 
@@ -62,10 +117,12 @@
       </div>
     </div>
   </ng-template>
-  
-  <button type="submit" 
-          class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200">
+  <div class="flex justify-end  ">
+
+    <button type="submit" 
+    class="mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200">
     Submit
   </button>
+</div>
   
 </form>

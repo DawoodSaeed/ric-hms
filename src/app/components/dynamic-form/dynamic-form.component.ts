@@ -5,20 +5,22 @@ import { DynamicFormService } from '../../core/services/dynamic-form.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
-
+import { TabsModule } from 'primeng/tabs';
+ import { Select } from 'primeng/select';
 @Component({
   selector: 'app-dynamic-form',
-  imports: [CommonModule,FormsModule,ReactiveFormsModule,DropdownModule],
+  imports: [CommonModule,FormsModule,ReactiveFormsModule,DropdownModule,TabsModule,Select],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss'
 })
-export class DynamicFormComponent {
+export class DynamicFormComponent implements OnInit {
   @Input() formStructure!: FormStructure;
   form!: FormGroup;
 
   constructor(private dynamicFormService: DynamicFormService) {}
 
   ngOnInit(): void {
+    console.log('Form Structure:', this.formStructure);
     this.form = this.dynamicFormService.createForm(this.formStructure);
   }
 

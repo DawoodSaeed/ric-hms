@@ -22,7 +22,18 @@ export class DynamicFormService {
           });
         });
       });
-    } else if (formStructure.fields) {
+    }else if (formStructure.sections) {
+      // Handle flat form with sections
+      formStructure.sections.forEach(section => {
+        section.fields.forEach(field => {
+          formGroup.addControl(
+            field.name,
+            this.fb.control('', field.required ? Validators.required : null)
+          );
+        });
+      });
+    }
+     else if (formStructure.fields) {
       // Handle simple flat form (no tabs, no sections)
       formStructure.fields.forEach(field => {
         formGroup.addControl(
