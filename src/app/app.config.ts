@@ -5,6 +5,12 @@ import { providePrimeNG } from 'primeng/config';
 
 import { routes } from './app.routes';
 import { MyHospitalTheme } from './core/preset';
+import {
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
+import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,5 +26,12 @@ export const appConfig: ApplicationConfig = {
         },
       },
     }),
+
+    provideHttpClient(withInterceptorsFromDi()),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor, // Add your custom interceptor here
+      multi: true, // Allows multiple interceptors if needed
+    },
   ],
 };

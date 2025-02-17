@@ -1,36 +1,41 @@
-import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PanelMenuModule } from 'primeng/panelmenu';
-import { MenuModule } from 'primeng/menu';
-import { ButtonModule } from 'primeng/button';
-import { AvatarModule } from 'primeng/avatar';
-import { MenuItem } from 'primeng/api';
-import { Menubar } from 'primeng/menubar';
-import { BadgeModule } from 'primeng/badge';
-import { InputText } from 'primeng/inputtext';
-import { Drawer } from 'primeng/drawer';
-import { RouterModule } from '@angular/router';
-import { ToggleButton } from 'primeng/togglebutton';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MenuItem } from 'primeng/api';
+import { Avatar } from 'primeng/avatar';
+import { Badge } from 'primeng/badge';
+import { InputText } from 'primeng/inputtext';
+import { Menubar } from 'primeng/menubar';
+import { ToggleButton } from 'primeng/togglebutton';
+import { Observable } from 'rxjs';
+import { SidebarService } from '../../core/services/sidebar.service';
+
 @Component({
   selector: 'app-navbar',
-  imports: [   CommonModule,
-      PanelMenuModule,
-      MenuModule,
-      ButtonModule,
-      AvatarModule,
-      Menubar,
-      BadgeModule,
-      InputText,
-      Drawer,
-      ToggleButton,
-      FormsModule,
-      RouterModule],
+  imports: [
+    Menubar,
+    InputText,
+    ToggleButton,
+    Badge,
+    CommonModule,
+    Avatar,
+    FormsModule,
+  ],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss'
+  styleUrl: './navbar.component.scss',
 })
-export class NavbarComponent {
-topMenuItems: MenuItem[] = [
+export class NavbarComponent implements OnInit {
+  sidebarService = inject(SidebarService);
+  ngOnInit(): void {
+    this.sidebarService.isDrawerOpen$.subscribe(
+      (state: boolean) => (this.isDrawerOpen = state)
+    );
+  }
+  isDrawerOpen: boolean = true;
+  toggleSidebar() {
+    this.sidebarService.toggleDrawer(!this.isDrawerOpen);
+  }
+  topMenuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },
     {
       label: 'Projects',
@@ -52,6 +57,7 @@ topMenuItems: MenuItem[] = [
     { label: 'Settings', icon: 'pi pi-cog', routerLink: '/settings' },
     { label: 'Logout', icon: 'pi pi-sign-out', command: () => this.logout() },
   ];
+
   logout() {
     console.log('User logged out');
   }

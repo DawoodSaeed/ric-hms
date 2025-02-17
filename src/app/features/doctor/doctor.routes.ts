@@ -6,7 +6,5 @@ export const doctorRoutes: Routes = [
   {
     path: '',
     component: DoctorDashboardComponent,
-    canActivate: [RoleGuard],
-    data: { role: 'doctor' },
   },
 ];

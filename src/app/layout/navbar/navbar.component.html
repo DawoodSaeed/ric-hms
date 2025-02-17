@@ -1,17 +1,12 @@
-  <!-- navbar component -->
+<div class="flex-1 p-0 absolute right-0" [ngStyle]="{'width':isDrawerOpen?'calc(100% - 20rem)':'100%'}">
   <p-menubar [model]="topMenuItems">
+    
     <ng-template #start>
-      <svg
-        width="33"
-        height="35"
-        viewBox="0 0 33 35"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path d="..." fill="var(--primary-color)" />
-      </svg>
+      <i *ngIf="!isDrawerOpen" (click)="toggleSidebar()" class="pi pi-align-justify
+      "></i>
     </ng-template>
     <ng-template #item let-item let-root="root">
+      
       <a pRipple class="flex items-center p-menubar-item-link">
         <span>{{ item.label }}</span>
         <p-badge
@@ -29,6 +24,7 @@
             'ml-auto pi',
             root ? 'pi-angle-down' : 'pi-angle-right'
           ]"
+          [ngClass]="['ml-auto pi', root ? 'pi-angle-down' : 'pi-angle-right']"
         ></i>
       </a>
     </ng-template>
@@ -41,13 +37,17 @@
         />
 
         <p-togglebutton
+          class="toggleTheme"
           [(ngModel)]="checked"
-          onLabel="Dark Theme"
-          offLabel="Light Theme"
-          styleClass="w-36"
+          styleClass="w-15 text-center p-0 m-0"
           ariaLabel="Change theme"
+          [onIcon]="'pi pi-sun'"
+          [offIcon]="'pi pi-moon'"
           (onChange)="toggleTheme()"
+          [onLabel]="''"
+          [offLabel]="''"
         />
       </div>
     </ng-template>
   </p-menubar>
+</div>

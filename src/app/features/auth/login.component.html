@@ -1,10 +1,9 @@
 <div
   class="flex justify-center items-center min-h-screen bg-gradient-to-r w-full"
   [class.from-blue-50]="!commonService.isDarkMode"
-  [class.from-blue-100]="!commonService.isDarkMode"
-  [ngClass]="{
-    'from-gray-800 to-gray-900': commonService.isDarkMode
-  }"
+  [class.to-blue-100]="!commonService.isDarkMode"
+  [class.from-gray-500]="commonService.isDarkMode"
+  [class.to-gray-900]="commonService.isDarkMode"
 >
   <p-card class="w-full max-w-md">
     <!-- Logo Section -->
@@ -36,10 +35,29 @@
 
         <ng-container *ngIf="authForm.controls.username as username">
           <div *ngIf="username.dirty && username.hasError('required')">
-            This field is required
+            <p-message
+              severity="error"
+              icon="pi pi-times-circle"
+              styleClass="mt-2"
+              >Username is required</p-message
+            >
           </div>
           <div *ngIf="username.dirty && username.hasError('minlength')">
-            Name must be at least 4 characters long.
+            <p-message
+              severity="error"
+              icon="pi pi-times-circle"
+              styleClass="mt-2"
+              >Name must be at least 4 characters long.</p-message
+            >
+          </div>
+
+          <div *ngIf="username.dirty && username.hasError('maxlength')">
+            <p-message
+              severity="error"
+              icon="pi pi-times-circle"
+              styleClass="mt-2"
+              >Username can't be longer then 20 characters.</p-message
+            >
           </div>
         </ng-container>
       </div>
@@ -61,13 +79,41 @@
           formControlName="password"
           required
         ></p-password>
+
+        <ng-container *ngIf="authForm.controls.password as password">
+          <div *ngIf="password.dirty && password.hasError('required')">
+            <p-message
+              severity="error"
+              icon="pi pi-times-circle"
+              styleClass="mt-2"
+              >password is required</p-message
+            >
+          </div>
+          <div *ngIf="password.dirty && password.hasError('minlength')">
+            <p-message
+              severity="error"
+              icon="pi pi-times-circle"
+              styleClass="mt-2"
+              >Password must be at least 4 characters long.</p-message
+            >
+          </div>
+
+          <div *ngIf="password.dirty && password.hasError('maxlength')">
+            <p-message
+              severity="error"
+              icon="pi pi-times-circle"
+              styleClass="mt-2"
+              >Password can't be longer then 20 characters.</p-message
+            >
+          </div>
+        </ng-container>
       </div>
 
       <!-- Remember Me Section -->
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center">
-          <p-checkbox formControlName="city" value="New York" inputId="ny" />
-          <label for="ny" class="ml-2">Remember me</label>
+          <!-- <p-checkbox formControlName="city" value="New York" inputId="ny" />
+          <label for="ny" class="ml-2">Remember me</label> -->
         </div>
         <a href="#" class="text-[#2467AA] hover:underline">Forgot password?</a>
       </div>
@@ -77,8 +123,38 @@
         type="submit"
         pButton
         label="Login"
+        (click)="login()"
         class="w-full p-button-raised p-button-rounded p-button-primary text-white font-medium bg-[#2467AA] border-[#2467AA]"
       ></button>
+
+      <ng-container *ngIf="authForm.errors">
+        <div *ngIf="authForm.errors['noConnection']">
+          <p-message
+            severity="error"
+            icon="pi pi-times-circle"
+            styleClass="mt-2"
+            >Login Failed: There is no connection</p-message
+          >
+        </div>
+
+        <div *ngIf="authForm.errors['unAuth']">
+          <p-message
+            severity="error"
+            icon="pi pi-times-circle"
+            styleClass="mt-2"
+            >Login Failed: Credentials are not correct</p-message
+          >
+        </div>
+
+        <div *ngIf="authForm.errors['unKnown']">
+          <p-message
+            severity="error"
+            icon="pi pi-times-circle"
+            styleClass="mt-2"
+            >Login Failed: There was unknown error</p-message
+          >
+        </div>
+      </ng-container>
     </form>
 
     <!-- Register Section -->

@@ -1,4 +1,4 @@
-<div class="layout-container">
+<!-- <div class="layout-container">
   <aside class="sidebar">
     <app-sidebar></app-sidebar>
   </aside>
@@ -9,4 +9,32 @@
       <router-outlet></router-outlet>
     </div>
   </div>
+</div> -->
+
+@if(!(isLoginPage$ | async)){
+<div class="flex flex-col h-full">
+  <div class="flex flex-1">
+    <app-sidebar />
+
+    <div
+      class="flex-1"
+      [ngStyle]="{
+        width: isDrawerOpen ? 'calc(100% - 20rem)' : '100%',
+      }"
+    >
+      <app-navbar />
+      <div
+        style="margin-top: 60px"
+        [ngStyle]="{
+        marginLeft: isDrawerOpen ? '30px' : '0',
+      }"
+      >
+        <router-outlet />
+      </div>
+    </div>
+  </div>
 </div>
+
+}@else {
+<router-outlet />
+}

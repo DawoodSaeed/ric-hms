@@ -1,17 +1,10 @@
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-sidebar',
-//   imports: [],
-//   templateUrl: './sidebar.component.html',
-//   styleUrl: './sidebar.component.scss'
-// })
-// export class SidebarComponent {
-
-// }
-
-
-import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  OnInit,
+  ViewEncapsulation,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { MenuModule } from 'primeng/menu';
@@ -22,13 +15,13 @@ import { Menubar } from 'primeng/menubar';
 import { BadgeModule } from 'primeng/badge';
 import { InputText } from 'primeng/inputtext';
 import { Drawer } from 'primeng/drawer';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ToggleButton } from 'primeng/togglebutton';
 import { FormsModule } from '@angular/forms';
-// import { LoginComponent } from './auth/components/login/login.component';
 import { StyleClass } from 'primeng/styleclass';
 import { expand } from 'rxjs';
-// import { LayoutsComponent } from './layouts/layouts.component';
+import { AuthService } from '../../core/services/auth.service';
+import { SidebarService } from '../../core/services/sidebar.service';
 @Component({
   selector: 'app-sidebar',
 
@@ -38,23 +31,24 @@ import { expand } from 'rxjs';
     MenuModule,
     ButtonModule,
     AvatarModule,
-    Menubar,
     BadgeModule,
-    InputText,
     Drawer,
-    ToggleButton,
     FormsModule,
-    RouterModule
+    RouterModule,
   ],
-   templateUrl: './sidebar.component.html',
+  templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class SidebarComponent implements OnInit {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   sideBarTabs: any[] = [];
   menuExpanded: boolean = false;
   // Variable to track the clicked menu
   clickedMenuIndex: number | null = null;
+  sidebarService = inject(SidebarService);
   constructor(private cdRef: ChangeDetectorRef) {}
   // Method to handle the click event
   onMenuClick(index: number) {
@@ -62,13 +56,15 @@ export class SidebarComponent implements OnInit {
     console.log(this.clickedMenuIndex);
   }
   ngOnInit(): void {
+    this.sidebarService.isDrawerOpen$.subscribe(
+      (state: boolean) => (this.isDrawerOpen = state)
+    );
     this.sideBarTabs = [
       {
         label: 'Admin & HR',
         icon: 'pi pi-user',
         expanded: false, // Track expanded state
-        items: [{ label: 'Employee Registry', icon: 'pi pi-circle-on'
-         }],
+        items: [{ label: 'Employee Registry', icon: 'pi pi-circle-on' }],
         // command:()=>{
         //   alert('clicked')
         // }
@@ -142,11 +138,13 @@ export class SidebarComponent implements OnInit {
   ];
 
   toggleDrawer() {
-    this.isDrawerOpen = !this.isDrawerOpen;
+    // this.isDrawerOpen = !this.isDrawerOpen;
+    this.sidebarService.toggleDrawer(!this.isDrawerOpen);
   }
 
   logout() {
-    console.log('User logged out');
+    this.authService.logout();
+    this.router.navigate(['/auth']);
   }
 
   checked: boolean = false;

@@ -6,7 +6,5 @@ export const storeRoutes: Routes = [
   {
     path: '',
     component: StoreDashboardComponent,
-    canActivate: [RoleGuard],
-    data: { role: 'store' },
   },
 ];

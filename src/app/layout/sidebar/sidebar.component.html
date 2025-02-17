@@ -1,95 +1,97 @@
-  <!-- Top Navigation Menu -->
+<!-- Sidebar (Drawer) -->
+<div
+  class="w-72 bg-gray-900 text-white p-4 flex flex-col justify-between"
+  *ngIf="isDrawerOpen"
+>
+  <p-drawer
+    [(visible)]="isDrawerOpen"
+    [closable]="false"
+    [dismissible]="false"
+    [autoZIndex]="true"
+    [modal]="false"
+  >
+    <ng-template #header >
+      <div class="flex items-center justify-between w-full" >
+        <div class="flex items-center gap-2">
 
-    <!-- Sidebar (Drawer) -->
+          <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+          shape="circle"
+          />
+          <span class="font-bold">Amy Elsner</span>
+        </div>
+        <i (click)="toggleDrawer()" class="pi pi-align-justify
+        " ></i>
+      </div>
+      
+    </ng-template>
 
-    <!-- sidebar component -->
-    <div
-      class="w-72 bg-gray-900 text-white p-4 flex flex-col justify-between"
-      *ngIf="isDrawerOpen"
+    <p-panelmenu
+      *ngFor="let tab of sideBarTabs; let i = index"
+      (click)="toggleMenu(tab.label)"
+      [model]="[tab]"
+      styleClass="w-full"
+      [ngClass]="{ 'cstm-panel': tab.expanded, border0: !tab.expanded }"
+      [transitionOptions]="'0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55)'"
     >
-      <p-drawer
-        [(visible)]="isDrawerOpen"
-        [closable]="true"
-        [dismissible]="false"
-        [autoZIndex]="true"
-        [modal]="false"
-      >
-        <ng-template #header>
-          <div class="flex items-center gap-2">
-            <p-avatar
-              image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
-              shape="circle"
-            />
-            <span class="font-bold">Amy Elsner</span>
-          </div>
-        </ng-template>
-
-        <p-panelmenu
-          *ngFor="let tab of sideBarTabs; let i = index"
-          (click)="toggleMenu(tab.label)"
-          [model]="[tab]"
-          styleClass="w-full"
-          [ngClass]="{ 'cstm-panel': tab.expanded, border0: !tab.expanded }"
-          [transitionOptions]="'0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55)'"
-        >
-          <ng-template #item let-item>
-            <ng-container *ngIf="item.route; else urlRef">
-              <a
-                [routerLink]="item.route"
-                class="flex items-center cursor-pointer text-color px-3 py-2"
-              >
-                <span [class]="item.icon"></span>
-                <span class="ml-2">{{ item.label }}</span>
-              </a>
-            </ng-container>
-            <ng-template #urlRef>
-              <a
-                *ngIf="item.url; else noLink"
-                [href]="item.url"
-                class="flex items-center cursor-pointer text-color px-3 py-2"
-              >
-                <span [class]="item.icon"></span>
-                <span class="ml-2">{{ item.label }}</span>
-              </a>
-              <ng-template #noLink>
-                <span
-                  class="flex items-center cursor-pointer text-surface-700 dark:text-surface-0 px-4 py-2"
-                >
-                  <span [class]="item.icon"></span>
-                  <span class="ml-2">{{ item.label }}</span>
-                  <i
-                    *ngIf="item.items"
-                    class="pi text-primary ml-auto"
-                    [ngClass]="{
-                      'pi-angle-left': tab.expanded,
-                      'pi-angle-down': !tab.expanded
-                    }"
-                  ></i>
-                </span>
-              </ng-template>
-            </ng-template>
+      <ng-template #item let-item>
+        <ng-container *ngIf="item.route; else urlRef">
+          <a
+            [routerLink]="item.route"
+            class="flex items-center cursor-pointer text-color px-3 py-2"
+          >
+            <span [class]="item.icon"></span>
+            <span class="ml-2">{{ item.label }}</span>
+          </a>
+        </ng-container>
+        <ng-template #urlRef>
+          <a
+            *ngIf="item.url; else noLink"
+            [href]="item.url"
+            class="flex items-center cursor-pointer text-color px-3 py-2"
+          >
+            <span [class]="item.icon"></span>
+            <span class="ml-2">{{ item.label }}</span>
+          </a>
+          <ng-template #noLink>
+            <span
+              class="flex items-center cursor-pointer text-surface-700 dark:text-surface-0 px-4 py-2"
+            >
+              <span [class]="item.icon"></span>
+              <span class="ml-2">{{ item.label }}</span>
+              <i
+                *ngIf="item.items"
+                class="pi text-primary ml-auto"
+                [ngClass]="{
+                  'pi-angle-left': tab.expanded,
+                  'pi-angle-down': !tab.expanded
+                }"
+              ></i>
+            </span>
           </ng-template>
-        </p-panelmenu>
-
-        <ng-template #footer>
-          <div class="flex items-center gap-2">
-            <button
-              pButton
-              label="Account"
-              icon="pi pi-user"
-              class="w-full"
-              outlined
-            ></button>
-            <button
-              pButton
-              label="Logout"
-              icon="pi pi-sign-out"
-              class="w-full"
-              severity="danger"
-              text
-            ></button>
-          </div>
         </ng-template>
-      </p-drawer>
-    </div>
+      </ng-template>
+    </p-panelmenu>
 
+    <ng-template #footer>
+      <div class="flex items-center gap-2">
+        <button
+          pButton
+          label="Account"
+          icon="pi pi-user"
+          class="w-full"
+          outlined
+        ></button>
+        <button
+          pButton
+          label="Logout"
+          icon="pi pi-sign-out"
+          class="w-full"
+          severity="danger"
+          text
+          (click)="logout()"
+        ></button>
+      </div>
+    </ng-template>
+  </p-drawer>
+</div>
