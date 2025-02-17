@@ -13,6 +13,7 @@ export interface Bank extends TypeTable {
   bankId?: number;
   abbrivation: string;
   code: string;
+  bank: number;
 }
 
 export interface DepartmentCategory extends TypeTable {

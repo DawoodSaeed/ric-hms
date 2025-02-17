@@ -5,6 +5,7 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TypetableManagerComponent } from '../../core/components/typetable/typetable.component';
 // import { SidebarService } from '../../core/services/sidebar.service';
 
 @Component({
@@ -12,7 +13,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   styleUrl: './admin-dashboard.component.scss',
   templateUrl: './admin-dashboard.component.html',
-  imports: [CommonModule],
+  imports: [CommonModule, TypetableManagerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminDashboardComponent {}

@@ -25,11 +25,13 @@ import {
   TypeTable,
   WorkingSession,
 } from '../interfaces/typetable';
+
+import { environment } from '../../../environments/environment.development';
 @Injectable({
   providedIn: 'root',
 })
 export class TypeTableService {
-  private apiUrl = '/api/TypeTables'; // Base API URL
+  private apiUrl = `${environment.apiUrl}TypeTables`; // Base API URL
 
   constructor(private http: HttpClient) {}
 
