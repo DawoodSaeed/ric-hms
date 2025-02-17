@@ -34,7 +34,7 @@ import { FormsModule } from '@angular/forms';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ContextMenuModule } from 'primeng/contextmenu';
-
+import { SkeletonModule } from 'primeng/skeleton';
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
@@ -64,6 +64,7 @@ import { ContextMenuModule } from 'primeng/contextmenu';
     IconFieldModule,
     InputIconModule,
     ContextMenuModule,
+    SkeletonModule,
   ],
   providers: [MessageService],
 })
@@ -103,6 +104,10 @@ export class AdminDashboardComponent {
           this.loading.set(false);
         },
       });
+  }
+
+  rowNumbers(rows: number): number[] {
+    return Array.from({ length: rows }, (_, i) => i + 1);
   }
 
   showDetails(employee: Employee | null) {
