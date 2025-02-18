@@ -6,12 +6,23 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { TabsModule } from 'primeng/tabs';
- import { Select } from 'primeng/select';
+import { Select } from 'primeng/select';
+import { InputTextModule } from 'primeng/inputtext';
+import { CalendarModule } from 'primeng/calendar';
 @Component({
   selector: 'app-dynamic-form',
-  imports: [CommonModule,FormsModule,ReactiveFormsModule,DropdownModule,TabsModule,Select],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    DropdownModule,
+    TabsModule,
+    Select,
+    InputTextModule,
+    CalendarModule,
+  ],
   templateUrl: './dynamic-form.component.html',
-  styleUrl: './dynamic-form.component.scss'
+  styleUrl: './dynamic-form.component.scss',
 })
 export class DynamicFormComponent implements OnInit {
   @Input() formStructure!: FormStructure;
@@ -33,9 +44,7 @@ export class DynamicFormComponent implements OnInit {
   }
 }
 
-
-
-// How to pass data 
+// How to pass data
 // There are three ways to pass and show input fields
 // Tabs Based
 // 👉 Use when you want multiple tabs, with each tab containing sections of fields.
@@ -85,8 +94,6 @@ export class DynamicFormComponent implements OnInit {
 //   ]
 // };
 
-
-
 // Flat Form with Sections
 
 // 👉 Use when you don’t want tabs, but you want sections with their own titles and fields.
@@ -125,8 +132,6 @@ export class DynamicFormComponent implements OnInit {
 //     }
 //   ]
 // };
-
-
 
 // Simple Flat Form (No Tabs, No Sections)
 
