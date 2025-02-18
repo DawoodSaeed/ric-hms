@@ -55,6 +55,7 @@ export interface PatientType extends TypeTable {
 }
 
 export interface Scale extends TypeTable {
+  
   minSalary: number;
   maxSalary: number;
   branchId: number;

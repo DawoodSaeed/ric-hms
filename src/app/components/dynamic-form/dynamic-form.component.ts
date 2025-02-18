@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output } from '@angular/core';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { FormStructure } from '../../core/interfaces/dynamicforminterface';
 import { DynamicFormService } from '../../core/services/dynamic-form.service';
@@ -9,6 +9,7 @@ import { TabsModule } from 'primeng/tabs';
 import { Select } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { CalendarModule } from 'primeng/calendar';
+import { EventEmitter } from '@angular/core';
 @Component({
   selector: 'app-dynamic-form',
   imports: [
@@ -26,6 +27,7 @@ import { CalendarModule } from 'primeng/calendar';
 })
 export class DynamicFormComponent implements OnInit {
   @Input() formStructure!: FormStructure;
+  @Output() dataEmitter=new EventEmitter<any>()
   form!: FormGroup;
 
   constructor(private dynamicFormService: DynamicFormService) {}
@@ -38,6 +40,7 @@ export class DynamicFormComponent implements OnInit {
   onSubmit(): void {
     if (this.form.valid) {
       console.log('Form Data:', this.form.value);
+      this.dataEmitter.emit(this.form)
     } else {
       console.log('Form is invalid');
     }

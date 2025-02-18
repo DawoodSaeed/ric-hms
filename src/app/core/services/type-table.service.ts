@@ -63,7 +63,7 @@ export class TypeTableService {
   }
 
   getBloodGroups(): Observable<TypeTable[]> {
-    return this.getAllPost<TypeTable>('BloodGroup');
+    return this.getAll<TypeTable>('BloodGroup');
   }
 
   getGazzatedTypes(): Observable<TypeTable[]> {
