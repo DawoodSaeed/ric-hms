@@ -1,0 +1,39 @@
+<p-dropdown
+  [options]="banks"
+  [(ngModel)]="selectedBank"
+  placeholder="Select a Bank"
+  optionLabel="name"
+  [filter]="true"
+  [showClear]="true"
+>
+</p-dropdown>
+
+<button pButton label="Add Bank" (click)="showDialog()"></button>
+
+<p-dialog header="Add New Bank" [visible]="displayDialog()">
+  <input
+    pInputText
+    [(ngModel)]="newBank.abbrivation"
+    placeholder="Abbreviation"
+    required
+  />
+  <input
+    pInputText
+    [(ngModel)]="newBank.name"
+    placeholder="Bank Name"
+    required
+  />
+  <input
+    pInputText
+    [(ngModel)]="newBank.code"
+    placeholder="Bank Code"
+    required
+  />
+  <input
+    pInputText
+    [(ngModel)]="newBank.description"
+    placeholder="Description"
+    required
+  />
+  <button pButton label="Save" (click)="addBank()"></button>
+</p-dialog>

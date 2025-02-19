@@ -3,4 +3,8 @@ input::placeholder {
     opacity: 0.75;
     font-size: 14px;
   }
+  :host ::ng-deep .radiobutton.background {
+    --p-radiobutton-checked-background: #28a745;
+    
+  }
   

@@ -1,39 +1,69 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup, FormsModule } from '@angular/forms';
+import { Component, Input, OnInit, Output } from '@angular/core';
+import { FormGroup, FormsModule,FormControl } from '@angular/forms';
 import { FormStructure } from '../../core/interfaces/dynamicforminterface';
 import { DynamicFormService } from '../../core/services/dynamic-form.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
+import { TabsModule } from 'primeng/tabs';
+import { Select } from 'primeng/select';
+import { InputTextModule } from 'primeng/inputtext';
+import { CalendarModule } from 'primeng/calendar';
+import { EventEmitter } from '@angular/core';
+import { RadioButton } from 'primeng/radiobutton';
 
 @Component({
   selector: 'app-dynamic-form',
-  imports: [CommonModule,FormsModule,ReactiveFormsModule,DropdownModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    DropdownModule,
+    TabsModule,
+    Select,
+    InputTextModule,
+    CalendarModule,
+    RadioButton
+  ],
   templateUrl: './dynamic-form.component.html',
-  styleUrl: './dynamic-form.component.scss'
+  styleUrl: './dynamic-form.component.scss',
 })
-export class DynamicFormComponent {
+export class DynamicFormComponent implements OnInit {
   @Input() formStructure!: FormStructure;
+  @Output() dataEmitter=new EventEmitter<any>()
   form!: FormGroup;
 
   constructor(private dynamicFormService: DynamicFormService) {}
 
   ngOnInit(): void {
+    console.log('Form Structure:', this.formStructure);
     this.form = this.dynamicFormService.createForm(this.formStructure);
   }
 
   onSubmit(): void {
     if (this.form.valid) {
       console.log('Form Data:', this.form.value);
+      this.dataEmitter.emit(this.form)
     } else {
       console.log('Form is invalid');
     }
   }
+  onDateSelect(event: any, fieldName: string) {
+    console.log(event);
+    const date = new Date(event);
+    
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure 2-digit month
+    const day = String(date.getDate()).padStart(2, '0'); // Ensure 2-digit day
+  
+    const formattedDate = `${year}-${month}-${day}`;
+    this.form.get(fieldName)?.setValue(formattedDate);
+  }
+  
+  
 }
 
-
-
-// How to pass data 
+// How to pass data
 // There are three ways to pass and show input fields
 // Tabs Based
 // 👉 Use when you want multiple tabs, with each tab containing sections of fields.
@@ -83,8 +113,6 @@ export class DynamicFormComponent {
 //   ]
 // };
 
-
-
 // Flat Form with Sections
 
 // 👉 Use when you don’t want tabs, but you want sections with their own titles and fields.
@@ -123,8 +151,6 @@ export class DynamicFormComponent {
 //     }
 //   ]
 // };
-
-
 
 // Simple Flat Form (No Tabs, No Sections)
 

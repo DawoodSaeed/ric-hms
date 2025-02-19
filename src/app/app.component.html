@@ -17,19 +17,11 @@
     <app-sidebar />
 
     <div
-      class="flex-1"
-      [ngStyle]="{
-        width: isDrawerOpen ? 'calc(100% - 20rem)' : '100%',
-      }"
+      [ngStyle]="{ width: isDrawerOpen() ? 'calc(100% - 20rem)' : '100%' }"
+      class="flex-1 p-0 absolute right-0 h-screen"
     >
       <app-navbar />
-      <div
-      class="p-8"
-        style="margin-top: 60px"
-        [ngStyle]="{
-        marginLeft: isDrawerOpen ? '30px' : '0',
-      }"
-      >
+      <div class="p-8">
         <router-outlet />
       </div>
     </div>

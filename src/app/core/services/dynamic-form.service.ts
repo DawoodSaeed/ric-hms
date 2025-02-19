@@ -9,7 +9,7 @@ export class DynamicFormService {
 
   createForm(formStructure: FormStructure): FormGroup {
     const formGroup = this.fb.group({});
-
+  
     if (formStructure.tabs) {
       // Handle form with tabs and sections
       formStructure.tabs.forEach(tab => {
@@ -17,9 +17,25 @@ export class DynamicFormService {
           section.fields.forEach(field => {
             formGroup.addControl(
               field.name,
-              this.fb.control('', field.required ? Validators.required : null)
+              this.fb.control(
+                field.type === 'select' ? 0 : field.type === 'date' ? null:'', // Set 0 for select fields
+                field.required ? Validators.required : null
+              )
             );
           });
+        });
+      });
+    } else if (formStructure.sections) {
+      // Handle flat form with sections
+      formStructure.sections.forEach(section => {
+        section.fields.forEach(field => {
+          formGroup.addControl(
+            field.name,
+            this.fb.control(
+              field.type === 'select' ? 0 : field.type === 'date' ? null:'', // Set 0 for select fields
+              field.required ? Validators.required : null
+            )
+          );
         });
       });
     } else if (formStructure.fields) {
@@ -27,11 +43,16 @@ export class DynamicFormService {
       formStructure.fields.forEach(field => {
         formGroup.addControl(
           field.name,
-          this.fb.control('', field.required ? Validators.required : null)
+          this.fb.control(
+            field.type === 'select' ? 0 : field.type === 'date' ? null:'', // Set 0 for select fields
+            field.required ? Validators.required : null
+          )
         );
       });
     }
+  
     return formGroup;
   }
+  
 }
 

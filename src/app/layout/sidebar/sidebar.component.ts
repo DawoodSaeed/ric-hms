@@ -64,8 +64,19 @@ export class SidebarComponent implements OnInit {
         label: 'Admin & HR',
         icon: 'fas fa-users-cog blue',
         expanded: false, // Track expanded state
-        items: [{ label: 'Employee Registry', icon: 'pi pi-circle-on' },{ label: 'Add Employee', icon: 'pi pi-circle-on',route:'/admin/addEmployee' }],
-        
+        items: [
+          {
+            label: 'Employees',
+            icon: 'pi pi-circle-on',
+            route: '/admin/employees',
+          },
+          {
+            label: 'Add Employee',
+            icon: 'pi pi-circle-on',
+            route: '/admin/addEmployee',
+          },
+        ],
+
         // command:()=>{
         //   alert('clicked')
         // }

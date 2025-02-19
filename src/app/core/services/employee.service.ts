@@ -14,6 +14,8 @@ export class EmployeeService {
   employee$ = this.http.get<Employee[]>(`${this.apiUrl}`);
 
   registerEmployee(employee: Employee) {
+    console.log(employee);
+    employee={...employee,empId: 0,}
     return this.http.post(`${this.apiUrl}/register`, employee);
   }
 }

@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class SidebarService {
-  private sideBarState = new BehaviorSubject<boolean>(false);
+  private sideBarState = new BehaviorSubject<boolean>(true);
   isDrawerOpen$ = this.sideBarState.asObservable();
 
   constructor() {}

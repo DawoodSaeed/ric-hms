@@ -4,7 +4,7 @@ export interface FormField {
   type: string;
   required?: boolean;
   placeholder?:string;
-  options?: { value: string; label: string }[];
+  options?: { value: number; label: string }[];
 }
 
 export interface FormSection {
