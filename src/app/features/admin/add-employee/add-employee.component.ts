@@ -1,9 +1,18 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, Signal, signal } from '@angular/core';
 import { DynamicFormComponent } from '../../../components/dynamic-form/dynamic-form.component';
 import { FormStructure } from '../../../core/interfaces/dynamicforminterface';
 import { TypeTableService } from '../../../core/services/type-table.service';
-import { EmploymentStatus, GuardianType, JobType, Relation, Scale, TypeTable } from '../../../core/interfaces/typetable';
+import swal from 'sweetalert2';
+import {
+  EmploymentStatus,
+  GuardianType,
+  JobType,
+  Relation,
+  Scale,
+  TypeTable,
+} from '../../../core/interfaces/typetable';
 import { EmployeeService } from '../../../core/services/employee.service';
+import { MessageService } from 'primeng/api';
 // import { FormStructure } from '../../../core/interfaces/dynamicform';
 @Component({
   selector: 'app-add-employee',
@@ -12,57 +21,115 @@ import { EmployeeService } from '../../../core/services/employee.service';
   styleUrl: './add-employee.component.scss',
 })
 export class AddEmployeeComponent implements OnInit {
+  constructor(private messageService: MessageService) {}
+
   dropDownService = inject(TypeTableService);
-  employeeService=inject(EmployeeService)
- ngOnInit(): void {
-  // Fetch and set job types
-  this.dropDownService.getJobTypes().subscribe((jobtypes: JobType[]) => {
-    this.updateDropdownOptions('jobTypeId', jobtypes);
-  });
-
-  // Fetch and set scales
-  this.dropDownService.getScales().subscribe((scales: Scale[]) => {
-    console.log('scales ', scales);
-    this.updateDropdownOptions('scaleId', scales);
-  });
-  this.dropDownService.getBloodGroups().subscribe((bloodgroups: TypeTable[]) => {
-    console.log('bloodgroups ',bloodgroups)
-    this.updateDropdownOptions('bloodGroupId', bloodgroups);
-  });
-
-  this.dropDownService.getGuardianTypes().subscribe((guardianTypes: GuardianType[]) => {
-    this.updateDropdownOptions('guadianTypeId', guardianTypes);
-  });
-
-  this.dropDownService.getEmploymentStatuses().subscribe((empStatuses: EmploymentStatus[]) => {
-    this.updateDropdownOptions('empStatusId', empStatuses);
-  });
-
-  this.dropDownService.getRelations().subscribe((relations: Relation[]) => {
-    this.updateDropdownOptions('nokrelationId', relations);
-  });
-}
-
-// Generic method to update dropdown options
-private updateDropdownOptions(fieldName: string, data: { id?: number; name: string }[]): void {
-  this.employeeFormStructure?.tabs?.forEach((tab) => {
-    tab.sections.forEach((section) => {
-      const field = section.fields.find((field) => field.name === fieldName);
-
-      if (field) {
-        // Filter out items with undefined `id`
-        field.options = data
-          .filter((item) => item.id !== undefined) // Ensure `id` is defined
-          .map((item) => ({
-            value: item.id as number, // Cast to `number` since `undefined` is filtered out
-            label: item.name,
-          }));
-      }
+  employeeService = inject(EmployeeService);
+  isLoading = signal<boolean>(false);
+  ngOnInit(): void {
+    // Fetch and set job types
+    this.dropDownService.getJobTypes().subscribe((jobtypes: JobType[]) => {
+      this.updateDropdownOptions('jobTypeId', jobtypes);
     });
-  });
-}
 
+    // Fetch and set scales
+    this.dropDownService.getScales().subscribe((scales: Scale[]) => {
+      console.log('scales ', scales);
+      this.updateDropdownOptions('scaleId', scales);
+    });
+    this.dropDownService
+      .getBloodGroups()
+      .subscribe((bloodgroups: TypeTable[]) => {
+        console.log('bloodgroups ', bloodgroups);
+        this.updateDropdownOptions('bloodGroupId', bloodgroups);
+      });
 
+    this.dropDownService
+      .getGuardianTypes()
+      .subscribe((guardianTypes: GuardianType[]) => {
+        this.updateDropdownOptions('guadianTypeId', guardianTypes);
+      });
+
+    this.dropDownService
+      .getEmploymentStatuses()
+      .subscribe((empStatuses: EmploymentStatus[]) => {
+        this.updateDropdownOptions('empStatusId', empStatuses);
+      });
+
+    this.dropDownService.getRelations().subscribe((relations: Relation[]) => {
+      this.updateDropdownOptions('nokrelationId', relations);
+    });
+  }
+
+  // Generic method to update dropdown options
+  private updateDropdownOptions(
+    fieldName: string,
+    data: { id?: number; name: string }[]
+  ): void {
+    this.employeeFormStructure?.tabs?.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        const field = section.fields.find((field) => field.name === fieldName);
+
+        if (field) {
+          // Filter out items with undefined `id`
+          field.options = data
+            .filter((item) => item.id !== undefined) // Ensure `id` is defined
+            .map((item) => ({
+              value: item.id as number, // Cast to `number` since `undefined` is filtered out
+              label: item.name,
+            }));
+        }
+      });
+    });
+  }
+// Function to detect and format date values in an object
+  // Bcz we needed to conver the date objects to string to pass to API
+  formatDatesInObject(obj: any): any {
+    if (obj && typeof obj === 'object') {
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          const value = obj[key];
+
+          // Check if the value is a Date object
+          if (value instanceof Date) {
+            // Format the date as "YYYY-MM-DD"
+            obj[key] = value.toISOString().split('T')[0];
+          }
+
+          // If it's a nested object, recurse
+          else if (typeof value === 'object' && value !== null) {
+            this.formatDatesInObject(value);
+          }
+        }
+      }
+    }
+    return obj;
+  }
+  handleFormData(event: any) {
+    let submittedForm = event.value;
+    this.formatDatesInObject(submittedForm);
+
+    this.isLoading.set(true);
+    this.employeeService.registerEmployee(submittedForm).subscribe({
+      next: (data) => {
+        console.log(data);
+        this.isLoading.set(false);
+        swal.fire({
+          title: 'Success!',
+          text: 'Employee added successfully!',
+          icon: 'success',
+        });
+      },
+      error: () => {
+        this.isLoading.set(false);
+        swal.fire({
+          title: 'Oops!!',
+          text: 'Something went wrong! Try again',
+          icon: 'error',
+        });
+      },
+    });
+  }
   employeeFormStructure: FormStructure = {
     globalTitle: 'Add Employee', // Always shown at the top of the form
     tabs: [
@@ -75,14 +142,19 @@ private updateDropdownOptions(fieldName: string, data: { id?: number; name: stri
               // { name: 'empId', label: 'Employee ID', type: 'number' },
               { name: 'firstName', label: 'First Name', type: 'text' },
               { name: 'lastName', label: 'Last Name', type: 'text' },
-              { name: 'picture', label: 'Picture', type: 'text' },
+              { name: 'picture', label: 'Profile Picture', type: 'image' },
               { name: 'cnic', label: 'CNIC', type: 'text' },
               { name: 'passport', label: 'Passport', type: 'text' },
               { name: 'dob', label: 'Date of Birth', type: 'date' },
               { name: 'gender', label: 'Gender', type: 'text' },
               { name: 'maritalStatus', label: 'Marital Status', type: 'text' },
               { name: 'religion', label: 'Religion', type: 'text' },
-              { name: 'bloodGroupId', label: 'Blood Group', type: 'select',options:[] },
+              {
+                name: 'bloodGroupId',
+                label: 'Blood Group',
+                type: 'select',
+                options: [],
+              },
               { name: 'country', label: 'Country', type: 'select' },
               { name: 'province', label: 'Province', type: 'select' },
               { name: 'cityDistrict', label: 'City/District', type: 'select' },
@@ -186,16 +258,197 @@ private updateDropdownOptions(fieldName: string, data: { id?: number; name: stri
           },
         ],
       },
+
+      {
+        tabName: 'Education Info',
+        sections: [
+          {
+            title: 'Basic Details',
+            fields: [
+              { name: 'empEduId', label: 'Education ID', type: 'text' },
+              { name: 'empId', label: 'Employee ID', type: 'text' },
+              { name: 'countryId', label: 'Country ID', type: 'text' },
+              {
+                name: 'eduIntId',
+                label: 'Education Institute ID',
+                type: 'text',
+              },
+              { name: 'degId', label: 'Degree ID', type: 'text' },
+              { name: 'fsid', label: 'Field of Study ID', type: 'text' },
+            ],
+          },
+          {
+            title: 'Dates',
+            fields: [
+              { name: 'startDate', label: 'Start Date', type: 'text' },
+              { name: 'endDate', label: 'End Date', type: 'text' },
+              { name: 'issueDate', label: 'Issue Date', type: 'text' },
+            ],
+          },
+          {
+            title: 'Grading & Status',
+            fields: [
+              { name: 'gradingId', label: 'Grading ID', type: 'text' },
+              { name: 'totalMarks', label: 'Total Marks', type: 'text' },
+              { name: 'obtainMarks', label: 'Obtain Marks', type: 'text' },
+              { name: 'status', label: 'Status', type: 'text' },
+              { name: 'isCurrent', label: 'Is Current', type: 'text' },
+            ],
+          },
+          {
+            title: 'Audit Info',
+            fields: [
+              { name: 'createdById', label: 'Created By', type: 'text' },
+              { name: 'createdOn', label: 'Created On', type: 'text' },
+              { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+              {
+                name: 'certificatePath',
+                label: 'Certificate Path',
+                type: 'text',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        tabName: 'Employee Department',
+        sections: [
+          {
+            title: 'Department Info',
+            fields: [
+              { name: 'empDid', label: 'Employee Department ID', type: 'text' },
+              { name: 'did', label: 'Department ID', type: 'text' },
+              { name: 'empId', label: 'Employee ID', type: 'text' },
+              { name: 'createdById', label: 'Created By', type: 'text' },
+              { name: 'createdOn', label: 'Created On', type: 'text' },
+              { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+            ],
+          },
+        ],
+      },
+      {
+        tabName: 'Employee Designation',
+        sections: [
+          {
+            title: 'Designation Info',
+            fields: [
+              {
+                name: 'empDesgnId',
+                label: 'Employee Designation ID',
+                type: 'text',
+              },
+              { name: 'empId', label: 'Employee ID', type: 'text' },
+              { name: 'desgnId', label: 'Designation ID', type: 'text' },
+              { name: 'createdById', label: 'Created By', type: 'text' },
+              { name: 'createdOn', label: 'Created On', type: 'text' },
+              { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+            ],
+          },
+        ],
+      },
+      {
+        tabName: 'Employee Experience',
+        sections: [
+          {
+            title: 'Experience Info',
+            fields: [
+              {
+                name: 'empExpId',
+                label: 'Employee Experience ID',
+                type: 'text',
+              },
+              { name: 'empId', label: 'Employee ID', type: 'text' },
+              { name: 'title', label: 'Job Title', type: 'text' },
+              { name: 'company', label: 'Company Name', type: 'text' },
+              { name: 'description', label: 'Description', type: 'text' },
+              { name: 'fromDate', label: 'From Date', type: 'text' },
+              { name: 'toDate', label: 'To Date', type: 'text' },
+              { name: 'status', label: 'Status', type: 'text' },
+              { name: 'createdById', label: 'Created By', type: 'text' },
+              { name: 'createdOn', label: 'Created On', type: 'text' },
+              { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+              {
+                name: 'certificatePath',
+                label: 'Certificate Path',
+                type: 'text',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        tabName: 'Employee Facility',
+        sections: [
+          {
+            title: 'Facility Info',
+            fields: [
+              {
+                name: 'empFacilityId',
+                label: 'Employee Facility ID',
+                type: 'text',
+              },
+              { name: 'empId', label: 'Employee ID', type: 'text' },
+              { name: 'facilityId', label: 'Facility ID', type: 'text' },
+              { name: 'createdById', label: 'Created By', type: 'text' },
+              { name: 'createdOn', label: 'Created On', type: 'text' },
+              { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+            ],
+          },
+        ],
+      },
+      {
+        tabName: 'Employee Speciality',
+        sections: [
+          {
+            title: 'Speciality Info',
+            fields: [
+              {
+                name: 'empSpId',
+                label: 'Employee Speciality ID',
+                type: 'text',
+              },
+              { name: 'empId', label: 'Employee ID', type: 'text' },
+              { name: 'spId', label: 'Speciality ID', type: 'text' },
+              { name: 'status', label: 'Status', type: 'text' },
+              { name: 'createdById', label: 'Created By', type: 'text' },
+              { name: 'createdOn', label: 'Created On', type: 'text' },
+              { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+            ],
+          },
+        ],
+      },
+      {
+        tabName: 'Employee Subspeciality',
+        sections: [
+          {
+            title: 'Subspeciality Info',
+            fields: [
+              {
+                name: 'empSubSpId',
+                label: 'Employee Subspeciality ID',
+                type: 'text',
+              },
+              { name: 'empId', label: 'Employee ID', type: 'text' },
+              { name: 'subSpId', label: 'Subspeciality ID', type: 'text' },
+              { name: 'status', label: 'Status', type: 'text' },
+              { name: 'createdById', label: 'Created By', type: 'text' },
+              { name: 'createdOn', label: 'Created On', type: 'text' },
+              { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+            ],
+          },
+        ],
+      },
     ],
   };
-  handleFormData(event:any){
-    console.log('data from child ',event.value)
-    this.employeeService.registerEmployee(event.value).subscribe({
-      next:(data)=>{
-        console.log(data);
-      }
-    })
-  }
+
+  
   // Section Based
   // employeeFormStructure: FormStructure = {
   //     globalTitle: "Add Emoloyee", // Always shown at the top of the form

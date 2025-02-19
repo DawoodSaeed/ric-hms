@@ -2,7 +2,7 @@
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <!-- Tabs View -->
-  <p-tabs [value]="0" *ngIf="formStructure.tabs; else flatForm">
+  <p-tabs [value]="0" *ngIf="formStructure.tabs; else flatForm" scrollable>
     <p-tablist>
       <p-tab *ngFor="let tab of formStructure.tabs; let i = index" [value]="i">
         {{ tab.tabName }}
@@ -50,15 +50,12 @@
                 variant="filled"
                 *ngIf="field && field.type === 'date'"
                 type="date"
-                dateFormat="dd-M-yy"
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder || field.label"
                 [yearNavigator]="true"
                 [yearRange]="'2000:2030'"
                 [style]="{ width: '100%' }"
                 [inputStyle]="{ width: '100%' }"
-                (onSelect)="onDateSelect($event,field.name)"
-
               />
 
               <!-- Number Input -->
@@ -72,25 +69,52 @@
               />
 
               <!-- Radio Inpput -->
-               <!-- Radio Button Input -->
-<div *ngIf="field.type === 'radio'" class="flex items-center gap-4">
-  <p-radioButton
-    name="{{ field.name }}"
-    [formControlName]="field.name"
-    value=1
-    inputId="{{ field.name }}Yes"
-  />
-  <label for="{{ field.name }}Yes">Yes</label>
+              <!-- Radio Button Input -->
+              <div
+                *ngIf="field.type === 'radio'"
+                class="flex items-center gap-4"
+              >
+                <p-radioButton
+                  name="{{ field.name }}"
+                  [formControlName]="field.name"
+                  value="1"
+                  inputId="{{ field.name }}Yes"
+                />
+                <label for="{{ field.name }}Yes">Yes</label>
 
-  <p-radioButton
-    name="{{ field.name }}"
-    [formControlName]="field.name"
-    value=0
-    inputId="{{ field.name }}No"
-  />
-  <label for="{{ field.name }}No">No</label>
-</div>
+                <p-radioButton
+                  name="{{ field.name }}"
+                  [formControlName]="field.name"
+                  value="0"
+                  inputId="{{ field.name }}No"
+                />
+                <label for="{{ field.name }}No">No</label>
+              </div>
 
+              <!-- Image Upload Input using PrimeNG -->
+              <div
+                *ngIf="field.type === 'image'"
+                class="flex flex-col relative"
+              >
+                <p-fileUpload
+                  *ngIf="!uploadedImages[field.name]"
+                  mode="basic"
+                  name="imageFile"
+                  accept="image/*"
+                  (onSelect)="onImageUpload($event, field.name)"
+                  [auto]="true"
+                  chooseLabel="Upload Image"
+                  class="w-full"
+                ></p-fileUpload>
+
+                <!-- Image Preview -->
+                <img
+                  *ngIf="uploadedImages[field.name]"
+                  [src]="uploadedImages[field.name]"
+                  class="mt-2 w-16 h-16 object-cover rounded-md absolute left-32 top-0"
+                  alt="Uploaded Image"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -185,8 +209,19 @@
     <button
       type="submit"
       class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
-    >
+    *ngIf="!isLoading else spinner"
+      >
       Submit
     </button>
+<ng-template #spinner>
+
+  <div class="card flex justify-center">
+    <button
+    class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200 "
+    >
+    <p-progress-spinner ariaLabel="loading" [style]="{width:'25px',height:'25px'}" />
+  </button>
+  </div>
+</ng-template>
   </div>
 </form>

@@ -11,6 +11,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { CalendarModule } from 'primeng/calendar';
 import { EventEmitter } from '@angular/core';
 import { RadioButton } from 'primeng/radiobutton';
+import { FileUploadModule } from 'primeng/fileupload';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -23,7 +25,7 @@ import { RadioButton } from 'primeng/radiobutton';
     Select,
     InputTextModule,
     CalendarModule,
-    RadioButton
+    RadioButton,FileUploadModule,ProgressSpinner
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',
@@ -31,7 +33,10 @@ import { RadioButton } from 'primeng/radiobutton';
 export class DynamicFormComponent implements OnInit {
   @Input() formStructure!: FormStructure;
   @Output() dataEmitter=new EventEmitter<any>()
+  @Input() isLoading:boolean=false
   form!: FormGroup;
+  uploadedImages: { [key: string]: string | ArrayBuffer } = {};
+
 
   constructor(private dynamicFormService: DynamicFormService) {}
 
@@ -40,6 +45,29 @@ export class DynamicFormComponent implements OnInit {
     this.form = this.dynamicFormService.createForm(this.formStructure);
   }
 
+  onImageUpload(event: any, fieldName: string) {
+    // PrimeNG file upload returns files in event.files array
+    const file: File = event.files[0];
+  
+    if (file) {
+      const reader = new FileReader();
+  
+      // On file load, convert to base64 string
+      reader.onload = () => {
+        const base64String = reader.result as string;
+  
+        // Store base64 in uploadedImages for preview
+        this.uploadedImages[fieldName] = base64String;
+  
+        // Store base64 string in the form control
+        this.form.get(fieldName)?.setValue(base64String);
+      };
+  
+      // Read the file as a Data URL (base64)
+      reader.readAsDataURL(file);
+    }
+  }
+  
   onSubmit(): void {
     if (this.form.valid) {
       console.log('Form Data:', this.form.value);
