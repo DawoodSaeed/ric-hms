@@ -13,6 +13,7 @@ import {
 } from '../../../core/interfaces/typetable';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { MessageService } from 'primeng/api';
+import Swal from 'sweetalert2';
 // import { FormStructure } from '../../../core/interfaces/dynamicform';
 @Component({
   selector: 'app-add-employee',
@@ -82,7 +83,7 @@ export class AddEmployeeComponent implements OnInit {
       });
     });
   }
-// Function to detect and format date values in an object
+  // Function to detect and format date values in an object
   // Bcz we needed to conver the date objects to string to pass to API
   formatDatesInObject(obj: any): any {
     if (obj && typeof obj === 'object') {
@@ -106,35 +107,58 @@ export class AddEmployeeComponent implements OnInit {
     return obj;
   }
   handleFormData(event: any) {
-    let submittedForm = event.value;
-    this.formatDatesInObject(submittedForm);
-
+    let submittedData = event.data;
+    console.log('submittedForm ', event.data);
+    this.formatDatesInObject(submittedData);
     this.isLoading.set(true);
-    this.employeeService.registerEmployee(submittedForm).subscribe({
-      next: (data) => {
-        console.log(data);
-        this.isLoading.set(false);
-        swal.fire({
-          title: 'Success!',
-          text: 'Employee added successfully!',
-          icon: 'success',
-        });
+    event.apiToCall(submittedData).subscribe({
+      next: (data: any) => {
+      Swal.fire({
+        title: 'Success!',
+        text: 'Employee added successfully!',
+        icon: 'success',
+      });
+      this.isLoading.set(false);
       },
       error: () => {
-        this.isLoading.set(false);
-        swal.fire({
-          title: 'Oops!!',
-          text: 'Something went wrong! Try again',
-          icon: 'error',
-        });
+      Swal.fire({
+        title: 'Oops!',
+        text: 'Something went wrong! Try again.',
+        icon: 'error',
+      });
+      this.isLoading.set(false);
       },
+      complete: () => {
+      console.log('Request completed');
+      }
     });
+    
+    // this.employeeService.registerEmployee(submittedData).subscribe({
+    //   next: (data) => {
+    //     console.log(data);
+    //     this.isLoading.set(false);
+    //     swal.fire({
+    //       title: 'Success!',
+    //       text: 'Employee added successfully!',
+    //       icon: 'success',
+    //     });
+    //   },
+    //   error: () => {
+    //     this.isLoading.set(false);
+    //     swal.fire({
+    //       title: 'Oops!!',
+    //       text: 'Something went wrong! Try again',
+    //       icon: 'error',
+    //     });
+    //   },
+    // });
   }
   employeeFormStructure: FormStructure = {
     globalTitle: 'Add Employee', // Always shown at the top of the form
     tabs: [
       {
         tabName: 'Basic Info',
+        apiToCall: this.employeeService.registerEmployee,
         sections: [
           {
             title: 'Personal Information',
@@ -153,7 +177,6 @@ export class AddEmployeeComponent implements OnInit {
                 name: 'bloodGroupId',
                 label: 'Blood Group',
                 type: 'select',
-                options: [],
               },
               { name: 'country', label: 'Country', type: 'select' },
               { name: 'province', label: 'Province', type: 'select' },
@@ -166,10 +189,9 @@ export class AddEmployeeComponent implements OnInit {
                 name: 'jobTypeId',
                 label: 'Job Type',
                 type: 'select',
-                options: [],
               },
               { name: 'empStatusId', label: 'Employee Status', type: 'select' },
-              { name: 'scaleId', label: 'Scale', type: 'select', options: [] },
+              { name: 'scaleId', label: 'Scale', type: 'select' },
               {
                 name: 'personalNumber',
                 label: 'Personal Number',
@@ -206,16 +228,13 @@ export class AddEmployeeComponent implements OnInit {
               { name: 'nokname', label: 'Next of Kin Name', type: 'text' },
               { name: 'noknic', label: 'Next of Kin NIC', type: 'text' },
               { name: 'nokmobile', label: 'Next of Kin Mobile', type: 'text' },
-              // { name: 'createdById', label: 'Created By', type: 'number' },
-              // { name: 'createdOn', label: 'Created On', type: 'date' },
-              // { name: 'modifiedById', label: 'Modified By', type: 'number' },
-              // { name: 'modifiedOn', label: 'Modified On', type: 'date' },
             ],
           },
         ],
       },
       {
         tabName: 'Awards',
+        apiToCall: this.employeeService.addEmployeeAwardDetails,
         sections: [
           {
             title: 'Awards Information',
@@ -237,9 +256,11 @@ export class AddEmployeeComponent implements OnInit {
       },
       {
         tabName: 'Bank Details',
+        apiToCall: this.employeeService.addEmployeeBankDetails,
         sections: [
           {
             title: 'Bank Information',
+
             fields: [
               // { name: 'empBankId', label: 'Bank ID', type: 'number' },
               // { name: 'empId', label: 'Employee ID', type: 'number' },
@@ -261,9 +282,11 @@ export class AddEmployeeComponent implements OnInit {
 
       {
         tabName: 'Education Info',
+        apiToCall: this.employeeService.addEmployeeEducationDetails,
         sections: [
           {
             title: 'Basic Details',
+
             fields: [
               { name: 'empEduId', label: 'Education ID', type: 'text' },
               { name: 'empId', label: 'Employee ID', type: 'text' },
@@ -295,24 +318,13 @@ export class AddEmployeeComponent implements OnInit {
               { name: 'isCurrent', label: 'Is Current', type: 'text' },
             ],
           },
-          {
-            title: 'Audit Info',
-            fields: [
-              { name: 'createdById', label: 'Created By', type: 'text' },
-              { name: 'createdOn', label: 'Created On', type: 'text' },
-              { name: 'modifiedById', label: 'Modified By', type: 'text' },
-              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
-              {
-                name: 'certificatePath',
-                label: 'Certificate Path',
-                type: 'text',
-              },
-            ],
-          },
+         
         ],
       },
       {
         tabName: 'Employee Department',
+
+        apiToCall: this.employeeService.addEmployeeDepartmentDetails,
         sections: [
           {
             title: 'Department Info',
@@ -329,7 +341,32 @@ export class AddEmployeeComponent implements OnInit {
         ],
       },
       {
+        tabName: 'Employee Sub Department',
+
+        apiToCall: this.employeeService.addEmployeesubDepartmentDetails,
+        sections: [
+          {
+            title: 'Sub Department Info',
+            fields: [
+              {
+                name: 'empSubDid',
+                label: 'Employee Sub Department ID',
+                type: 'text',
+              },
+              { name: 'subDid', label: 'Sub Department ID', type: 'text' },
+              { name: 'empId', label: 'Employee ID', type: 'text' },
+              { name: 'createdById', label: 'Created By', type: 'text' },
+              { name: 'createdOn', label: 'Created On', type: 'text' },
+              { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+            ],
+          },
+        ],
+      },
+
+      {
         tabName: 'Employee Designation',
+        apiToCall: this.employeeService.addEmployeeDesignationDetails,
         sections: [
           {
             title: 'Designation Info',
@@ -351,6 +388,7 @@ export class AddEmployeeComponent implements OnInit {
       },
       {
         tabName: 'Employee Experience',
+        apiToCall: this.employeeService.addEmployeeExpDetails,
         sections: [
           {
             title: 'Experience Info',
@@ -380,8 +418,10 @@ export class AddEmployeeComponent implements OnInit {
           },
         ],
       },
+
       {
         tabName: 'Employee Facility',
+        apiToCall: this.employeeService.addEmployeeFacilityDetails,
         sections: [
           {
             title: 'Facility Info',
@@ -403,6 +443,7 @@ export class AddEmployeeComponent implements OnInit {
       },
       {
         tabName: 'Employee Speciality',
+        apiToCall: this.employeeService.addEmployeeSpecialityDetails,
         sections: [
           {
             title: 'Speciality Info',
@@ -425,6 +466,7 @@ export class AddEmployeeComponent implements OnInit {
       },
       {
         tabName: 'Employee Subspeciality',
+        apiToCall: this.employeeService.addEmployeeSubSpecialityDetails,
         sections: [
           {
             title: 'Subspeciality Info',
@@ -448,7 +490,6 @@ export class AddEmployeeComponent implements OnInit {
     ],
   };
 
-  
   // Section Based
   // employeeFormStructure: FormStructure = {
   //     globalTitle: "Add Emoloyee", // Always shown at the top of the form

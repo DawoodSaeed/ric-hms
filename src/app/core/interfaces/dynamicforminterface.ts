@@ -1,3 +1,5 @@
+import { Observable } from "rxjs";
+
 export interface FormField {
   name: string;
   label: string;
@@ -10,10 +12,12 @@ export interface FormField {
 export interface FormSection {
   title: string;
   fields: FormField[];
+
 }
 
 export interface FormTab {
   tabName: string;
+  apiToCall?:(formData:any)=>Observable<any>;
   sections: FormSection[];
 }
 
