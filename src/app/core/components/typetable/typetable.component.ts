@@ -29,6 +29,9 @@ import {
   PatientCheckInStatus,
   Country,
   Province,
+  District,
+  City,
+  Designation,
 } from '../../interfaces/typetable';
 
 // Import PrimeNG modules used in the template
@@ -72,13 +75,10 @@ export class TypetableManagerComponent implements OnInit {
   cols = signal<Cols[]>([]);
   globalFilters = signal<string[]>([]);
   displayDialog = signal(false);
-  newProvince: Province = {
+  newDesignation: Designation = {
     name: '',
-    code: '',
-    cid: 0, // Default value, adjust as needed
     description: '',
-    status: 1, // Or true, depending on your backend
-    isActive: 1, // Or true, depending on your backend
+    isActive: 1,
   };
 
   constructor(private typeTableService: TypeTableService) {}
@@ -88,44 +88,25 @@ export class TypetableManagerComponent implements OnInit {
   }
 
   fetchBanks() {
-    this.typeTableService.getProvinces().subscribe((itm) => {
+    this.typeTableService.getDesignations().subscribe((itm) => {
       this.data.set(itm);
     });
   }
 
   showDialog() {
-    this.newProvince = {
-      name: '',
-      code: '',
-      cid: 0, // Default value, adjust as needed
-      description: '',
-      status: 1, // Or true, depending on your backend
-      isActive: 1, // Or true, depending on your backend
-    };
     this.displayDialog.set(true);
   }
 
-  addProvince() {
-    if (
-      this.newProvince.name &&
-      this.newProvince.code &&
-      this.newProvince.cid !== undefined &&
-      this.newProvince.cid !== null &&
-      this.newProvince.description
-    ) {
+  addDesignation() {
+    if (this.newDesignation.name && this.newDesignation.description) {
       this.typeTableService
-        .addUpdateBankProvince(this.newProvince)
+        .addUpdateDesignations(this.newDesignation)
         .subscribe(() => {
-          // You might want to emit an event or use a service to notify the parent component
-          // that a new province has been added, so it can refresh the data.
           this.displayDialog.set(false);
-          this.newProvince = {
+          this.newDesignation = {
             name: '',
-            code: '',
-            cid: 0, // Default value, adjust as needed
             description: '',
-            status: 1, // Or true, depending on your backend
-            isActive: 1, // Or true, depending on your backend
+            isActive: 1,
           };
         });
     }

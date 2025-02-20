@@ -9,34 +9,22 @@
 </p-dropdown>
 <button pButton label="Add Country" (click)="showDialog()"></button>
 
-<p-dialog header="Add New Province" [visible]="displayDialog()">
+<p-dialog header="Add New Designation" [visible]="displayDialog()">
   <div class="grid grid-cols-1 gap-4">
     <input
       pInputText
-      [(ngModel)]="newProvince.name"
-      placeholder="Province Name"
+      [(ngModel)]="newDesignation.name"
+      placeholder="Designation Name"
       required
     />
     <input
       pInputText
-      [(ngModel)]="newProvince.code"
-      placeholder="Province Code"
-      required
-    />
-    <input
-      pInputText
-      [(ngModel)]="newProvince.cid"
-      placeholder="Country ID"
-      required
-    />
-    <input
-      pInputText
-      [(ngModel)]="newProvince.description"
+      [(ngModel)]="newDesignation.description"
       placeholder="Description"
       required
     />
   </div>
-  <button pButton label="Save" (click)="addProvince()"></button>
+  <button pButton label="Save" (click)="addDesignation()"></button>
 </p-dialog>
 
 <app-table />

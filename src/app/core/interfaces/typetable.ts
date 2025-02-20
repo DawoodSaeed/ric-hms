@@ -151,3 +151,21 @@ export interface Province extends TypeTable {
   cid: number;
   status: number;
 }
+
+export interface District extends TypeTable {
+  did?: number;
+  pid: number;
+  cid: number;
+  status: number;
+}
+
+export interface City extends TypeTable {
+  id?: number;
+  pid: number;
+  cid: number;
+  status: number;
+}
+
+export interface Designation extends TypeTable {
+  desgnId?: number;
+}
