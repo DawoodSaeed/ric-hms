@@ -58,6 +58,7 @@
     <p-contextmenu #cm [model]="contextItems" />
 
     <p-table
+      [columns]="cols()"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
       [showCurrentPageReport]="true"
       [size]="'large'"
@@ -109,7 +110,7 @@
         </div>
       </ng-template>
 
-      <ng-template pTemplate="header">
+      <!-- <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="empId">Emp ID <p-sortIcon field="empId" /></th>
           <th>Name</th>
@@ -120,11 +121,18 @@
           <th>Job Type</th>
           <th>Address</th>
           <th>Actions</th>
-          <!-- Icons Column -->
+        </tr>
+      </ng-template> -->
+      <ng-template #header let-columns>
+        <tr>
+          <th style="width: 3rem"></th>
+          <th *ngFor="let col of columns">
+            {{ col.header }}
+          </th>
         </tr>
       </ng-template>
 
-      <ng-template pTemplate="body" let-employee>
+      <!-- <ng-template pTemplate="body" let-employee>
         <tr [pContextMenuRow]="employee" *ngIf="!loading()">
           <td>{{ employee.empId }}</td>
           <td>
@@ -148,6 +156,14 @@
                 [style]="{ position: 'relative',  }"
               ></p-speeddial>
             </div>
+          </td>
+        </tr>
+      </ng-template> -->
+
+      <ng-template #body let-rowData let-columns="columns" let-index="rowIndex">
+        <tr [pContextMenuRow]="rowData">
+          <td *ngFor="let col of columns">
+            {{ rowData[col.field] }}
           </td>
         </tr>
       </ng-template>

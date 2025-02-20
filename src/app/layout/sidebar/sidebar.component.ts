@@ -82,15 +82,25 @@ export class SidebarComponent implements OnInit {
         // }
       },
       {
-        label: 'Alpha',
-
-        icon: 'pi pi-desktop',
+        label: 'Organization Setup',
+        icon: 'fas fa-sitemap blue',
         expanded: false, // Track expanded state
         items: [
-          { label: 'Phone', icon: 'pi pi-circle-on' },
-          { label: 'Desktop', icon: 'pi pi-circle-on' },
-          { label: 'Tablet', icon: 'pi pi-circle-on' },
+          {
+            label: 'Employees',
+            icon: 'pi pi-circle-on',
+            route: '/admin/employees',
+          },
+          {
+            label: 'Add Employee',
+            icon: 'pi pi-circle-on',
+            route: '/admin/addEmployee',
+          },
         ],
+
+        // command:()=>{
+        //   alert('clicked')
+        // }
       },
     ];
   }
