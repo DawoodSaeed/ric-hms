@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 
 import {
   Bank,
+  Country,
   DepartmentCategory,
   DiscountType,
   EducationDegree,
@@ -19,6 +20,7 @@ import {
   PatientCheckInStatus,
   PatientType,
   PaymentMethod,
+  Province,
   Relation,
   Religion,
   Scale,
@@ -242,5 +244,22 @@ export class TypeTableService {
 
   addUpdateScale(scale: Scale): Observable<Scale> {
     return this.addUpdate<Scale>('Scales', scale);
+  }
+
+  // for the second push of the type table.... (Countries, Provinces, )
+  getCountries(): Observable<Country[]> {
+    return this.getAll<Country>('Countries');
+  }
+
+  addUpdateBankCountry(country: Country): Observable<Country> {
+    return this.addUpdate<Country>('Countries', country);
+  }
+
+  getProvinces(): Observable<Province[]> {
+    return this.getAll<Province>('Provinces');
+  }
+
+  addUpdateBankProvince(province: Province): Observable<Province> {
+    return this.addUpdate<Province>('Provinces', province);
   }
 }

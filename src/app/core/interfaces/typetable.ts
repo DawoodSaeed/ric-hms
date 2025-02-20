@@ -55,7 +55,6 @@ export interface PatientType extends TypeTable {
 }
 
 export interface Scale extends TypeTable {
-  
   minSalary: number;
   maxSalary: number;
   branchId: number;
@@ -136,3 +135,19 @@ export interface PaymentMethod extends TypeTable {
 export interface Relation extends TypeTable {}
 export interface Religion extends TypeTable {}
 export interface PatientCheckInStatus extends TypeTable {}
+
+// Stage # 2 of making the typetable #################
+export interface Country extends TypeTable {
+  cid?: number;
+  code: string;
+  phoneCode: string;
+  currencyCode: string;
+  status: number;
+}
+
+export interface Province extends TypeTable {
+  pid?: number;
+  code: string;
+  cid: number;
+  status: number;
+}
