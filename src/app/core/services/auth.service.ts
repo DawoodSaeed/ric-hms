@@ -43,9 +43,10 @@ export class AuthService {
 
   checkAuth() {
     return this.http.get<CheckAuth>(`${this.apiUrl}/verify-token/`).pipe(
-      map(({ valid, role, username, userId }) => {
+      map((auth) => {
+        const { valid, role, username, userId } = auth;
         this.setRole(role.toLocaleLowerCase());
-        return valid;
+        return auth;
       })
     );
   }

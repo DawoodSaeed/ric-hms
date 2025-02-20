@@ -1,25 +1,41 @@
-// src/app/core/role.guard.ts
-import { inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
-  CanActivateFn,
+  CanActivate,
   ActivatedRouteSnapshot,
   Router,
   RouterStateSnapshot,
 } from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 
-export const RoleGuard: CanActivateFn = (
-  route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
-) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  const requiredRole = route.data?.['role'];
+@Injectable({
+  providedIn: 'root',
+})
+export class RoleGuard implements CanActivate {
+  constructor(private authService: AuthService, private router: Router) {}
 
-  if (!requiredRole || authService.getRole() === requiredRole) {
-    return true;
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable<boolean> {
+    const requiredRole = route.data['role'];
+    console.log(requiredRole);
+    return this.authService.checkAuth().pipe(
+      map((response: { valid: boolean; role: string }) => {
+        const { valid, role } = response || { valid: false, role: '' };
+
+        if (valid && role === requiredRole) {
+          return true; // Access granted for correct role
+        }
+
+        this.router.navigate(['/']); // Redirect if role mismatch
+        return false;
+      }),
+      catchError(() => {
+        this.router.navigate(['/login']); // Redirect if error occurs
+        return of(false);
+      })
+    );
   }
-
-  router.navigate(['/']); // Redirect to home if unauthorized
-  return false;
-};
+}

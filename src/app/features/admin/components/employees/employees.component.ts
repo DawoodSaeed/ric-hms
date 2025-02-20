@@ -35,6 +35,11 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { SkeletonModule } from 'primeng/skeleton';
+
+interface cols {
+  field: string;
+  header: string;
+}
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
@@ -58,7 +63,7 @@ import { SkeletonModule } from 'primeng/skeleton';
     TableModule,
     ButtonModule,
     TagModule,
-    SpeedDial,
+    // SpeedDial,
     SelectButtonModule,
     FormsModule,
     IconFieldModule,
@@ -72,6 +77,7 @@ export class EmployeesComponent {
   private employeeService = inject(EmployeeService);
 
   employees = signal<Employee[]>([]);
+  cols = signal<cols[]>([]);
   selectedEmployee: Employee | null = null;
   employeeSidebarVisible = false;
   // Options for SelectButton
@@ -97,6 +103,15 @@ export class EmployeesComponent {
       .subscribe({
         next: (data: Employee[]) => {
           console.log(data.length);
+          const keys = Object.keys(data);
+          const cols: cols[] = [];
+          keys.forEach((key) => {
+            cols.push({
+              field: key,
+              header: key,
+            });
+          });
+          this.cols.set(cols);
           this.employees.set(data);
         },
 
