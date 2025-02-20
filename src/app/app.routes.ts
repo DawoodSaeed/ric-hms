@@ -4,10 +4,15 @@ import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { RoleGuard } from './core/guards/role.guard';
 import { AuthGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full',
+  },
   {
     path: 'login',
-    component: LoginComponent,
+    loadComponent: () =>
+      import('./features/auth/login.component').then((m) => m.LoginComponent),
     canActivate: [AuthGuard],
   },
   {
@@ -15,7 +20,7 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/admin/admin.routes').then((m) => m.adminRoutes),
     canActivate: [RoleGuard],
-    data: { role: 'admin' },
+    data: { role: 'Admin' },
   },
   {
     path: 'doctor',
@@ -33,5 +38,4 @@ export const routes: Routes = [
     canActivate: [RoleGuard],
     data: { role: 'medical-store' },
   },
-  { path: '**', redirectTo: 'login' },
 ];

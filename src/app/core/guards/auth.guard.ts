@@ -16,31 +16,22 @@ import { AuthService } from '../services/auth.service';
 export class AuthGuard implements CanActivate {
   constructor(private router: Router, private authService: AuthService) {}
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): boolean {
-    // check if the tokens are present
-    let navigateToLogin = true;
+  canActivate(): Observable<boolean> {
     if (this.authService.isLoggedIn()) {
-      this.authService.checkAuth().subscribe({
-        next: (valid) => {
+      return this.authService.checkAuth().pipe(
+        map(({ valid, role }) => {
           if (valid) {
-            navigateToLogin = false;
-            console.log('##############', this.authService.getRole());
-            this.router.navigate([`/${this.authService.getRole()}/`]);
+            this.router.navigate([`/${role.toLocaleLowerCase()}`]);
+            return false;
           }
-
-          navigateToLogin = true;
-        },
-
-        error: () => {
-          navigateToLogin = true;
-        },
-      });
-      return navigateToLogin;
+          return true;
+        }),
+        catchError(() => {
+          return of(true);
+        })
+      );
     } else {
-      return true;
+      return of(true);
     }
   }
 }
