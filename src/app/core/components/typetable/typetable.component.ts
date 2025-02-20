@@ -27,6 +27,11 @@ import {
   Relation,
   Religion,
   PatientCheckInStatus,
+  Country,
+  Province,
+  District,
+  City,
+  Designation,
 } from '../../interfaces/typetable';
 
 // Import PrimeNG modules used in the template
@@ -38,11 +43,11 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { FormsModule } from '@angular/forms'; // Import FormsModule
 import { CommonModule } from '@angular/common';
+import { TableComponent } from '../table/table.component';
 
-interface Endpoint {
-  name: string;
-  type: any;
-  postGetAll: boolean;
+interface Cols {
+  field: string;
+  header: string;
 }
 
 @Component({
@@ -60,21 +65,20 @@ interface Endpoint {
     DialogModule,
     InputTextModule,
     ToastModule,
-    FormsModule, // Add FormsModule
+    FormsModule,
+    TableComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TypetableManagerComponent implements OnInit {
-  banks: Bank[] = [];
+  data = signal<any[]>([]);
   selectedBank?: Bank;
+  cols = signal<Cols[]>([]);
+  globalFilters = signal<string[]>([]);
   displayDialog = signal(false);
-  newBank: Bank = {
-    abbrivation: '',
+  newDesignation: Designation = {
     name: '',
-    code: '',
     description: '',
     isActive: 1,
-    bank: 0,
   };
 
   constructor(private typeTableService: TypeTableService) {}
@@ -84,34 +88,27 @@ export class TypetableManagerComponent implements OnInit {
   }
 
   fetchBanks() {
-    this.typeTableService.getBanks().subscribe((data) => {
-      this.banks = data;
+    this.typeTableService.getDesignations().subscribe((itm) => {
+      this.data.set(itm);
     });
   }
 
   showDialog() {
-    this.newBank = {
-      abbrivation: '',
-      name: '',
-      code: '',
-      description: '',
-      isActive: 1,
-      bank: 0,
-    };
     this.displayDialog.set(true);
   }
 
-  addBank() {
-    if (
-      this.newBank.name &&
-      this.newBank.abbrivation &&
-      this.newBank.code &&
-      this.newBank.description
-    ) {
-      this.typeTableService.addUpdateBank(this.newBank).subscribe(() => {
-        this.fetchBanks();
-        this.displayDialog.set(false);
-      });
+  addDesignation() {
+    if (this.newDesignation.name && this.newDesignation.description) {
+      this.typeTableService
+        .addUpdateDesignations(this.newDesignation)
+        .subscribe(() => {
+          this.displayDialog.set(false);
+          this.newDesignation = {
+            name: '',
+            description: '',
+            isActive: 1,
+          };
+        });
     }
   }
 }

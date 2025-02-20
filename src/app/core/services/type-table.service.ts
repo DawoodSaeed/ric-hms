@@ -6,8 +6,12 @@ import { Observable } from 'rxjs';
 
 import {
   Bank,
+  City,
+  Country,
   DepartmentCategory,
+  Designation,
   DiscountType,
+  District,
   EducationDegree,
   EducationInstitution,
   EmploymentStatus,
@@ -19,6 +23,7 @@ import {
   PatientCheckInStatus,
   PatientType,
   PaymentMethod,
+  Province,
   Relation,
   Religion,
   Scale,
@@ -242,5 +247,56 @@ export class TypeTableService {
 
   addUpdateScale(scale: Scale): Observable<Scale> {
     return this.addUpdate<Scale>('Scales', scale);
+  }
+
+  // for the second push of the type table.... (Countries, Provinces, Dsitricts, Cities, designations ) ######
+
+  // ###### COUNTRIES >>>>>>>>>>>>>
+  getCountries(): Observable<Country[]> {
+    return this.getAll<Country>('Countries');
+  }
+
+  addUpdateCountry(country: Country): Observable<Country> {
+    return this.addUpdate<Country>('Countries', country);
+  }
+
+  // ###### PROVINCES >>>>>>>>>>>>>
+
+  getProvinces(): Observable<Province[]> {
+    return this.getAll<Province>('Provinces');
+  }
+
+  addUpdateProvince(province: Province): Observable<Province> {
+    return this.addUpdate<Province>('Provinces', province);
+  }
+
+  // ###### DISTRICTS >>>>>>>>>>>>>
+
+  getDistricts(): Observable<District[]> {
+    return this.getAll<District>('Districts');
+  }
+
+  addUpdateDistricts(district: District): Observable<District> {
+    return this.addUpdate<District>('Districts', district);
+  }
+
+  // ###### CITIES >>>>>>>>>>>>>
+
+  getCities(): Observable<City[]> {
+    return this.getAll<City>('Cities');
+  }
+
+  addUpdateCities(city: City): Observable<City> {
+    return this.addUpdate<City>('Cities', city);
+  }
+
+  // ###### DESIGNATIONS >>>>>>>>>>>>>
+
+  getDesignations(): Observable<Designation[]> {
+    return this.getAll<Designation>('Designations');
+  }
+
+  addUpdateDesignations(designation: Designation): Observable<Designation> {
+    return this.addUpdate<Designation>('Designations', designation);
   }
 }
