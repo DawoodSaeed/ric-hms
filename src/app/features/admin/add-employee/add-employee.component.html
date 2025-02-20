@@ -1,1 +1,1 @@
-<app-dynamic-form [formStructure]="employeeFormStructure"></app-dynamic-form>
+<app-dynamic-form [formStructure]="employeeFormStructure" (dataEmitter)="handleFormData($event)" [isLoading]='isLoading()'></app-dynamic-form>
