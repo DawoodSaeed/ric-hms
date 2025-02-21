@@ -63,7 +63,7 @@ interface cols {
     TableModule,
     ButtonModule,
     TagModule,
-    // SpeedDial,
+    SpeedDial,
     SelectButtonModule,
     FormsModule,
     IconFieldModule,

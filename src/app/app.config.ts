@@ -22,7 +22,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withViewTransitions()),
     provideAnimationsAsync(),
     providePrimeNG({
-      
       ripple: true,
       theme: {
         preset: MyHospitalTheme,

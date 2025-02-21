@@ -1,31 +1,96 @@
-.border0 .p-panelmenu-panel {
-    border: 0;
-  }
-  .cstm-panel .p-panelmenu-panel {
-    border: 1px solid #2929b9;
-  }
-  .cstm-panel .pi-circle-off,
-  .pi-circle-on {
-    font-size: 4px !important;
-  }
-  
-  
-  .cstm-panel .p-panelmenu-header-active .p-panelmenu-header-content{
-    color: #2929b9;
-   
-  }
-  .p-panelmenu-header-content{
-    font-size: 16px !important;
-  
-  }
-  .cstm-panel .p-panelmenu-item-content {
-    font-size: 15px;
-  }
-  .cstm-panel {
-    .p-panelmenu-header-label,
-    .p-panelmenu-submenu-icon {
-      color: #2929b9;
-     
-    }
-    
-  }
+:host {
+}
+
+/* Smooth animations for nested items */
+::ng-deep .p-panelmenu .p-panelmenu-content {
+  transition: max-height 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  overflow: hidden;
+}
+
+::ng-deep .p-panelmenu .p-panelmenu-content .p-menuitem-link {
+  padding-left: 2rem !important; /* Indent nested items */
+}
+
+::ng-deep .p-panelmenu .p-panelmenu-content .p-menuitem-link .pi {
+  transition: transform 0.3s ease;
+}
+
+::ng-deep
+  .p-panelmenu
+  .p-panelmenu-content
+  .p-menuitem-link
+  .pi.pi-angle-right {
+  transform: rotate(0deg);
+}
+
+::ng-deep .p-panelmenu .p-panelmenu-content .p-menuitem-link .pi.pi-angle-down {
+  transform: rotate(90deg);
+}
+
+/* Custom scrollbar styling */
+.custom-scrollbar {
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #4a5568 #2d3748; /* For Firefox */
+}
+
+/* For WebKit browsers (Chrome, Safari, Edge) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #2d3748; /* Color of the track */
+  border-radius: 4px; /* Rounded corners for the track */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #4a5568; /* Color of the thumb */
+  border-radius: 4px; /* Rounded corners for the thumb */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #718096; /* Color of the thumb on hover */
+}
+
+/* Override PrimeNG PanelMenu styles for both light and dark themes */
+::ng-deep .p-panelmenu .p-panelmenu-header {
+  background: var(--surface-a); /* Use PrimeNG's surface color */
+  color: var(--text-color); /* Use PrimeNG's text color */
+  border: none;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+::ng-deep .p-panelmenu .p-panelmenu-content {
+  background: var(--surface-a); /* Use PrimeNG's surface color */
+  color: var(--text-color); /* Use PrimeNG's text color */
+  border: none;
+  border-radius: 0.5rem;
+}
+
+::ng-deep .p-panelmenu .p-menuitem-link {
+  color: var(--text-color); /* Use PrimeNG's text color */
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+
+::ng-deep .p-panelmenu .p-menuitem-link:hover {
+  background: var(--surface-c); /* Use PrimeNG's surface hover color */
+}
+
+::ng-deep .p-panelmenu .p-menuitem-link .p-menuitem-icon {
+  color: var(--text-color-secondary); /* Use PrimeNG's secondary text color */
+}
+
+::ng-deep .p-panelmenu .p-menuitem-link .p-menuitem-text {
+  color: var(--text-color); /* Use PrimeNG's text color */
+}
+
+::ng-deep .p-panelmenu .p-menuitem-link .p-submenu-icon {
+  color: var(--text-color-secondary); /* Use PrimeNG's secondary text color */
+}
+
+.p-panelmenu {
+  --p-panelmenu-panel-background: #111827;
+}
