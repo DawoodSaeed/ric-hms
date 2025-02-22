@@ -4,9 +4,11 @@ import { FormStructure } from '../../../core/interfaces/dynamicforminterface';
 import { TypeTableService } from '../../../core/services/type-table.service';
 import swal from 'sweetalert2';
 import {
+  Country,
   EmploymentStatus,
   GuardianType,
   JobType,
+  Province,
   Relation,
   Scale,
   TypeTable,
@@ -58,8 +60,19 @@ export class AddEmployeeComponent implements OnInit {
       });
 
     this.dropDownService.getRelations().subscribe((relations: Relation[]) => {
+      console.log('relations ',relations);
       this.updateDropdownOptions('nokrelationId', relations);
     });
+    this.dropDownService.getCountries().subscribe((countries: Country[]) => {
+      console.log('countries ',countries);
+      this.updateDropdownOptions('country', countries);
+    });
+
+    this.dropDownService.getProvinces().subscribe((provinces: Province[]) => {
+      console.log('provinces ',provinces);
+      this.updateDropdownOptions('province', provinces);
+    });
+    
   }
 
   // Generic method to update dropdown options

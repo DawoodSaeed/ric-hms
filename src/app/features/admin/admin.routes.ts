@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { AdminDashboardComponent } from './admin-dashboard.component';
-import { RoleGuard } from '../../core/guards/role.guard';
 import { AddEmployeeComponent } from './add-employee/add-employee.component';
 import { EmployeesComponent } from './components/employees/employees.component';
 export const adminRoutes: Routes = [

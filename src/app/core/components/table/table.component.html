@@ -1,0 +1,179 @@
+<div class="card">
+  <p-contextmenu #cm [model]="contextItems" />
+
+  <p-table
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [showCurrentPageReport]="true"
+    [size]="'large'"
+    #dt
+    [value]="banks()"
+    [tableStyle]="{ 'min-width': '60rem' }"
+    [paginator]="true"
+    [rows]="10"
+    stripedRows
+    responsiveLayout="scroll"
+    class="custom-table"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    dataKey="empId"
+    [globalFilterFields]="['name', 'bankId']"
+    [(contextMenuSelection)]="selectedItem"
+    [contextMenu]="cm"
+    stateStorage="session"
+    [loading]="loading()"
+    stateKey="statedemo-session"
+  >
+    <ng-template #caption>
+      <div class="flex">
+        <p-button
+          label="Clear"
+          [outlined]="true"
+          icon="pi pi-filter-slash"
+          (click)="clear(dt)"
+        />
+        <button
+          p-button
+          icon="pi pi-plus"
+          (click)="showDialog()"
+          class="ml-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out cursor-pointer"
+        >
+          Add Bank
+        </button>
+
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input
+            pInputText
+            type="text"
+            [value]="searchValue()"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Keyboard Search"
+          />
+        </p-iconfield>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="bankId">Bank ID <p-sortIcon field="bankId" /></th>
+        <th pSortableColumn="name">Bank Name <p-sortIcon field="name" /></th>
+        <th pSortableColumn="description">
+          Description <p-sortIcon field="description" />
+        </th>
+        <th pSortableColumn="abbrivation">
+          Abbreviation <p-sortIcon field="abbrivation" />
+        </th>
+        <th pSortableColumn="code">Bank Code <p-sortIcon field="code" /></th>
+
+        <th pSortableColumn="createdOn">
+          Created On <p-sortIcon field="createdOn" />
+        </th>
+
+        <th pSortableColumn="isActive">
+          Status <p-sortIcon field="isActive" />
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-bank>
+      <tr [pContextMenuRow]="bank" *ngIf="banks().length > 0">
+        <td>{{ bank.bankId }}</td>
+        <td>{{ bank.name }}</td>
+        <td>{{ bank.description }}</td>
+        <td>{{ bank.abbrivation }}</td>
+        <td>{{ bank.code }}</td>
+        <td>{{ bank.createdOn | date : "MMM d, y" }}</td>
+
+        <td>
+          <span
+            [ngClass]="{
+              'bg-green-100 text-green-800': bank.isActive === 1,
+              'bg-red-100 text-red-800': bank.isActive === 0
+            }"
+            class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
+          >
+            {{ bank.isActive === 1 ? "Active" : "Inactive" }}
+          </span>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog
+    header="Add New Bank"
+    [visible]="displayDialog()"
+    styleClass="w-full md:w-[45rem]"
+    [closable]="false"
+    [maximizable]="true"
+  >
+    <ng-template #header>
+      <div class="flex items-center justify-between w-[100%]">
+        <h3 class="font-semibold text-lg">Add Bank Details</h3>
+        <button
+          pButton
+          icon="pi pi-times"
+          (click)="closeDialog()"
+          class="p-button-rounded p-button-text"
+        ></button>
+      </div>
+    </ng-template>
+    <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+      <label for="abbreviation" class="text-right font-medium"
+        >Abbreviation</label
+      >
+      <input
+        pInputText
+        [(ngModel)]="newBank.abbrivation"
+        id="abbreviation"
+        placeholder="Abbreviation"
+        required
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
+    </div>
+    <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+      <label for="name" class="text-right font-medium">Bank Name</label>
+      <input
+        pInputText
+        [(ngModel)]="newBank.name"
+        id="name"
+        placeholder="Bank Name"
+        required
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
+    </div>
+    <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+      <label for="code" class="text-right font-medium">Bank Code</label>
+      <input
+        pInputText
+        [(ngModel)]="newBank.code"
+        id="code"
+        placeholder="Bank Code"
+        required
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
+    </div>
+    <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-start">
+      <label for="description" class="text-right font-medium"
+        >Description</label
+      >
+      <textarea
+        pInputTextarea
+        [(ngModel)]="newBank.description"
+        id="description"
+        placeholder="Description"
+        required
+        rows="5"
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      ></textarea>
+    </div>
+    <div class="flex justify-end mt-4">
+      <button
+        pButton
+        label="Save"
+        (click)="addBank()"
+        class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+      ></button>
+    </div>
+  </p-dialog>
+</div>
