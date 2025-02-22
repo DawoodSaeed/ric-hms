@@ -36,6 +36,7 @@ export class DynamicFormComponent implements OnInit {
   @Input() formStructure!: FormStructure;
   @Output() dataEmitter = new EventEmitter<any>();
   @Input() isLoading: boolean = false;
+  entriesCount:number=2
   form!: FormGroup;
   uploadedImages: { [key: string]: string | ArrayBuffer } = {};
   selectedTabIndex: number = 0;
@@ -91,6 +92,7 @@ export class DynamicFormComponent implements OnInit {
     const formattedDate = `${year}-${month}-${day}`;
     this.form.get(fieldName)?.setValue(formattedDate);
   }
+  
   onSubmit(): void {
     if (this.form.valid && this.formStructure?.tabs) {
       // Ensure formStructure and tabs exist before accessing

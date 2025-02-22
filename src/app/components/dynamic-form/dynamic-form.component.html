@@ -1,24 +1,26 @@
 <h2 class="text-2xl font-semibold">{{ formStructure.globalTitle }}</h2>
 
-<form [formGroup]="form" >
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
   <!-- Tabs View -->
-  <p-tabs [value]="0" *ngIf="formStructure.tabs; else flatForm" [tabindex]="selectedTabIndex"  (valueChange)="onTabChange($event)"  scrollable >
+  <p-tabs [value]="0" *ngIf="formStructure.tabs; else flatForm" scrollable>
     <p-tablist>
-      <p-tab *ngFor="let tab of formStructure.tabs; let i = index" [value]="i" [disabled]="currentTab()!==tab.tabName">
+      <p-tab *ngFor="let tab of formStructure.tabs; let i = index" [value]="i">
         {{ tab.tabName }}
       </p-tab>
     </p-tablist>
+
     <p-tabpanels>
-      <p-tabpanel 
+      <p-tabpanel
         *ngFor="let tab of formStructure.tabs; let i = index"
         [value]="i"
       >
-        <div  *ngFor="let section of tab.sections" class="mb-4">
+        <div *ngFor="let section of tab.sections" class="mb-4">
           <h3 class="text-xl font-semibold mb-2">{{ section.title }}</h3>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div *ngFor="let field of section.fields" class="flex flex-col">
               <label class="text-sm font-medium mb-1">{{ field.label }}</label>
+
               <!-- Text Input -->
               <input
                 variant="filled"
@@ -29,6 +31,7 @@
                 [placeholder]="field.placeholder || field.label"
                 class="p-inputtext p-component w-full py-2 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+
               <!-- Select Input -->
               <p-select
                 variant="filled"
@@ -41,6 +44,7 @@
                 class="w-full"
               >
               </p-select>
+
               <!-- Date Input -->
               <p-calendar
                 variant="filled"
@@ -53,6 +57,7 @@
                 [style]="{ width: '100%' }"
                 [inputStyle]="{ width: '100%' }"
               />
+
               <!-- Number Input -->
               <input
                 variant="filled"
@@ -62,6 +67,7 @@
                 [placeholder]="field.placeholder || field.label"
                 class="p-inputtext p-component w-full py-2 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+
               <!-- Radio Inpput -->
               <!-- Radio Button Input -->
               <div
@@ -84,6 +90,7 @@
                 />
                 <label for="{{ field.name }}No">No</label>
               </div>
+
               <!-- Image Upload Input using PrimeNG -->
               <div
                 *ngIf="field.type === 'image'"
@@ -202,22 +209,19 @@
     <button
       type="submit"
       class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
-      *ngIf="!isLoading; else spinner"
-      (click)="onSubmit()"
-    >
+    *ngIf="!isLoading else spinner"
+      >
       Submit
     </button>
-    <ng-template #spinner>
-      <div class="card flex justify-center">
-        <button
-          class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
-        >
-          <p-progress-spinner
-            ariaLabel="loading"
-            [style]="{ width: '25px', height: '25px' }"
-          />
-        </button>
-      </div>
-    </ng-template>
+<ng-template #spinner>
+
+  <div class="card flex justify-center">
+    <button
+    class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200 "
+    >
+    <p-progress-spinner ariaLabel="loading" [style]="{width:'25px',height:'25px'}" />
+  </button>
+  </div>
+</ng-template>
   </div>
 </form>

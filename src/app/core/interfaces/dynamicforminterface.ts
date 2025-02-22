@@ -18,6 +18,7 @@ export interface FormSection {
 export interface FormTab {
   tabName: string;
   apiToCall?:(formData:any)=>Observable<any>;
+  multipleEntries?:boolean;
   sections: FormSection[];
 }
 

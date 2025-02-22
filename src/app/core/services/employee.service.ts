@@ -33,47 +33,37 @@ export class EmployeeService {
   }
 
   addEmployeeAwardDetails=(awardDetails: EmployeeAward): Observable<any>=> {
-    // employee={...employee,empId: 0,}
     return this.http.post(`${this.apiUrl}/empaward`, awardDetails);
   }
 
   addEmployeeBankDetails=(bankDetails: EmployeeBankDetails): Observable<any>=> {
-    // employee={...employee,empId: 0,}
     return this.http.post(`${this.apiUrl}/empbank`, bankDetails);
   }
 
   addEmployeeEducationDetails=(educationDetails: EmployeeEducation): Observable<any>=> {
-    // employee={...employee,empId: 0,}
     return this.http.post(`${this.apiUrl}/empeducation`, educationDetails);
   }
   addEmployeeDepartmentDetails=(departmentDetails: EmployeeDepartment): Observable<any>=> {
-    // employee={...employee,empId: 0,}
     return this.http.post(`${this.apiUrl}/empdept`, departmentDetails);
   }
   addEmployeesubDepartmentDetails=(subDeptDetails: EmployeeSubDepartment): Observable<any>=> {
-    // employee={...employee,empId: 0,}
     return this.http.post(`${this.apiUrl}/empsubdept`, subDeptDetails);
   }
   addEmployeeDesignationDetails=(designationDetails: EmployeeDesignation): Observable<any>=> {
-    // employee={...employee,empId: 0,}
     return this.http.post(`${this.apiUrl}/empdesg`, designationDetails);
   }
   addEmployeeExpDetails=(expDetails: EmployeeExperience): Observable<any>=> {
-    // employee={...employee,empId: 0,}
     return this.http.post(`${this.apiUrl}/empexperience`, expDetails);
   }
   addEmployeeFacilityDetails=(facilityDetails: EmployeeFacility): Observable<any>=> {
-    // employee={...employee,empId: 0,}
     return this.http.post(`${this.apiUrl}/empfacility`, facilityDetails);
   }
   addEmployeeSpecialityDetails=(specialityDetails: EmployeeSpecialization): Observable<any>=> {
-    // employee={...employee,empId: 0,}
     return this.http.post(`${this.apiUrl}/empspeciality`, specialityDetails);
   }
   addEmployeeSubSpecialityDetails=(
     subSpecialityDetails: EmployeeSubSpecialization
   ): Observable<any>=> {
-    // employee={...employee,empId: 0,}
     return this.http.post(
       `${this.apiUrl}/empsubspeciality`,
       subSpecialityDetails
