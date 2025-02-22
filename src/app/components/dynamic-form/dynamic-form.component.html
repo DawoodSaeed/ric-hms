@@ -130,8 +130,26 @@
         </div>
 
         <!-- Table -->
-
-<app-dynamic-table *ngIf="tab.tableData" [tableData]="tab.tableData"></app-dynamic-table>
+        <div class="flex justify-end">
+          <button
+            type="submit"
+            class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
+          *ngIf="!isLoading else spinner"
+            >
+            Submit
+          </button>
+        </div>
+      <ng-template #spinner>
+      
+        <div class="card flex justify-center">
+          <button
+          class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200 "
+          >
+          <p-progress-spinner ariaLabel="loading" [style]="{width:'25px',height:'25px'}" />
+        </button>
+        </div>
+      </ng-template>
+<app-dynamic-table *ngIf="tab.tableData" [tableTitle]="tab.tabName" [tableData]="tab.tableData"></app-dynamic-table>
       </p-tabpanel>
     </p-tabpanels>
   </p-tabs>
@@ -219,25 +237,7 @@
       </div>
     </div>
   </ng-template>
-  <div class="flex justify-end">
-    <button
-      type="submit"
-      class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
-    *ngIf="!isLoading else spinner"
-      >
-      Submit
-    </button>
-<ng-template #spinner>
-
-  <div class="card flex justify-center">
-    <button
-    class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200 "
-    >
-    <p-progress-spinner ariaLabel="loading" [style]="{width:'25px',height:'25px'}" />
-  </button>
-  </div>
-</ng-template>
-  </div>
+ 
 </form>
 
 

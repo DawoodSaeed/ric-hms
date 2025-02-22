@@ -1,16 +1,54 @@
-<div class="card">
-    <p-table [value]="tableData" [tableStyle]="{ 'min-width': '50rem' }">
-        <ng-template #header>
-            <tr>
-                <th *ngFor="let key of getKeys()">{{key}}</th>
+<div class="card  bg-white shadow-lg rounded-xl">
+  <p-table
+    #dt2
+    [value]="tableData"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    showGridlines
+    stripedRows
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [paginator]="true"
+    sortMode="multiple"
+    [rows]="5"
+    [globalFilterFields]="getKeys()"
+    class="w-full border border-gray-200 rounded-lg overflow-hidden"
+  >
+    <!-- Search Bar -->
+    <ng-template #caption>
+      <div class="flex justify-between items-center p-3  rounded-t-lg">
+        <p>{{tableTitle}}</p>
+        <div class="relative">
+          <i class="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+          <input
+            pInputText
+            type="text"
+            (input)="dt2?.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Search..."
+            class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        </div>
+      </div>
+    </ng-template>
 
-            </tr>
-        </ng-template>
-        <ng-template #body let-product>
-            <tr>
-                <td *ngFor="let key of getKeys()">{{ product[key] }}</td>
-             
-            </tr>
-        </ng-template>
-    </p-table>
+    <!-- Table Header -->
+    <ng-template #header>
+      <tr class="bg-gradient-to-r from-[#21249d] to-[#21249d] text-white">
+        <th
+          pSortableColumn
+          *ngFor="let key of getKeys()"
+          class="px-4 py-3 text-left font-semibold"
+        >
+          {{ key }}
+        </th>
+      </tr>
+    </ng-template>
+
+    <!-- Table Body -->
+    <ng-template #body let-product>
+      <tr class="border-b border-gray-200 hover:bg-gray-100 transition">
+        <td *ngFor="let key of getKeys()" class="px-4 py-3 text-gray-700">
+          {{ product[key] }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>

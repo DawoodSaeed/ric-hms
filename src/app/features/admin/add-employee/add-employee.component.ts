@@ -143,7 +143,12 @@ this.employeeFormStructure.tabs?.forEach(tab=>{
     this.isLoading.set(true);
     event.apiToCall(submittedData).subscribe({
       next: (data: any) => {
-        this.notyf.success('SUCCESS');
+        this.notyf.success({
+          message: 'Success',
+          duration: 3000,
+          icon: false,
+          background:'green'
+        });
 
       this.isLoading.set(false);
       },
