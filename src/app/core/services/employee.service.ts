@@ -14,7 +14,7 @@ import {
   EmployeeSubDepartment,
   EmployeeSubSpecialization,
 } from '../interfaces/employeeinterfaces';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +23,8 @@ export class EmployeeService {
   constructor() {}
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl + 'Employee';
-
+private employeeAwardSubject=new BehaviorSubject<any[]>([])
+employeeAwards$=this.employeeAwardSubject.asObservable()
   employee$ = this.http.get<Employee[]>(`${this.apiUrl}`);
 
   registerEmployee=(employee: Employee): Observable<any>=> {
@@ -33,13 +34,20 @@ export class EmployeeService {
   }
 
   addEmployeeAwardDetails=(awardDetails: EmployeeAward): Observable<any>=> {
-    return this.http.post(`${this.apiUrl}/empaward`, awardDetails);
+    return this.http.post(`${this.apiUrl}/empaward`, awardDetails).pipe(
+      tap(()=>this.getEmployeeAwardDetails())
+    );
   }
-
+  getEmployeeAwardDetails=():void=> {
+     this.http.get(`${this.apiUrl}/empaward`).subscribe((data:any)=>
+    this.employeeAwardSubject.next(data))
+  }
   addEmployeeBankDetails=(bankDetails: EmployeeBankDetails): Observable<any>=> {
     return this.http.post(`${this.apiUrl}/empbank`, bankDetails);
   }
-
+  getEmployeeBankDetails=(): Observable<any>=> {
+    return this.http.get(`${this.apiUrl}/empbank`);
+  }
   addEmployeeEducationDetails=(educationDetails: EmployeeEducation): Observable<any>=> {
     return this.http.post(`${this.apiUrl}/empeducation`, educationDetails);
   }

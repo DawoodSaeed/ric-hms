@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, signal } from '@angular/core';
+import { Component, Inject, Input, OnInit, Output, signal } from '@angular/core';
 import { FormGroup, FormsModule, FormControl } from '@angular/forms';
 import { FormStructure } from '../../core/interfaces/dynamicforminterface';
 import { DynamicFormService } from '../../core/services/dynamic-form.service';
@@ -12,8 +12,10 @@ import { CalendarModule } from 'primeng/calendar';
 import { EventEmitter } from '@angular/core';
 import { RadioButton } from 'primeng/radiobutton';
 import { FileUploadModule } from 'primeng/fileupload';
+import { DynamicTableComponent } from '../dynamic-table/dynamic-table.component';
 import { ProgressSpinner } from 'primeng/progressspinner';
-
+import { NOTYF } from './../../shared/utils/notyf.token';
+import { Notyf } from 'notyf';
 @Component({
   selector: 'app-dynamic-form',
   imports: [
@@ -28,11 +30,13 @@ import { ProgressSpinner } from 'primeng/progressspinner';
     RadioButton,
     FileUploadModule,
     ProgressSpinner,
+    DynamicTableComponent
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',
 })
 export class DynamicFormComponent implements OnInit {
+ 
   @Input() formStructure!: FormStructure;
   @Output() dataEmitter = new EventEmitter<any>();
   @Input() isLoading: boolean = false;
@@ -41,7 +45,7 @@ export class DynamicFormComponent implements OnInit {
   uploadedImages: { [key: string]: string | ArrayBuffer } = {};
   selectedTabIndex: number = 0;
   currentTab = signal('');
-  constructor(private dynamicFormService: DynamicFormService) {}
+  constructor(private dynamicFormService: DynamicFormService,@Inject(NOTYF) private notyf: Notyf) {}
 
   ngOnInit(): void {
     console.log('Form Structure:', this.formStructure);
@@ -94,6 +98,7 @@ export class DynamicFormComponent implements OnInit {
   }
   
   onSubmit(): void {
+
     if (this.form.valid && this.formStructure?.tabs) {
       // Ensure formStructure and tabs exist before accessing
       const selectedTab = this.formStructure.tabs[this.selectedTabIndex];

@@ -63,7 +63,7 @@ export class SidebarComponent implements OnInit {
       {
         label: 'Admin & HR',
         icon: 'fas fa-users-cog blue',
-        expanded: false, // Track expanded state
+        expanded: false,
         items: [
           {
             label: 'Employees',
@@ -76,31 +76,200 @@ export class SidebarComponent implements OnInit {
             route: '/admin/addEmployee',
           },
         ],
-
-        // command:()=>{
-        //   alert('clicked')
-        // }
       },
       {
         label: 'Organization Setup',
         icon: 'fas fa-sitemap blue',
-        expanded: false, // Track expanded state
+        expanded: false,
         items: [
           {
-            label: 'Employees',
-            icon: 'pi pi-circle-on',
-            route: '/admin/employees',
+            label: 'Location Management',
+            icon: 'fas fa-map-marked-alt',
+            items: [
+              {
+                label: 'Branches',
+                icon: 'fas fa-building',
+                route: '/admin/branches',
+              },
+              {
+                label: 'Buildings',
+                icon: 'fas fa-building',
+                route: '/admin/buildings',
+              },
+              {
+                label: 'Floors',
+                icon: 'fas fa-layer-group',
+                route: '/admin/floors',
+              },
+              {
+                label: 'Rooms',
+                icon: 'fas fa-door-open',
+                route: '/admin/rooms',
+              },
+              { label: 'Beds', icon: 'fas fa-bed', route: '/admin/beds' },
+              {
+                label: 'Countries',
+                icon: 'fas fa-globe',
+                route: '/admin/countries',
+              },
+              {
+                label: 'Provinces',
+                icon: 'fas fa-map-marked-alt',
+                route: '/admin/provinces',
+              },
+              {
+                label: 'Districts',
+                icon: 'fas fa-map-marked-alt',
+                route: '/admin/districts',
+              },
+              { label: 'Cities', icon: 'fas fa-city', route: '/admin/cities' },
+            ],
           },
           {
-            label: 'Add Employee',
-            icon: 'pi pi-circle-on',
-            route: '/admin/addEmployee',
+            label: 'Organizational Structure',
+            icon: 'fas fa-network-wired',
+            items: [
+              {
+                label: 'Designations',
+                icon: 'fas fa-id-card-alt',
+                route: '/admin/designations',
+              },
+              {
+                label: 'Departments',
+                icon: 'fas fa-building-columns',
+                route: '/admin/departments',
+              },
+              {
+                label: 'Department Categories',
+                icon: 'fas fa-tags',
+                route: '/admin/department-categories',
+              },
+              {
+                label: 'Organization Types',
+                icon: 'fas fa-sitemap',
+                route: '/admin/organization-types',
+              },
+              {
+                label: 'Job Types',
+                icon: 'fas fa-briefcase',
+                route: '/admin/job-types',
+              },
+            ],
+          },
+          {
+            label: 'Patient Management',
+            icon: 'fas fa-hospital-user',
+            items: [
+              {
+                label: 'Patient Types',
+                icon: 'fas fa-user-injured',
+                route: '/admin/patient-types',
+              },
+              {
+                label: 'Patient Check-in Status',
+                icon: 'fas fa-clipboard-check',
+                route: '/admin/patient-checkin-status',
+              },
+              {
+                label: 'Check-in Types',
+                icon: 'fas fa-sign-in-alt',
+                route: '/admin/checkin-types',
+              },
+              {
+                label: 'Guardian Types',
+                icon: 'fas fa-user-shield',
+                route: '/admin/guardian-types',
+              },
+              {
+                label: 'Blood Groups',
+                icon: 'fas fa-tint',
+                route: '/admin/blood-groups',
+              },
+            ],
+          },
+          {
+            label: 'Financial Management',
+            icon: 'fas fa-money-bill-wave',
+            items: [
+              {
+                label: 'Payment Methods',
+                icon: 'fas fa-credit-card',
+                route: '/admin/payment-methods',
+              },
+              {
+                label: 'Discount Types',
+                icon: 'fas fa-percent',
+                route: '/admin/discount-types',
+              },
+              {
+                label: 'Charges Types',
+                icon: 'fas fa-file-invoice-dollar',
+                route: '/admin/charges-types',
+              },
+              {
+                label: 'Banks',
+                icon: 'fas fa-university',
+                route: '/admin/banks',
+              },
+            ],
+          },
+          {
+            label: 'Education & Personal',
+            icon: 'fas fa-graduation-cap',
+            items: [
+              {
+                label: 'Scales',
+                icon: 'fas fa-ruler-horizontal',
+                route: '/admin/scales',
+              },
+              {
+                label: 'Religions',
+                icon: 'fas fa-place-of-worship',
+                route: '/admin/religions',
+              },
+              {
+                label: 'Relations',
+                icon: 'fas fa-users-between-lines',
+                route: '/admin/relations',
+              },
+              {
+                label: 'Employment Status',
+                icon: 'fas fa-user-tie',
+                route: '/admin/employment-status',
+              },
+              {
+                label: 'Field of Study',
+                icon: 'fas fa-book-reader',
+                route: '/admin/field-of-study',
+              },
+              {
+                label: 'Faculty',
+                icon: 'fas fa-chalkboard-teacher',
+                route: '/admin/faculty',
+              },
+              {
+                label: 'Education Institutes',
+                icon: 'fas fa-school',
+                route: '/admin/education-institutes',
+              },
+              {
+                label: 'Education Degrees',
+                icon: 'fas fa-certificate',
+                route: '/admin/education-degrees',
+              },
+              {
+                label: 'Gazzated Types',
+                icon: 'fas fa-file-alt',
+                route: '/admin/gazzated-types',
+              },
+            ],
+          },
+          {
+            label: 'Working Sessions',
+            icon: 'fas fa-clock',
+            route: '/admin/working-sessions',
           },
         ],
-
-        // command:()=>{
-        //   alert('clicked')
-        // }
       },
     ];
   }
@@ -115,7 +284,6 @@ export class SidebarComponent implements OnInit {
       }
     });
   }
-
 
   sideMenuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },

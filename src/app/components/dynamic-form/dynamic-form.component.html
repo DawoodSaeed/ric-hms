@@ -1,11 +1,20 @@
-<h2 class="text-2xl font-semibold">{{ formStructure.globalTitle }}</h2>
+<h2 class="text-2xl font-semibold mb-5">{{ formStructure.globalTitle }}</h2>
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <!-- Tabs View -->
-  <p-tabs [value]="0" *ngIf="formStructure.tabs; else flatForm" scrollable>
+  <p-tabs
+    [value]="0"
+    *ngIf="formStructure.tabs; else flatForm"
+    [tabindex]="selectedTabIndex"
+    (valueChange)="onTabChange($event)"
+    scrollable
+  >
     <p-tablist>
-      <p-tab *ngFor="let tab of formStructure.tabs; let i = index" [value]="i" >
-        <!-- [disabled]="currentTab()!==tab.tabName" -->
+      <p-tab
+        *ngFor="let tab of formStructure.tabs; let i = index"
+        [value]="i"
+        >
+        <!-- [disabled]="currentTab() !== tab.tabName" -->
         {{ tab.tabName }}
       </p-tab>
     </p-tablist>
@@ -119,6 +128,10 @@
             </div>
           </div>
         </div>
+
+        <!-- Table -->
+
+<app-dynamic-table *ngIf="tab.tableData" [tableData]="tab.tableData"></app-dynamic-table>
       </p-tabpanel>
     </p-tabpanels>
   </p-tabs>
@@ -226,3 +239,6 @@
 </ng-template>
   </div>
 </form>
+
+
+

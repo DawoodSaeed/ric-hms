@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, Signal, signal } from '@angular/core';
+import { Component, Inject, inject, OnInit, Signal, signal } from '@angular/core';
 import { DynamicFormComponent } from '../../../components/dynamic-form/dynamic-form.component';
 import { FormStructure } from '../../../core/interfaces/dynamicforminterface';
 import { TypeTableService } from '../../../core/services/type-table.service';
@@ -16,6 +16,8 @@ import {
 import { EmployeeService } from '../../../core/services/employee.service';
 import { MessageService } from 'primeng/api';
 import Swal from 'sweetalert2';
+import { NOTYF } from './../../../shared/utils/notyf.token';
+import { Notyf } from 'notyf';
 // import { FormStructure } from '../../../core/interfaces/dynamicform';
 @Component({
   selector: 'app-add-employee',
@@ -24,57 +26,72 @@ import Swal from 'sweetalert2';
   styleUrl: './add-employee.component.scss',
 })
 export class AddEmployeeComponent implements OnInit {
-  constructor(private messageService: MessageService) {}
+  constructor(private messageService: MessageService,@Inject(NOTYF) private notyf: Notyf) {}
 
   dropDownService = inject(TypeTableService);
   employeeService = inject(EmployeeService);
   isLoading = signal<boolean>(false);
   ngOnInit(): void {
-    // Fetch and set job types
-    this.dropDownService.getJobTypes().subscribe((jobtypes: JobType[]) => {
-      this.updateDropdownOptions('jobTypeId', jobtypes);
-    });
+ this.fetchDropdowns()
 
-    // Fetch and set scales
-    this.dropDownService.getScales().subscribe((scales: Scale[]) => {
-      console.log('scales ', scales);
-      this.updateDropdownOptions('scaleId', scales);
-    });
-    this.dropDownService
-      .getBloodGroups()
-      .subscribe((bloodgroups: TypeTable[]) => {
-        console.log('bloodgroups ', bloodgroups);
-        this.updateDropdownOptions('bloodGroupId', bloodgroups);
-      });
-
-    this.dropDownService
-      .getGuardianTypes()
-      .subscribe((guardianTypes: GuardianType[]) => {
-        this.updateDropdownOptions('guadianTypeId', guardianTypes);
-      });
-
-    this.dropDownService
-      .getEmploymentStatuses()
-      .subscribe((empStatuses: EmploymentStatus[]) => {
-        this.updateDropdownOptions('empStatusId', empStatuses);
-      });
-
-    this.dropDownService.getRelations().subscribe((relations: Relation[]) => {
-      console.log('relations ',relations);
-      this.updateDropdownOptions('nokrelationId', relations);
-    });
-    this.dropDownService.getCountries().subscribe((countries: Country[]) => {
-      console.log('countries ',countries);
-      this.updateDropdownOptions('country', countries);
-    });
-
-    this.dropDownService.getProvinces().subscribe((provinces: Province[]) => {
-      console.log('provinces ',provinces);
-      this.updateDropdownOptions('province', provinces);
-    });
-    
+    this.fetchTableData()
+   
+  }
+fetchTableData(){
+this.employeeFormStructure.tabs?.forEach(tab=>{
+  if(tab.tabName==='Awards'){
+    this.employeeService.getEmployeeAwardDetails()
+    tab.dataSubscription=this.employeeService.employeeAwards$.subscribe((data:any[])=>{
+      tab.tableData=data
+    })
   }
 
+})
+}
+  fetchDropdowns(){
+       // Fetch and set job types
+       this.dropDownService.getJobTypes().subscribe((jobtypes: JobType[]) => {
+        this.updateDropdownOptions('jobTypeId', jobtypes);
+      });
+  
+      // Fetch and set scales
+      this.dropDownService.getScales().subscribe((scales: Scale[]) => {
+        console.log('scales ', scales);
+        this.updateDropdownOptions('scaleId', scales);
+      });
+      this.dropDownService
+        .getBloodGroups()
+        .subscribe((bloodgroups: TypeTable[]) => {
+          console.log('bloodgroups ', bloodgroups);
+          this.updateDropdownOptions('bloodGroupId', bloodgroups);
+        });
+  
+      this.dropDownService
+        .getGuardianTypes()
+        .subscribe((guardianTypes: GuardianType[]) => {
+          this.updateDropdownOptions('guadianTypeId', guardianTypes);
+        });
+  
+      this.dropDownService
+        .getEmploymentStatuses()
+        .subscribe((empStatuses: EmploymentStatus[]) => {
+          this.updateDropdownOptions('empStatusId', empStatuses);
+        });
+  
+      this.dropDownService.getRelations().subscribe((relations: Relation[]) => {
+        console.log('relations ',relations);
+        this.updateDropdownOptions('nokrelationId', relations);
+      });
+      this.dropDownService.getCountries().subscribe((countries: Country[]) => {
+        console.log('countries ',countries);
+        this.updateDropdownOptions('country', countries);
+      });
+  
+      this.dropDownService.getProvinces().subscribe((provinces: Province[]) => {
+        console.log('provinces ',provinces);
+        this.updateDropdownOptions('province', provinces);
+      });
+  }
   // Generic method to update dropdown options
   private updateDropdownOptions(
     fieldName: string,
@@ -126,11 +143,8 @@ export class AddEmployeeComponent implements OnInit {
     this.isLoading.set(true);
     event.apiToCall(submittedData).subscribe({
       next: (data: any) => {
-      Swal.fire({
-        title: 'Success!',
-        text: 'Employee added successfully!',
-        icon: 'success',
-      });
+        this.notyf.success('SUCCESS');
+
       this.isLoading.set(false);
       },
       error: () => {
@@ -145,26 +159,6 @@ export class AddEmployeeComponent implements OnInit {
       console.log('Request completed');
       }
     });
-    
-    // this.employeeService.registerEmployee(submittedData).subscribe({
-    //   next: (data) => {
-    //     console.log(data);
-    //     this.isLoading.set(false);
-    //     swal.fire({
-    //       title: 'Success!',
-    //       text: 'Employee added successfully!',
-    //       icon: 'success',
-    //     });
-    //   },
-    //   error: () => {
-    //     this.isLoading.set(false);
-    //     swal.fire({
-    //       title: 'Oops!!',
-    //       text: 'Something went wrong! Try again',
-    //       icon: 'error',
-    //     });
-    //   },
-    // });
   }
   employeeFormStructure: FormStructure = {
     globalTitle: 'Add Employee', // Always shown at the top of the form
@@ -248,7 +242,9 @@ export class AddEmployeeComponent implements OnInit {
       {
         tabName: 'Awards',
         apiToCall: this.employeeService.addEmployeeAwardDetails,
-        multipleEntries:true,
+        tableData:[],
+        showTable:true,
+        
         sections: [
           {
             title: 'Awards Information',
