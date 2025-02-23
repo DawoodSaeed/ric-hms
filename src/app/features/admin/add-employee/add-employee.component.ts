@@ -5,7 +5,10 @@ import { TypeTableService } from '../../../core/services/type-table.service';
 import swal from 'sweetalert2';
 import {
   Country,
+  EducationDegree,
+  EducationInstitution,
   EmploymentStatus,
+  FieldOfStudy,
   GuardianType,
   JobType,
   Province,
@@ -18,6 +21,7 @@ import { MessageService } from 'primeng/api';
 import Swal from 'sweetalert2';
 import { NOTYF } from './../../../shared/utils/notyf.token';
 import { Notyf } from 'notyf';
+import { Observable, Subscription } from 'rxjs';
 // import { FormStructure } from '../../../core/interfaces/dynamicform';
 @Component({
   selector: 'app-add-employee',
@@ -27,7 +31,7 @@ import { Notyf } from 'notyf';
 })
 export class AddEmployeeComponent implements OnInit {
   constructor(private messageService: MessageService,@Inject(NOTYF) private notyf: Notyf) {}
-
+  subscriptions: Subscription[] = [];
   dropDownService = inject(TypeTableService);
   employeeService = inject(EmployeeService);
   isLoading = signal<boolean>(false);
@@ -35,20 +39,38 @@ export class AddEmployeeComponent implements OnInit {
  this.fetchDropdowns()
 
     this.fetchTableData()
-   
   }
-fetchTableData(){
-this.employeeFormStructure.tabs?.forEach(tab=>{
-  if(tab.tabName==='Awards'){
-    this.employeeService.getEmployeeAwardDetails()
-    tab.dataSubscription=this.employeeService.employeeAwards$.subscribe((data:any[])=>{
-      tab.tableData=data
-    })
+  
+  fetchTableData() {
+    const dataMap: { [key: string]: { fetchData: () => void; dataStream: Observable<any[]> } } = {
+      'Awards': { fetchData: () => this.employeeService.getEmployeeAwardDetails(), dataStream: this.employeeService.employeeAwards$ },
+      'Bank Details': { fetchData: () => this.employeeService.getEmployeeBankDetails(), dataStream: this.employeeService.bankDetails$ },
+      'Education Info': { fetchData: () => this.employeeService.getEmployeeEducationDetails(), dataStream: this.employeeService.education$ },
+      'Employee Department': { fetchData: () => this.employeeService.getEmployeeDepartmentDetails(), dataStream: this.employeeService.department$ },
+      'Employee Sub Department': { fetchData: () => this.employeeService.getEmployeeSubDepartmentDetails(), dataStream: this.employeeService.subDepartment$ },
+      'Employee Designation': { fetchData: () => this.employeeService.getEmployeeDesignationDetails(), dataStream: this.employeeService.designation$ },
+      'Employee Experience': { fetchData: () => this.employeeService.getEmployeeExperienceDetails(), dataStream: this.employeeService.experience$ },
+      'Employee Facility': { fetchData: () => this.employeeService.getEmployeeFacilityDetails(), dataStream: this.employeeService.facility$ },
+      'Employee Speciality': { fetchData: () => this.employeeService.getEmployeeSpecialityDetails(), dataStream: this.employeeService.speciality$ },
+      'Employee Subspeciality': { fetchData: () => this.employeeService.getEmployeeSubSpecialityDetails(), dataStream: this.employeeService.subSpeciality$ },
+    };
+  
+    this.employeeFormStructure.tabs?.forEach(tab => {
+      if (dataMap[tab.tabName]) {
+        dataMap[tab.tabName].fetchData();
+        
+        const subscription = dataMap[tab.tabName].dataStream.subscribe((data: any[]) => {
+          tab.tableData = data;
+        });
+  
+        tab.dataSubscription = subscription; // Store it in the tab object (optional)
+        this.subscriptions.push(subscription); // Store in the array for cleanup
+      }
+    });
   }
 
-})
-}
   fetchDropdowns(){
+    
        // Fetch and set job types
        this.dropDownService.getJobTypes().subscribe((jobtypes: JobType[]) => {
         this.updateDropdownOptions('jobTypeId', jobtypes);
@@ -85,11 +107,26 @@ this.employeeFormStructure.tabs?.forEach(tab=>{
       this.dropDownService.getCountries().subscribe((countries: Country[]) => {
         console.log('countries ',countries);
         this.updateDropdownOptions('country', countries);
+        this.updateDropdownOptions('countryId', countries);
+        
+        
       });
   
       this.dropDownService.getProvinces().subscribe((provinces: Province[]) => {
         console.log('provinces ',provinces);
         this.updateDropdownOptions('province', provinces);
+      });
+      this.dropDownService.getEducationInstitutions().subscribe((eduInstitutes: EducationInstitution[]) => {
+        console.log('eduIntId',eduInstitutes);
+        this.updateDropdownOptions('eduIntId', eduInstitutes);
+      });
+      this.dropDownService.getFieldOfStudies().subscribe((fieldOfStudes: FieldOfStudy[]) => {
+        console.log('fsid',fieldOfStudes);
+        this.updateDropdownOptions('fsid', fieldOfStudes);
+      });
+      this.dropDownService.getEducationDegrees().subscribe((degrees: EducationDegree[]) => {
+        console.log('degId',degrees);
+        this.updateDropdownOptions('degId', degrees);
       });
   }
   // Generic method to update dropdown options
@@ -247,6 +284,7 @@ this.employeeFormStructure.tabs?.forEach(tab=>{
       {
         tabName: 'Awards',
         apiToCall: this.employeeService.addEmployeeAwardDetails,
+
         tableData:[],
         showTable:true,
         
@@ -309,7 +347,7 @@ this.employeeFormStructure.tabs?.forEach(tab=>{
                 label: 'Education Institute',
                 type: 'select',
               },
-              { name: 'degId', label: 'Degree ID', type: 'select' },
+              { name: 'degId', label: 'Degree', type: 'select' },
               { name: 'fsid', label: 'Field of Study', type: 'select' },
               { name: 'startDate', label: 'Start Date', type: 'date' },
               { name: 'endDate', label: 'End Date', type: 'date' },
@@ -568,4 +606,11 @@ this.employeeFormStructure.tabs?.forEach(tab=>{
   //     }
   //   ]
   // };
+
+  ngOnDestroy() {
+    console.log('Clearing Subscriptions ')
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions = []; // Clear the array after unsubscribing
+  }
+  
 }

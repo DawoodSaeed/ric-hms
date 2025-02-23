@@ -1,4 +1,4 @@
-<div class="card  bg-white shadow-lg rounded-xl">
+<div class="card bg-gray-100 shadow-2xl rounded-2xl mt-[8px]">
   <p-table
     #dt2
     [value]="tableData"
@@ -10,20 +10,20 @@
     sortMode="multiple"
     [rows]="5"
     [globalFilterFields]="getKeys()"
-    class="w-full border border-gray-200 rounded-lg overflow-hidden"
+    class="w-full rounded-lg overflow-hidden bg-gray-50"
   >
     <!-- Search Bar -->
     <ng-template #caption>
       <div class="flex justify-between items-center p-3  rounded-t-lg">
-        <p>{{tableTitle}}</p>
+        <p class="font-semibold text-white">{{tableTitle}}</p>
         <div class="relative">
-          <i class="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+          <i class="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
           <input
             pInputText
             type="text"
             (input)="dt2?.filterGlobal($any($event.target).value, 'contains')"
             placeholder="Search..."
-            class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            class="pl-10 pr-4 py-2 border border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
           />
         </div>
       </div>
@@ -31,23 +31,27 @@
 
     <!-- Table Header -->
     <ng-template #header>
-      <tr class="bg-gradient-to-r from-[#21249d] to-[#21249d] text-white">
+      <tr class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white">
         <th
           pSortableColumn
           *ngFor="let key of getKeys()"
-          class="px-4 py-3 text-left font-semibold"
+          class="px-4 py-3 text-left font-semibold text-base"
         >
-          {{ key }}
+          {{formatStringName(key) }}
         </th>
       </tr>
     </ng-template>
 
     <!-- Table Body -->
     <ng-template #body let-product>
-      <tr class="border-b border-gray-200 hover:bg-gray-100 transition">
-        <td *ngFor="let key of getKeys()" class="px-4 py-3 text-gray-700">
-          {{ product[key] }}
+      <tr class="border-b border-gray-300 even:bg-blue-50 odd:bg-white hover:bg-blue-200 transition">
+        <td *ngFor="let key of getKeys()" class="px-4 py-3 text-gray-900 text-base">
+          <p-tag *ngIf="key === 'status'" [severity]="formatStatus(product[key], key).severity" 
+                 [value]="formatStatus(product[key], key).label">
+          </p-tag>
+          <span *ngIf="key !== 'status'">{{ product[key] }}</span>
         </td>
+        
       </tr>
     </ng-template>
   </p-table>
