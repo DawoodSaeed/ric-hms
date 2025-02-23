@@ -1,9 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, computed, inject, Inject, Input, OnInit } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { Tag } from 'primeng/tag';
+import { EmployeeService } from '../../core/services/employee.service';
 
 @Component({
   selector: 'app-dynamic-table',
@@ -12,9 +13,11 @@ import { Tag } from 'primeng/tag';
   styleUrl: './dynamic-table.component.scss',
 })
 export class DynamicTableComponent implements OnInit {
+  constructor(){
+  }
+
   @Input() tableData: any[] = [];
   @Input() tableTitle: string = '';
-
   ngOnInit(): void {}
   getKeys(): any[] {
     return this.tableData.length > 0

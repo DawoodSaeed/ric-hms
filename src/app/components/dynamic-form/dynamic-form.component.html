@@ -13,6 +13,7 @@
       <p-tab
         *ngFor="let tab of formStructure.tabs; let i = index"
         [value]="i"
+        [disabled]="i!==0 && !registeredEmpID()"
         >
         <!-- [disabled]="currentTab() !== tab.tabName" -->
         {{ tab.tabName }}

@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnInit, Output, signal } from '@angular/core';
+import { Component, computed, inject, Inject, Input, OnInit, Output, signal } from '@angular/core';
 import { FormGroup, FormsModule, FormControl } from '@angular/forms';
 import { FormStructure } from '../../core/interfaces/dynamicforminterface';
 import { DynamicFormService } from '../../core/services/dynamic-form.service';
@@ -16,6 +16,7 @@ import { DynamicTableComponent } from '../dynamic-table/dynamic-table.component'
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { NOTYF } from './../../shared/utils/notyf.token';
 import { Notyf } from 'notyf';
+import { EmployeeService } from '../../core/services/employee.service';
 @Component({
   selector: 'app-dynamic-form',
   imports: [
@@ -45,7 +46,13 @@ export class DynamicFormComponent implements OnInit {
   uploadedImages: { [key: string]: string | ArrayBuffer } = {};
   selectedTabIndex: number = 0;
   currentTab = signal('');
-  constructor(private dynamicFormService: DynamicFormService,@Inject(NOTYF) private notyf: Notyf) {}
+  private emplyeeService=inject(EmployeeService)
+  registeredEmpID=computed(()=>this.emplyeeService.registeredEmpIDSignal())
+
+  constructor(private dynamicFormService: DynamicFormService,@Inject(NOTYF) private notyf: Notyf) {
+    console.log('new employeed added with id ',this.registeredEmpID())
+
+  }
 
   ngOnInit(): void {
     console.log('Form Structure:', this.formStructure);
