@@ -22,6 +22,7 @@ import { StyleClass } from 'primeng/styleclass';
 import { expand } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { SidebarService } from '../../core/services/sidebar.service';
+import { EmployeeService } from '../../core/services/employee.service';
 @Component({
   selector: 'app-sidebar',
 
@@ -304,6 +305,7 @@ export class SidebarComponent implements OnInit {
       },
     ];
   }
+
   title = 'ric';
   isDrawerOpen = true;
   toggleMenu(label: string) {
