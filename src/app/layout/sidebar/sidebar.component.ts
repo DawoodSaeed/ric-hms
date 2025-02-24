@@ -32,7 +32,6 @@ import { SidebarService } from '../../core/services/sidebar.service';
     ButtonModule,
     AvatarModule,
     BadgeModule,
-    Drawer,
     FormsModule,
     RouterModule,
   ],
@@ -60,6 +59,38 @@ export class SidebarComponent implements OnInit {
       (state: boolean) => (this.isDrawerOpen = state)
     );
     this.sideBarTabs = [
+      {
+        label: 'Organization Building',
+        icon: 'fas fa-building',
+        expanded: true,
+        items: [
+          {
+            label: 'Building',
+            icon: 'fas fa-building',
+            route: '/admin/organizational-building/buildings', // Adjusted route to match your routing structure
+          },
+          {
+            label: 'Floors',
+            icon: 'fas fa-layer-group',
+            route: '/admin/organizational-building/floors', // Adjusted route to match your routing structure
+          },
+          {
+            label: 'Rooms',
+            icon: 'fas fa-door-open',
+            route: '/admin/organizational-building/rooms', // Adjusted route to match your routing structure
+          },
+          {
+            label: 'Beds',
+            icon: 'fas fa-bed',
+            route: '/admin/organizational-building/beds', // Adjusted route to match your routing structure
+          },
+          {
+            label: 'Beds Summary',
+            icon: 'fas fa-list-ul',
+            route: '/admin/organizational-building/beds-summary', // Adjusted route to match your routing structure
+          },
+        ],
+      },
       {
         label: 'Admin & HR',
         icon: 'fas fa-users-cog blue',
