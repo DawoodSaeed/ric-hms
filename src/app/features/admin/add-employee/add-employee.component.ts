@@ -13,6 +13,8 @@ import swal from 'sweetalert2';
 import {
   Bank,
   Country,
+  DepartmentCategory,
+  Designation,
   EducationDegree,
   EducationInstitution,
   EmploymentStatus,
@@ -185,6 +187,20 @@ export class AddEmployeeComponent implements OnInit {
         console.log('bankId', banks);
         this.updateDropdownOptions('bankId', banks);
       });
+
+      this.dropDownService
+      .getDepartmentCategories()
+      .subscribe((departments: DepartmentCategory[]) => {
+        console.log('did', departments);
+        this.updateDropdownOptions('did', departments);
+      });
+      this.dropDownService
+      .getDesignations()
+      .subscribe((designations: Designation[]) => {
+        console.log('desgnId', designations);
+        this.updateDropdownOptions('desgnId', designations);
+      });
+
   }
   // Generic method to update dropdown options
   private updateDropdownOptions(
@@ -406,6 +422,11 @@ export class AddEmployeeComponent implements OnInit {
               { name: 'totalMarks', label: 'Total Marks', type: 'text' },
               { name: 'obtainMarks', label: 'Obtain Marks', type: 'text' },
               { name: 'status', label: 'Status', type: 'radio' },
+              {
+                name: 'certificatePath',
+                label: 'Certificate Path',
+                type: 'text',
+              },
               // { name: 'isCurrent', label: 'Is Current', type: 'text' },
             ],
           },
@@ -419,7 +440,7 @@ export class AddEmployeeComponent implements OnInit {
           {
             title: 'Department Info',
             fields: [
-              { name: 'empDid', label: 'Employee Department', type: 'select' },
+              { name: 'did', label: 'Employee Department', type: 'select' },
               // { name: 'did', label: 'Department ID', type: 'text' },
               // { name: 'empId', label: 'Employee ID', type: 'text' },
               // { name: 'createdById', label: 'Created By', type: 'text' },
@@ -438,12 +459,12 @@ export class AddEmployeeComponent implements OnInit {
           {
             title: 'Sub Department Info',
             fields: [
-              {
-                name: 'empSubDid',
-                label: 'Employee Sub Department',
-                type: 'select',
-              },
-              // { name: 'subDid', label: 'Sub Department ID', type: 'text' },
+              // {
+              //   name: 'empSubDid',
+              //   label: 'Employee Sub Department',
+              //   type: 'select',
+              // },
+              { name: 'subDid', label: 'Sub Department', type: 'select' },
               // { name: 'empId', label: 'Employee ID', type: 'text' },
               // { name: 'createdById', label: 'Created By', type: 'text' },
               // { name: 'createdOn', label: 'Created On', type: 'text' },
@@ -461,13 +482,9 @@ export class AddEmployeeComponent implements OnInit {
           {
             title: 'Designation Info',
             fields: [
-              {
-                name: 'empDesgnId',
-                label: 'Employee Designation',
-                type: 'select',
-              },
+            
               // { name: 'empId', label: 'Employee ID', type: 'text' },
-              // { name: 'desgnId', label: 'Designation ID', type: 'text' },
+              { name: 'desgnId', label: 'Employee Designation', type: 'select' },
               // { name: 'createdById', label: 'Created By', type: 'text' },
               // { name: 'createdOn', label: 'Created On', type: 'text' },
               // { name: 'modifiedById', label: 'Modified By', type: 'text' },
@@ -483,27 +500,18 @@ export class AddEmployeeComponent implements OnInit {
           {
             title: 'Experience Info',
             fields: [
-              {
-                name: 'empExpId',
-                label: 'Employee Experience',
-                type: 'select',
-              },
-              // { name: 'empId', label: 'Employee ID', type: 'text' },
+           
               { name: 'title', label: 'Job Title', type: 'text' },
               { name: 'company', label: 'Company Name', type: 'text' },
               { name: 'description', label: 'Description', type: 'text' },
               { name: 'fromDate', label: 'From Date', type: 'date' },
               { name: 'toDate', label: 'To Date', type: 'date' },
-              // { name: 'status', label: 'Status', type: 'text' },
-              // { name: 'createdById', label: 'Created By', type: 'text' },
-              // { name: 'createdOn', label: 'Created On', type: 'text' },
-              // { name: 'modifiedById', label: 'Modified By', type: 'text' },
-              // { name: 'modifiedOn', label: 'Modified On', type: 'text' },
               {
                 name: 'certificatePath',
                 label: 'Certificate Path',
                 type: 'text',
               },
+              { name: 'status', label: 'Status', type: 'radio' },
             ],
           },
         ],
