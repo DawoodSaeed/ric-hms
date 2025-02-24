@@ -13,9 +13,11 @@ import {
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { DatePipe } from '@angular/common';
 import { MessageService } from 'primeng/api';
+import { NOTYF, notyfFactory } from './shared/utils/notyf.token';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: NOTYF, useFactory: notyfFactory },
     [MessageService],
     [DatePipe],
     provideZoneChangeDetection({ eventCoalescing: true }),

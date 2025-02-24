@@ -13,14 +13,15 @@ export class AuthService {
   private http = inject(HttpClient);
   private tokenService = inject(TokenService);
   private router = inject(Router);
-
-  private apiUrl = environment.apiUrl + 'auth';
+private apiUrl = environment.apiUrl + 'auth';
 
   private user = new BehaviorSubject<User | null>(null);
   user$ = this.user.asObservable();
-
+  private loggedInUserId=new BehaviorSubject<string>('')
+  loggedInUserId$=this.loggedInUserId.asObservable()
   private role = '';
   login(username: string, password: string) {
+    console.log('login called')
     return this.http
       .post<User>(`${this.apiUrl}/login`, {
         username: username,
@@ -29,7 +30,6 @@ export class AuthService {
       .pipe(
         tap((user) => {
           this.setRole('Admin'.toLocaleLowerCase());
-
           this.user.next({
             ...user,
             role: 'Admin',
@@ -45,6 +45,7 @@ export class AuthService {
     return this.http.get<CheckAuth>(`${this.apiUrl}/verify-token/`).pipe(
       map((auth) => {
         const { valid, role, username, userId } = auth;
+        this.loggedInUserId.next(userId)
         this.setRole(role.toLocaleLowerCase());
         return auth;
       })

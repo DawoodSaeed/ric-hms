@@ -1,12 +1,17 @@
-import { Component, inject, OnInit, Signal, signal } from '@angular/core';
+import { Component, Inject, inject, OnInit, Signal, signal } from '@angular/core';
 import { DynamicFormComponent } from '../../../components/dynamic-form/dynamic-form.component';
 import { FormStructure } from '../../../core/interfaces/dynamicforminterface';
 import { TypeTableService } from '../../../core/services/type-table.service';
 import swal from 'sweetalert2';
 import {
+  Country,
+  EducationDegree,
+  EducationInstitution,
   EmploymentStatus,
+  FieldOfStudy,
   GuardianType,
   JobType,
+  Province,
   Relation,
   Scale,
   TypeTable,
@@ -14,6 +19,9 @@ import {
 import { EmployeeService } from '../../../core/services/employee.service';
 import { MessageService } from 'primeng/api';
 import Swal from 'sweetalert2';
+import { NOTYF } from './../../../shared/utils/notyf.token';
+import { Notyf } from 'notyf';
+import { Observable, Subscription } from 'rxjs';
 // import { FormStructure } from '../../../core/interfaces/dynamicform';
 @Component({
   selector: 'app-add-employee',
@@ -22,46 +30,105 @@ import Swal from 'sweetalert2';
   styleUrl: './add-employee.component.scss',
 })
 export class AddEmployeeComponent implements OnInit {
-  constructor(private messageService: MessageService) {}
-
+  constructor(private messageService: MessageService,@Inject(NOTYF) private notyf: Notyf) {}
+  subscriptions: Subscription[] = [];
   dropDownService = inject(TypeTableService);
   employeeService = inject(EmployeeService);
   isLoading = signal<boolean>(false);
   ngOnInit(): void {
-    // Fetch and set job types
-    this.dropDownService.getJobTypes().subscribe((jobtypes: JobType[]) => {
-      this.updateDropdownOptions('jobTypeId', jobtypes);
-    });
+ this.fetchDropdowns()
 
-    // Fetch and set scales
-    this.dropDownService.getScales().subscribe((scales: Scale[]) => {
-      console.log('scales ', scales);
-      this.updateDropdownOptions('scaleId', scales);
-    });
-    this.dropDownService
-      .getBloodGroups()
-      .subscribe((bloodgroups: TypeTable[]) => {
-        console.log('bloodgroups ', bloodgroups);
-        this.updateDropdownOptions('bloodGroupId', bloodgroups);
-      });
-
-    this.dropDownService
-      .getGuardianTypes()
-      .subscribe((guardianTypes: GuardianType[]) => {
-        this.updateDropdownOptions('guadianTypeId', guardianTypes);
-      });
-
-    this.dropDownService
-      .getEmploymentStatuses()
-      .subscribe((empStatuses: EmploymentStatus[]) => {
-        this.updateDropdownOptions('empStatusId', empStatuses);
-      });
-
-    this.dropDownService.getRelations().subscribe((relations: Relation[]) => {
-      this.updateDropdownOptions('nokrelationId', relations);
+    this.fetchTableData()
+  }
+  
+  fetchTableData() {
+    const dataMap: { [key: string]: { fetchData: () => void; dataStream: Observable<any[]> } } = {
+      'Awards': { fetchData: () => this.employeeService.getEmployeeAwardDetails(), dataStream: this.employeeService.employeeAwards$ },
+      'Bank Details': { fetchData: () => this.employeeService.getEmployeeBankDetails(), dataStream: this.employeeService.bankDetails$ },
+      'Education Info': { fetchData: () => this.employeeService.getEmployeeEducationDetails(), dataStream: this.employeeService.education$ },
+      'Employee Department': { fetchData: () => this.employeeService.getEmployeeDepartmentDetails(), dataStream: this.employeeService.department$ },
+      'Employee Sub Department': { fetchData: () => this.employeeService.getEmployeeSubDepartmentDetails(), dataStream: this.employeeService.subDepartment$ },
+      'Employee Designation': { fetchData: () => this.employeeService.getEmployeeDesignationDetails(), dataStream: this.employeeService.designation$ },
+      'Employee Experience': { fetchData: () => this.employeeService.getEmployeeExperienceDetails(), dataStream: this.employeeService.experience$ },
+      'Employee Facility': { fetchData: () => this.employeeService.getEmployeeFacilityDetails(), dataStream: this.employeeService.facility$ },
+      'Employee Speciality': { fetchData: () => this.employeeService.getEmployeeSpecialityDetails(), dataStream: this.employeeService.speciality$ },
+      'Employee Subspeciality': { fetchData: () => this.employeeService.getEmployeeSubSpecialityDetails(), dataStream: this.employeeService.subSpeciality$ },
+    };
+  
+    this.employeeFormStructure.tabs?.forEach(tab => {
+      if (dataMap[tab.tabName]) {
+        dataMap[tab.tabName].fetchData();
+        
+        const subscription = dataMap[tab.tabName].dataStream.subscribe((data: any[]) => {
+          tab.tableData = data;
+        });
+  
+        tab.dataSubscription = subscription; // Store it in the tab object (optional)
+        this.subscriptions.push(subscription); // Store in the array for cleanup
+      }
     });
   }
 
+  fetchDropdowns(){
+    
+       // Fetch and set job types
+       this.dropDownService.getJobTypes().subscribe((jobtypes: JobType[]) => {
+        this.updateDropdownOptions('jobTypeId', jobtypes);
+      });
+  
+      // Fetch and set scales
+      this.dropDownService.getScales().subscribe((scales: Scale[]) => {
+        console.log('scales ', scales);
+        this.updateDropdownOptions('scaleId', scales);
+      });
+      this.dropDownService
+        .getBloodGroups()
+        .subscribe((bloodgroups: TypeTable[]) => {
+          console.log('bloodgroups ', bloodgroups);
+          this.updateDropdownOptions('bloodGroupId', bloodgroups);
+        });
+  
+      this.dropDownService
+        .getGuardianTypes()
+        .subscribe((guardianTypes: GuardianType[]) => {
+          this.updateDropdownOptions('guadianTypeId', guardianTypes);
+        });
+  
+      this.dropDownService
+        .getEmploymentStatuses()
+        .subscribe((empStatuses: EmploymentStatus[]) => {
+          this.updateDropdownOptions('empStatusId', empStatuses);
+        });
+  
+      this.dropDownService.getRelations().subscribe((relations: Relation[]) => {
+        console.log('relations ',relations);
+        this.updateDropdownOptions('nokrelationId', relations);
+      });
+      this.dropDownService.getCountries().subscribe((countries: Country[]) => {
+        console.log('countries ',countries);
+        this.updateDropdownOptions('country', countries);
+        this.updateDropdownOptions('countryId', countries);
+        
+        
+      });
+  
+      this.dropDownService.getProvinces().subscribe((provinces: Province[]) => {
+        console.log('provinces ',provinces);
+        this.updateDropdownOptions('province', provinces);
+      });
+      this.dropDownService.getEducationInstitutions().subscribe((eduInstitutes: EducationInstitution[]) => {
+        console.log('eduIntId',eduInstitutes);
+        this.updateDropdownOptions('eduIntId', eduInstitutes);
+      });
+      this.dropDownService.getFieldOfStudies().subscribe((fieldOfStudes: FieldOfStudy[]) => {
+        console.log('fsid',fieldOfStudes);
+        this.updateDropdownOptions('fsid', fieldOfStudes);
+      });
+      this.dropDownService.getEducationDegrees().subscribe((degrees: EducationDegree[]) => {
+        console.log('degId',degrees);
+        this.updateDropdownOptions('degId', degrees);
+      });
+  }
   // Generic method to update dropdown options
   private updateDropdownOptions(
     fieldName: string,
@@ -113,11 +180,13 @@ export class AddEmployeeComponent implements OnInit {
     this.isLoading.set(true);
     event.apiToCall(submittedData).subscribe({
       next: (data: any) => {
-      Swal.fire({
-        title: 'Success!',
-        text: 'Employee added successfully!',
-        icon: 'success',
-      });
+        this.notyf.success({
+          message: 'Success',
+          duration: 3000,
+          icon: false,
+          background:'green'
+        });
+
       this.isLoading.set(false);
       },
       error: () => {
@@ -132,26 +201,6 @@ export class AddEmployeeComponent implements OnInit {
       console.log('Request completed');
       }
     });
-    
-    // this.employeeService.registerEmployee(submittedData).subscribe({
-    //   next: (data) => {
-    //     console.log(data);
-    //     this.isLoading.set(false);
-    //     swal.fire({
-    //       title: 'Success!',
-    //       text: 'Employee added successfully!',
-    //       icon: 'success',
-    //     });
-    //   },
-    //   error: () => {
-    //     this.isLoading.set(false);
-    //     swal.fire({
-    //       title: 'Oops!!',
-    //       text: 'Something went wrong! Try again',
-    //       icon: 'error',
-    //     });
-    //   },
-    // });
   }
   employeeFormStructure: FormStructure = {
     globalTitle: 'Add Employee', // Always shown at the top of the form
@@ -235,6 +284,10 @@ export class AddEmployeeComponent implements OnInit {
       {
         tabName: 'Awards',
         apiToCall: this.employeeService.addEmployeeAwardDetails,
+
+        tableData:[],
+        showTable:true,
+        
         sections: [
           {
             title: 'Awards Information',
@@ -262,9 +315,7 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Bank Information',
 
             fields: [
-              // { name: 'empBankId', label: 'Bank ID', type: 'number' },
-              // { name: 'empId', label: 'Employee ID', type: 'number' },
-              // { name: 'bankId', label: 'Bank ID', type: 'number' },
+            
               { name: 'accountTitle', label: 'Account Title', type: 'text' },
               { name: 'accountNo', label: 'Account Number', type: 'text' },
               { name: 'branchName', label: 'Branch Name', type: 'text' },
@@ -288,36 +339,28 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Basic Details',
 
             fields: [
-              { name: 'empEduId', label: 'Education ID', type: 'text' },
-              { name: 'empId', label: 'Employee ID', type: 'text' },
-              { name: 'countryId', label: 'Country ID', type: 'text' },
+              // { name: 'empEduId', label: 'Education ID', type: 'text' },
+              // { name: 'empId', label: 'Employee ID', type: 'text' },
+              { name: 'countryId', label: 'Country', type: 'select' },
               {
                 name: 'eduIntId',
-                label: 'Education Institute ID',
-                type: 'text',
+                label: 'Education Institute',
+                type: 'select',
               },
-              { name: 'degId', label: 'Degree ID', type: 'text' },
-              { name: 'fsid', label: 'Field of Study ID', type: 'text' },
-            ],
-          },
-          {
-            title: 'Dates',
-            fields: [
-              { name: 'startDate', label: 'Start Date', type: 'text' },
-              { name: 'endDate', label: 'End Date', type: 'text' },
-              { name: 'issueDate', label: 'Issue Date', type: 'text' },
-            ],
-          },
-          {
-            title: 'Grading & Status',
-            fields: [
-              { name: 'gradingId', label: 'Grading ID', type: 'text' },
+              { name: 'degId', label: 'Degree', type: 'select' },
+              { name: 'fsid', label: 'Field of Study', type: 'select' },
+              { name: 'startDate', label: 'Start Date', type: 'date' },
+              { name: 'endDate', label: 'End Date', type: 'date' },
+              { name: 'issueDate', label: 'Issue Date', type: 'date' },
+              { name: 'gradingId', label: 'Grading', type: 'select' },
               { name: 'totalMarks', label: 'Total Marks', type: 'text' },
               { name: 'obtainMarks', label: 'Obtain Marks', type: 'text' },
-              { name: 'status', label: 'Status', type: 'text' },
-              { name: 'isCurrent', label: 'Is Current', type: 'text' },
+              { name: 'status', label: 'Status', type: 'radio' },
+              // { name: 'isCurrent', label: 'Is Current', type: 'text' },
             ],
           },
+        
+       
          
         ],
       },
@@ -329,13 +372,13 @@ export class AddEmployeeComponent implements OnInit {
           {
             title: 'Department Info',
             fields: [
-              { name: 'empDid', label: 'Employee Department ID', type: 'text' },
-              { name: 'did', label: 'Department ID', type: 'text' },
-              { name: 'empId', label: 'Employee ID', type: 'text' },
-              { name: 'createdById', label: 'Created By', type: 'text' },
-              { name: 'createdOn', label: 'Created On', type: 'text' },
-              { name: 'modifiedById', label: 'Modified By', type: 'text' },
-              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+              { name: 'empDid', label: 'Employee Department', type: 'select' },
+              // { name: 'did', label: 'Department ID', type: 'text' },
+              // { name: 'empId', label: 'Employee ID', type: 'text' },
+              // { name: 'createdById', label: 'Created By', type: 'text' },
+              // { name: 'createdOn', label: 'Created On', type: 'text' },
+              // { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              // { name: 'modifiedOn', label: 'Modified On', type: 'text' },
             ],
           },
         ],
@@ -350,15 +393,15 @@ export class AddEmployeeComponent implements OnInit {
             fields: [
               {
                 name: 'empSubDid',
-                label: 'Employee Sub Department ID',
-                type: 'text',
+                label: 'Employee Sub Department',
+                type: 'select',
               },
-              { name: 'subDid', label: 'Sub Department ID', type: 'text' },
-              { name: 'empId', label: 'Employee ID', type: 'text' },
-              { name: 'createdById', label: 'Created By', type: 'text' },
-              { name: 'createdOn', label: 'Created On', type: 'text' },
-              { name: 'modifiedById', label: 'Modified By', type: 'text' },
-              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+              // { name: 'subDid', label: 'Sub Department ID', type: 'text' },
+              // { name: 'empId', label: 'Employee ID', type: 'text' },
+              // { name: 'createdById', label: 'Created By', type: 'text' },
+              // { name: 'createdOn', label: 'Created On', type: 'text' },
+              // { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              // { name: 'modifiedOn', label: 'Modified On', type: 'text' },
             ],
           },
         ],
@@ -373,15 +416,15 @@ export class AddEmployeeComponent implements OnInit {
             fields: [
               {
                 name: 'empDesgnId',
-                label: 'Employee Designation ID',
-                type: 'text',
+                label: 'Employee Designation',
+                type: 'select',
               },
-              { name: 'empId', label: 'Employee ID', type: 'text' },
-              { name: 'desgnId', label: 'Designation ID', type: 'text' },
-              { name: 'createdById', label: 'Created By', type: 'text' },
-              { name: 'createdOn', label: 'Created On', type: 'text' },
-              { name: 'modifiedById', label: 'Modified By', type: 'text' },
-              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+              // { name: 'empId', label: 'Employee ID', type: 'text' },
+              // { name: 'desgnId', label: 'Designation ID', type: 'text' },
+              // { name: 'createdById', label: 'Created By', type: 'text' },
+              // { name: 'createdOn', label: 'Created On', type: 'text' },
+              // { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              // { name: 'modifiedOn', label: 'Modified On', type: 'text' },
             ],
           },
         ],
@@ -395,20 +438,20 @@ export class AddEmployeeComponent implements OnInit {
             fields: [
               {
                 name: 'empExpId',
-                label: 'Employee Experience ID',
-                type: 'text',
+                label: 'Employee Experience',
+                type: 'select',
               },
-              { name: 'empId', label: 'Employee ID', type: 'text' },
+              // { name: 'empId', label: 'Employee ID', type: 'text' },
               { name: 'title', label: 'Job Title', type: 'text' },
               { name: 'company', label: 'Company Name', type: 'text' },
               { name: 'description', label: 'Description', type: 'text' },
-              { name: 'fromDate', label: 'From Date', type: 'text' },
-              { name: 'toDate', label: 'To Date', type: 'text' },
-              { name: 'status', label: 'Status', type: 'text' },
-              { name: 'createdById', label: 'Created By', type: 'text' },
-              { name: 'createdOn', label: 'Created On', type: 'text' },
-              { name: 'modifiedById', label: 'Modified By', type: 'text' },
-              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+              { name: 'fromDate', label: 'From Date', type: 'date' },
+              { name: 'toDate', label: 'To Date', type: 'date' },
+              // { name: 'status', label: 'Status', type: 'text' },
+              // { name: 'createdById', label: 'Created By', type: 'text' },
+              // { name: 'createdOn', label: 'Created On', type: 'text' },
+              // { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              // { name: 'modifiedOn', label: 'Modified On', type: 'text' },
               {
                 name: 'certificatePath',
                 label: 'Certificate Path',
@@ -428,15 +471,15 @@ export class AddEmployeeComponent implements OnInit {
             fields: [
               {
                 name: 'empFacilityId',
-                label: 'Employee Facility ID',
-                type: 'text',
+                label: 'Employee Facility',
+                type: 'select',
               },
-              { name: 'empId', label: 'Employee ID', type: 'text' },
-              { name: 'facilityId', label: 'Facility ID', type: 'text' },
-              { name: 'createdById', label: 'Created By', type: 'text' },
-              { name: 'createdOn', label: 'Created On', type: 'text' },
-              { name: 'modifiedById', label: 'Modified By', type: 'text' },
-              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+              // { name: 'empId', label: 'Employee ID', type: 'text' },
+              // { name: 'facilityId', label: 'Facility ID', type: 'text' },
+              // { name: 'createdById', label: 'Created By', type: 'text' },
+              // { name: 'createdOn', label: 'Created On', type: 'text' },
+              // { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              // { name: 'modifiedOn', label: 'Modified On', type: 'text' },
             ],
           },
         ],
@@ -450,16 +493,16 @@ export class AddEmployeeComponent implements OnInit {
             fields: [
               {
                 name: 'empSpId',
-                label: 'Employee Speciality ID',
-                type: 'text',
+                label: 'Employee Speciality',
+                type: 'select',
               },
-              { name: 'empId', label: 'Employee ID', type: 'text' },
-              { name: 'spId', label: 'Speciality ID', type: 'text' },
-              { name: 'status', label: 'Status', type: 'text' },
-              { name: 'createdById', label: 'Created By', type: 'text' },
-              { name: 'createdOn', label: 'Created On', type: 'text' },
-              { name: 'modifiedById', label: 'Modified By', type: 'text' },
-              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+              // { name: 'empId', label: 'Employee ID', type: 'text' },
+              // { name: 'spId', label: 'Speciality ID', type: 'text' },
+              // { name: 'status', label: 'Status', type: 'text' },
+              // { name: 'createdById', label: 'Created By', type: 'text' },
+              // { name: 'createdOn', label: 'Created On', type: 'text' },
+              // { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              // { name: 'modifiedOn', label: 'Modified On', type: 'text' },
             ],
           },
         ],
@@ -473,16 +516,16 @@ export class AddEmployeeComponent implements OnInit {
             fields: [
               {
                 name: 'empSubSpId',
-                label: 'Employee Subspeciality ID',
-                type: 'text',
+                label: 'Employee Subspeciality',
+                type: 'select',
               },
-              { name: 'empId', label: 'Employee ID', type: 'text' },
-              { name: 'subSpId', label: 'Subspeciality ID', type: 'text' },
-              { name: 'status', label: 'Status', type: 'text' },
-              { name: 'createdById', label: 'Created By', type: 'text' },
-              { name: 'createdOn', label: 'Created On', type: 'text' },
-              { name: 'modifiedById', label: 'Modified By', type: 'text' },
-              { name: 'modifiedOn', label: 'Modified On', type: 'text' },
+              // { name: 'empId', label: 'Employee ID', type: 'text' },
+              // { name: 'subSpId', label: 'Subspeciality ID', type: 'text' },
+              // { name: 'status', label: 'Status', type: 'text' },
+              // { name: 'createdById', label: 'Created By', type: 'text' },
+              // { name: 'createdOn', label: 'Created On', type: 'text' },
+              // { name: 'modifiedById', label: 'Modified By', type: 'text' },
+              // { name: 'modifiedOn', label: 'Modified On', type: 'text' },
             ],
           },
         ],
@@ -563,4 +606,11 @@ export class AddEmployeeComponent implements OnInit {
   //     }
   //   ]
   // };
+
+  ngOnDestroy() {
+    console.log('Clearing Subscriptions ')
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions = []; // Clear the array after unsubscribing
+  }
+  
 }

@@ -1,4 +1,4 @@
-import { Observable } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 
 export interface FormField {
   name: string;
@@ -18,6 +18,9 @@ export interface FormSection {
 export interface FormTab {
   tabName: string;
   apiToCall?:(formData:any)=>Observable<any>;
+  showTable?:boolean;
+  dataSubscription?:Subscription
+  tableData?:any[];
   sections: FormSection[];
 }
 
