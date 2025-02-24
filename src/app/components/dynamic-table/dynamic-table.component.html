@@ -46,12 +46,8 @@
     <ng-template #body let-product>
       <tr class="border-b border-gray-300 even:bg-blue-50 odd:bg-white hover:bg-blue-200 transition">
         <td *ngFor="let key of getKeys()" class="px-4 py-3 text-gray-900 text-base">
-          <p-tag *ngIf="key === 'status'" [severity]="formatStatus(product[key], key).severity" 
-                 [value]="formatStatus(product[key], key).label">
-          </p-tag>
-          <span *ngIf="key !== 'status'">{{ product[key] }}</span>
+                 {{product[key]}}
         </td>
-        
       </tr>
     </ng-template>
   </p-table>
