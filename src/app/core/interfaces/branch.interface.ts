@@ -18,6 +18,7 @@ export interface Building {
   createdOn: string;
   modifiedById: number;
   modifiedOn: string;
+  building?: number;
 }
 
 export interface Floor {

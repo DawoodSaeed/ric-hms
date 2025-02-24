@@ -26,22 +26,27 @@ export const adminRoutes: Routes = [
       {
         path: 'beds',
         component: TableComponent,
+        data: { dataType: 'beds' },
       },
       {
         path: 'floors',
-        component: FloorsComponent,
+        component: TableComponent,
+        data: { dataType: 'floors' },
       },
       {
         path: 'rooms',
         component: TableComponent,
+        data: { dataType: 'rooms' },
       },
       {
         path: 'buildings',
         component: TableComponent,
+        data: { dataType: 'buildings' },
       },
       {
         path: 'beds-summary', // Added beds-summary route
-        component: TableComponent, // Assuming you'll use TableComponent or a similar one
+        component: TableComponent,
+        data: { dataType: 'beds-summary' },
       },
       {
         path: '', // Default route when organizational-building is accessed
