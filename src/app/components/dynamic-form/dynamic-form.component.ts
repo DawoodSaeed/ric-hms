@@ -50,7 +50,6 @@ export class DynamicFormComponent implements OnInit {
   registeredEmpID=computed(()=>this.emplyeeService.registeredEmpIDSignal())
 
   constructor(private dynamicFormService: DynamicFormService,@Inject(NOTYF) private notyf: Notyf) {
-    console.log('new employeed added with id ',this.registeredEmpID())
 
   }
 

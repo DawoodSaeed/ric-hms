@@ -10,12 +10,7 @@
     scrollable
   >
     <p-tablist>
-      <p-tab
-        *ngFor="let tab of formStructure.tabs; let i = index"
-        [value]="i"
-        [disabled]="i!==0 && !registeredEmpID()"
-        >
-        <!-- [disabled]="currentTab() !== tab.tabName" -->
+      <p-tab *ngFor="let tab of formStructure.tabs; let i = index" [value]="i" [disabled]="i!==0 && !registeredEmpID()">
         {{ tab.tabName }}
       </p-tab>
     </p-tablist>
@@ -88,7 +83,7 @@
                 <p-radioButton
                   name="{{ field.name }}"
                   [formControlName]="field.name"
-                  value="1"
+                  [value]=0
                   inputId="{{ field.name }}Yes"
                 />
                 <label for="{{ field.name }}Yes">Yes</label>
@@ -96,7 +91,7 @@
                 <p-radioButton
                   name="{{ field.name }}"
                   [formControlName]="field.name"
-                  value="0"
+                  [value]=1
                   inputId="{{ field.name }}No"
                 />
                 <label for="{{ field.name }}No">No</label>
@@ -135,22 +130,28 @@
           <button
             type="submit"
             class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
-          *ngIf="!isLoading else spinner"
-            >
+            *ngIf="!isLoading; else spinner"
+          >
             Submit
           </button>
         </div>
-      <ng-template #spinner>
-      
-        <div class="card flex justify-center">
-          <button
-          class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200 "
-          >
-          <p-progress-spinner ariaLabel="loading" [style]="{width:'25px',height:'25px'}" />
-        </button>
-        </div>
-      </ng-template>
-<app-dynamic-table *ngIf="tab.tableData" [tableTitle]="tab.tabName" [tableData]="tab.tableData"></app-dynamic-table>
+        <ng-template #spinner>
+          <div class="card flex justify-center">
+            <button
+              class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
+            >
+              <p-progress-spinner
+                ariaLabel="loading"
+                [style]="{ width: '25px', height: '25px' }"
+              />
+            </button>
+          </div>
+        </ng-template>
+        <app-dynamic-table
+          *ngIf="tab.tableData"
+          [tableTitle]="tab.tabName"
+          [tableData]="tab.tableData"
+        ></app-dynamic-table>
       </p-tabpanel>
     </p-tabpanels>
   </p-tabs>
@@ -238,8 +239,4 @@
       </div>
     </div>
   </ng-template>
- 
 </form>
-
-
-
