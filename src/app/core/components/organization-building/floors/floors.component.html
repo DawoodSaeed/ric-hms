@@ -1,0 +1,109 @@
+<div class="card">
+  <p-contextmenu #cm [model]="contextItems" />
+
+  <p-table
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [showCurrentPageReport]="true"
+    [size]="'large'"
+    #dt
+    [value]="data()"
+    [tableStyle]="{ 'min-width': '60rem' }"
+    [paginator]="true"
+    [rows]="10"
+    stripedRows
+    responsiveLayout="scroll"
+    class="custom-table"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [dataKey]="config.dataKey"
+    [globalFilterFields]="getFilterFields()"
+    [(contextMenuSelection)]="selectedItem"
+    [contextMenu]="cm"
+    stateStorage="session"
+    [loading]="loading()"
+    stateKey="statedemo-session"
+  >
+    <ng-template #caption>
+      <div class="flex">
+        <p-button
+          label="Clear"
+          [outlined]="true"
+          icon="pi pi-filter-slash"
+          (click)="clear(dt)"
+        />
+        <p-button
+          p-button
+          icon="pi pi-plus"
+          (click)="showDialog()"
+          [label]="'Add ' + config.title.slice(0, -1)"
+          class="ml-2"
+        />
+
+        <p-inputgroup class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input
+            pInputText
+            type="text"
+            [value]="searchValue()"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Keyword Search"
+          />
+        </p-inputgroup>
+      </div>
+    </ng-template>
+  </p-table>
+
+  <p-dialog
+    [visible]="displayDialog()"
+    [modal]="true"
+    [header]="newItem.id ? 'Edit Floor' : 'Add Floor'"
+    [dismissableMask]="true"
+  >
+    <div class="p-fluid">
+      <div *ngFor="let field of config.formFields">
+        <label>{{ field.label }}</label>
+        <input
+          *ngIf="field.type === 'text' && field.field"
+          type="text"
+          pInputText
+          [(ngModel)]="newItem[field.field!]"
+        />
+        <textarea
+          *ngIf="field.type === 'textarea' && field.field && field.field"
+          pInputTextarea
+          [(ngModel)]="newItem[field.field]"
+        ></textarea>
+        <p-dropdown
+          *ngIf="field.type === 'select' && field.field"
+          [options]="field.options"
+          [(ngModel)]="newItem[field.field]"
+        ></p-dropdown>
+        <input
+          *ngIf="field.type === 'number' && field.field"
+          type="number"
+          pInputText
+          [(ngModel)]="newItem[field.field]"
+        />
+        <p-checkbox
+          *ngIf="field.type === 'checkbox' && field.field"
+          [(ngModel)]="newItem[field.field]"
+          binary="true"
+        ></p-checkbox>
+      </div>
+    </div>
+
+    <p-footer>
+      <p-button
+        label="Cancel"
+        icon="pi pi-times"
+        (click)="closeDialog()"
+        class="p-button-text"
+      ></p-button>
+      <p-button
+        label="Save"
+        icon="pi pi-check"
+        (click)="saveData()"
+        class="p-button-primary"
+      ></p-button>
+    </p-footer>
+  </p-dialog>
+</div>
