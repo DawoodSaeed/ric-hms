@@ -14,7 +14,7 @@ import {
   EmployeeSubDepartment,
   EmployeeSubSpecialization,
 } from '../interfaces/employeeinterfaces';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, map, Observable, tap } from 'rxjs';
 import { Signal } from '@angular/core';
 import { AuthService } from './auth.service';
 @Injectable({
@@ -89,7 +89,9 @@ export class EmployeeService {
   };
   getEmployeeAwardDetails = (): void => {
     this.http
-      .get(`${this.apiUrl}/empaward`)
+      .get(`${this.apiUrl}/empaward`).pipe(map((response:any)=>{
+return response.filter((data:any)=> data.status===1)
+      }))
       .subscribe((data: any) => this.employeeAwardSubject.next(data));
   };
 
