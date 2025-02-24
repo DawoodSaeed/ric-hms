@@ -32,6 +32,7 @@ export interface Floor {
   createdOn: string;
   modifiedById: number;
   modifiedOn: string;
+  buildingName?: string;
 }
 
 export interface Room {

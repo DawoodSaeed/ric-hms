@@ -68,7 +68,7 @@ export class BranchService {
 
   createOrUpdateRoom(room: Room): Observable<Room> {
     return this.http
-      .post<Room>(`${this.baseUrl}/AllRooms`, room)
+      .post<Room>(`${this.baseUrl}/CreateOrUpdateRoom`, room)
       .pipe(catchError(this.handleError));
   }
 
@@ -81,7 +81,7 @@ export class BranchService {
 
   createOrUpdateBed(bed: Bed): Observable<Bed> {
     return this.http
-      .post<Bed>(`${this.baseUrl}/AllBeds`, bed)
+      .post<Bed>(`${this.baseUrl}/CreateOrUpdateBed`, bed)
       .pipe(catchError(this.handleError));
   }
 

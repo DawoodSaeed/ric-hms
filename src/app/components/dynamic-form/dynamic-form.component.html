@@ -10,7 +10,7 @@
     scrollable
   >
     <p-tablist>
-      <p-tab *ngFor="let tab of formStructure.tabs; let i = index" [value]="i" [disabled]="i!==0 && !registeredEmpID()">
+      <p-tab *ngFor="let tab of formStructure.tabs; let i = index" [value]="i">
         {{ tab.tabName }}
       </p-tab>
     </p-tablist>
@@ -83,7 +83,7 @@
                 <p-radioButton
                   name="{{ field.name }}"
                   [formControlName]="field.name"
-                  [value]=0
+                  [value]="0"
                   inputId="{{ field.name }}Yes"
                 />
                 <label for="{{ field.name }}Yes">Yes</label>
@@ -91,7 +91,7 @@
                 <p-radioButton
                   name="{{ field.name }}"
                   [formControlName]="field.name"
-                  [value]=1
+                  [value]="1"
                   inputId="{{ field.name }}No"
                 />
                 <label for="{{ field.name }}No">No</label>

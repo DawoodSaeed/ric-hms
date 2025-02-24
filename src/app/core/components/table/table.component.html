@@ -2,9 +2,11 @@
   <p-contextmenu #cm [model]="contextItems" />
   @if(data()){
   <p-table
+    [scrollable]="true"
+    scrollHeight="flex"
     #dt
     [value]="data()"
-    [columns]="tableColumns"
+    [columns]="tableColumns()"
     [loading]="loading()"
     dataKey="id"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
@@ -61,8 +63,13 @@
         <th>Status</th>
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-rowData let-columns="columns">
-      <tr [pContextMenuRow]="rowData">
+    <ng-template
+      pTemplate="body"
+      let-rowData
+      let-columns="columns"
+      let-rowIndex="rowIndex"
+    >
+      <tr [pContextMenuRow]="rowData" [pSelectableRow]="rowData">
         @for (col of columns; track col) {
         <td>{{ rowData[col.field] }}</td>
         }
@@ -100,21 +107,43 @@
       </div>
     </ng-template>
 
+    <!-- To add the floor #################### -->
     <ng-container *ngIf="currentDataType === 'floors'">
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Select Branch</label
+        >
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="branches()"
+          [(ngModel)]="selectedBranch"
+          optionLabel="branchName"
+          placeholder="Select Branch"
+          class="w-full md:w-56"
+          required
+          (ngModelChange)="onDropdownChange($event, 'branch')"
+        />
+      </div>
+
       <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
         <label for="abbreviation" class="text-right font-medium"
           >Select Building</label
         >
         <p-select
-          filterBy="name"
+          filter="true"
           [checkmark]="true"
           [options]="buildings()"
           [(ngModel)]="selectedBuilding"
           optionLabel="name"
           placeholder="Select Building"
           class="w-full md:w-56"
+          required
+          (ngModelChange)="onDropdownChange($event, 'building')"
+          [disabled]="this.selectedBranchSubj.value == 0"
         />
       </div>
+
       <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
         <label for="name" class="text-right font-medium">Floor Name</label>
         <input
@@ -143,6 +172,7 @@
       </div>
     </ng-container>
 
+    <!-- To add the bulding ############## -->
     <ng-container *ngIf="currentDataType === 'buildings'">
       <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
         <label for="name" class="text-right font-medium">Building Name</label>
@@ -171,6 +201,89 @@
       </div>
     </ng-container>
 
+    <!-- To add the room -->
+    <ng-container *ngIf="currentDataType === 'rooms'">
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Select Branch</label
+        >
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="branches()"
+          [(ngModel)]="selectedBranch"
+          optionLabel="branchName"
+          placeholder="Select Branch"
+          class="w-full md:w-56"
+          required
+          (ngModelChange)="onDropdownChange($event, 'branch')"
+        />
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Select Building</label
+        >
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="buildings()"
+          [(ngModel)]="selectedBuilding"
+          optionLabel="name"
+          placeholder="Select Building"
+          class="w-full md:w-56"
+          required
+          (ngModelChange)="onDropdownChange($event, 'building')"
+          [disabled]="this.selectedBranchSubj.value == 0"
+        />
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Select Floor</label
+        >
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="floors()"
+          [(ngModel)]="selectedFloor"
+          optionLabel="name"
+          placeholder="Select Floor"
+          class="w-full md:w-56"
+          required
+          [disabled]="
+            this.selectedBuildingSubj.value == 0 ||
+            this.selectedBranchSubj.value == 0
+          "
+        />
+      </div>
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="name" class="text-right font-medium">Room Name</label>
+        <input
+          pInputText
+          [(ngModel)]="newRoom.name"
+          id="name"
+          placeholder="Room Name"
+          required
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-start">
+        <label for="description" class="text-right font-medium"
+          >Description</label
+        >
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newRoom.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+    </ng-container>
     <div class="flex justify-end mt-4">
       <button
         pButton

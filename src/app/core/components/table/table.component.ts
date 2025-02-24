@@ -6,13 +6,26 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ConfirmationService, Header, MessageService } from 'primeng/api';
-import { Table, TableModule } from 'primeng/table';
+import { Table, TableModule, TableRowSelectEvent } from 'primeng/table';
 import { Bank } from '../../interfaces/typetable';
 import { TypeTableService } from '../../services/type-table.service';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { BehaviorSubject, filter, Observable, take, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  filter,
+  Observable,
+  take,
+  tap,
+} from 'rxjs';
 import { BranchService } from '../../services/branch.service';
-import { Bed, Building, Floor, Room } from '../../interfaces/branch.interface';
+import {
+  Bed,
+  Branch,
+  Building,
+  Floor,
+  Room,
+} from '../../interfaces/branch.interface';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { RippleModule } from 'primeng/ripple';
@@ -35,6 +48,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { DynamicFormComponent } from '../../../components/dynamic-form/dynamic-form.component';
 import { DynamicTableComponent } from '../../../components/dynamic-table/dynamic-table.component';
 import { SelectModule } from 'primeng/select';
+import { toObservable } from '@angular/core/rxjs-interop';
+
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
@@ -65,13 +80,33 @@ import { SelectModule } from 'primeng/select';
   providers: [MessageService, ConfirmationService],
 })
 export class TableComponent implements OnInit {
+  // Signals...
   searchValue = signal('');
   data = signal<Bank[] | Building[] | Room[] | Bed[]>([]);
+
   buildings = signal<Building[]>([]);
+  floors = signal<Floor[]>([]);
+  branches = signal<Branch[]>([]);
+
+  dropdownFloors = combineLatest([
+    toObservable(this.buildings),
+    toObservable(this.floors),
+  ]);
+
   loading = signal(true);
-  selectedItem: any;
   displayDialog = signal(false);
-  selectedBuilding = '';
+
+  // Normal Variables...
+  selectedItem: any;
+  selectedRow!: Bank | Building | Room | Bed;
+
+  selectedBuilding: Building | string = '';
+  selectedFloor: Floor | string = '';
+  selectedBranch: Branch | string = '';
+
+  selectedBranchSubj = new BehaviorSubject<number>(0);
+  selectedBuildingSubj = new BehaviorSubject<number>(0);
+  selectedFloorSub = new BehaviorSubject<number>(0);
   // Utility function to get common fields
 
   // New floor object
@@ -81,7 +116,7 @@ export class TableComponent implements OnInit {
     description: '',
     bid: 0,
     branchId: 0,
-    status: 0,
+    status: 1,
     ...this.getCommonFields(),
   };
 
@@ -95,14 +130,56 @@ export class TableComponent implements OnInit {
     ...this.getCommonFields(),
   };
 
+  // New Room Object
+  newRoom: Room = {
+    rid: 0,
+    name: '',
+    description: '',
+    bid: 0, //Building Id
+    fid: 0, // Floor Id
+    branchId: 0,
+    status: 1,
+    ...this.getCommonFields(),
+  };
+
+  // New Bed Object
+  newBed: Bed = {
+    bdId: 0,
+    name: '',
+    description: '',
+    bid: 0, //Building Id
+    fid: 0, // Floor Id
+    rid: 0, // Room Id
+    branchId: 0, // Branch id
+    priceId: 0,
+    minValue: 0,
+    maxValue: 0,
+    isVacant: true,
+    isFemale: true,
+    status: 1,
+    ...this.getCommonFields(),
+  };
+
   currentDataType: 'floors' | 'buildings' | 'rooms' | 'beds' | null = null;
-  tableColumns: any[] = [];
+  tableColumns = signal<any[]>([]);
   dialogHeader = '';
   globalFilterFields = signal<string[]>([]);
   contextItems: any[] = [
     { icon: 'pi pi-eye', label: 'View' },
-    { icon: 'pi pi-pencil', label: 'Edit' },
-    { icon: 'pi pi-trash', label: 'Delete' },
+    {
+      icon: 'pi pi-pencil',
+      label: 'Edit',
+      command: () => {
+        console.log(this.selectedItem);
+      },
+    },
+    {
+      icon: 'pi pi-trash',
+      label: 'Delete',
+      command: () => {
+        console.log('Clicked');
+      },
+    },
   ];
 
   constructor(
@@ -130,17 +207,63 @@ export class TableComponent implements OnInit {
     });
 
     this.fetchBuildings(undefined);
+    this.fetchFloors(undefined);
+    this.fetchBranches();
+
+    // This will filter the dropdown values
+    combineLatest([
+      this.selectedBranchSubj,
+      this.selectedBuildingSubj,
+    ]).subscribe(([branchId, buildingId]) => {
+      // if branch id is greater then 1 we need t filter the buildings.
+      if (branchId) {
+        this.buildings.update((currentBuildings) =>
+          currentBuildings.filter((building) => building.branchId == branchId)
+        );
+      }
+
+      if (buildingId) {
+        this.floors.update((currentFloors) =>
+          currentFloors.filter((floor) => floor.bid == buildingId)
+        );
+      }
+    });
   }
 
   fetchBuildings(params: undefined | 'set') {
     this.branchService.getAllBuildings().subscribe((data) => {
-      this.tableColumns = [
+      this.tableColumns.set([
         { field: 'bid', header: 'Building ID' },
         { field: 'name', header: 'Building Name' },
         { field: 'description', header: 'Description' },
-      ];
-      this.globalFilterFields.set(this.tableColumns.map((col) => col.field));
+      ]);
+      this.globalFilterFields.set(this.tableColumns().map((col) => col.field));
       this.buildings.set(data);
+
+      if (params) {
+        this.data.set(data);
+        this.loading.set(false);
+      }
+    });
+  }
+
+  fetchBranches() {
+    this.branchService.getAllBranches().subscribe((data) => {
+      this.branches.set(data);
+    });
+  }
+
+  fetchFloors(params: undefined | 'set') {
+    this.branchService.getAllFloors().subscribe((data) => {
+      console.log('Data from the api: ', data);
+      this.tableColumns.set([
+        { field: 'buildingName', header: 'Building Name' },
+        { field: 'name', header: 'Floor Name' },
+        { field: 'description', header: 'Floor Description' },
+        { field: 'branchName', header: 'Branch Name' },
+      ]);
+      this.globalFilterFields.set(this.tableColumns().map((col) => col.field));
+      this.floors.set(data);
 
       if (params) {
         this.data.set(data);
@@ -153,19 +276,7 @@ export class TableComponent implements OnInit {
     this.loading.set(true);
     switch (this.currentDataType) {
       case 'floors':
-        this.branchService.getAllFloors().subscribe((data) => {
-          console.log('Data from the api: ', data);
-          this.tableColumns = [
-            { field: 'bid', header: 'Building Id' },
-            { field: 'name', header: 'Floor Name' },
-          ];
-          this.globalFilterFields.set(
-            this.tableColumns.map((col) => col.field)
-          );
-          this.data.set(data); // Set the data signal
-          this.loading.set(false);
-          this.cdr.markForCheck();
-        });
+        this.fetchFloors('set');
         break;
       case 'buildings':
         this.fetchBuildings('set');
@@ -173,14 +284,15 @@ export class TableComponent implements OnInit {
       case 'rooms':
         this.branchService.getAllRooms().subscribe((data) => {
           console.log('Data from the api: ', data);
-          this.tableColumns = [
-            { field: 'id', header: 'Room ID' },
+          this.tableColumns.set([
             { field: 'name', header: 'Room Name' },
             { field: 'description', header: 'Description' },
-            { field: 'isActive', header: 'Status' },
-          ];
+            { field: 'branchName', Header: 'Branch Name' },
+            { field: 'buildingName', header: 'Building Name' },
+            { field: 'floorName', header: 'Floor Name' },
+          ]);
           this.globalFilterFields.set(
-            this.tableColumns.map((col) => col.field)
+            this.tableColumns().map((col) => col.field)
           );
           this.data.set(data); // Set the data signal
           this.loading.set(false);
@@ -190,14 +302,14 @@ export class TableComponent implements OnInit {
       case 'beds':
         this.branchService.getAllBeds().subscribe((data) => {
           console.log('Data from the api: ', data);
-          this.tableColumns = [
+          this.tableColumns.set([
             { field: 'id', header: 'Bed ID' },
             { field: 'name', header: 'Bed Name' },
             { field: 'description', header: 'Description' },
             { field: 'isActive', header: 'Status' },
-          ];
+          ]);
           this.globalFilterFields.set(
-            this.tableColumns.map((col) => col.field)
+            this.tableColumns().map((col) => col.field)
           );
           this.data.set(data); // Set the data signal
           this.loading.set(false);
@@ -216,9 +328,54 @@ export class TableComponent implements OnInit {
   }
 
   addOrUpdateItem() {
+    // For adding the Building #################
     if (this.currentDataType == 'buildings') {
       this.branchService
         .addOrUpdateBuilding(this.newBuilding)
+        .pipe(
+          take(1),
+          tap(() => {
+            this.displayDialog.set(false), this.fetchData();
+          })
+        )
+        .subscribe();
+    }
+
+    // For adding the Floor #################
+    else if (
+      this.currentDataType == 'floors' &&
+      typeof this.selectedBuilding === 'object'
+    ) {
+      this.newFloor = {
+        ...this.newFloor,
+        branchId: this.selectedBranchSubj.value,
+        bid: this.selectedBuildingSubj.value,
+      };
+      this.branchService
+        .createOrUpdateFloor(this.newFloor)
+        .pipe(
+          take(1),
+          tap(() => {
+            this.displayDialog.set(false), this.fetchData();
+          })
+        )
+        .subscribe();
+    }
+
+    // For adding the room #################
+    else if (
+      this.currentDataType == 'rooms' &&
+      typeof this.selectedBuilding === 'object' &&
+      typeof this.selectedFloor === 'object'
+    ) {
+      this.newRoom = {
+        ...this.newRoom,
+        bid: this.selectedBuildingSubj.value,
+        fid: this.selectedFloorSub.value,
+        branchId: this.selectedBranchSubj.value,
+      };
+      this.branchService
+        .createOrUpdateRoom(this.newRoom)
         .pipe(
           take(1),
           tap(() => {
@@ -275,5 +432,35 @@ export class TableComponent implements OnInit {
       modifiedById: 0,
       modifiedOn: timestamp,
     };
+  }
+
+  onSelectedRow(event: any) {
+    this.selectedRow = event.data;
+    console.log('Selected Row:', this.selectedRow);
+    console.log('Type of selectedRow:', typeof this.selectedRow);
+    console.log('Is selectedRow an array:', Array.isArray(this.selectedRow));
+  }
+
+  onDropdownChange(
+    event: Branch | Building | Floor,
+    type: 'branch' | 'building' | 'floor'
+  ) {
+    console.log(event, type);
+    switch (type) {
+      case 'branch':
+        const branchEvent = event as Branch; // Type assertion
+        this.selectedBranchSubj.next(branchEvent.branchId);
+        break;
+
+      case 'building':
+        const buildingEvent = event as Building;
+        this.selectedBuildingSubj.next(buildingEvent.bid);
+        break;
+
+      case 'floor':
+        const floorEvent = event as Floor;
+        this.selectedFloorSub.next(floorEvent.fid);
+        break;
+    }
   }
 }
