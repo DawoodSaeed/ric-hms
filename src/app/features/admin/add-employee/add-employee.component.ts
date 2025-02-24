@@ -1,9 +1,17 @@
-import { Component, Inject, inject, OnInit, Signal, signal } from '@angular/core';
+import {
+  Component,
+  Inject,
+  inject,
+  OnInit,
+  Signal,
+  signal,
+} from '@angular/core';
 import { DynamicFormComponent } from '../../../components/dynamic-form/dynamic-form.component';
 import { FormStructure } from '../../../core/interfaces/dynamicforminterface';
 import { TypeTableService } from '../../../core/services/type-table.service';
 import swal from 'sweetalert2';
 import {
+  Bank,
   Country,
   EducationDegree,
   EducationInstitution,
@@ -22,6 +30,7 @@ import Swal from 'sweetalert2';
 import { NOTYF } from './../../../shared/utils/notyf.token';
 import { Notyf } from 'notyf';
 import { Observable, Subscription } from 'rxjs';
+import { NotificationService } from '../../../core/services/notification.service';
 // import { FormStructure } from '../../../core/interfaces/dynamicform';
 @Component({
   selector: 'app-add-employee',
@@ -30,103 +39,151 @@ import { Observable, Subscription } from 'rxjs';
   styleUrl: './add-employee.component.scss',
 })
 export class AddEmployeeComponent implements OnInit {
-  constructor(private messageService: MessageService,@Inject(NOTYF) private notyf: Notyf) {}
+  constructor(
+    private notificationService: NotificationService,
+    private messageService: MessageService,
+    @Inject(NOTYF) private notyf: Notyf
+  ) {}
   subscriptions: Subscription[] = [];
   dropDownService = inject(TypeTableService);
   employeeService = inject(EmployeeService);
   isLoading = signal<boolean>(false);
   ngOnInit(): void {
- this.fetchDropdowns()
+    this.fetchDropdowns();
 
-    this.fetchTableData()
+    this.fetchTableData();
   }
-  
+
   fetchTableData() {
-    const dataMap: { [key: string]: { fetchData: () => void; dataStream: Observable<any[]> } } = {
-      'Awards': { fetchData: () => this.employeeService.getEmployeeAwardDetails(), dataStream: this.employeeService.employeeAwards$ },
-      'Bank Details': { fetchData: () => this.employeeService.getEmployeeBankDetails(), dataStream: this.employeeService.bankDetails$ },
-      'Education Info': { fetchData: () => this.employeeService.getEmployeeEducationDetails(), dataStream: this.employeeService.education$ },
-      'Employee Department': { fetchData: () => this.employeeService.getEmployeeDepartmentDetails(), dataStream: this.employeeService.department$ },
-      'Employee Sub Department': { fetchData: () => this.employeeService.getEmployeeSubDepartmentDetails(), dataStream: this.employeeService.subDepartment$ },
-      'Employee Designation': { fetchData: () => this.employeeService.getEmployeeDesignationDetails(), dataStream: this.employeeService.designation$ },
-      'Employee Experience': { fetchData: () => this.employeeService.getEmployeeExperienceDetails(), dataStream: this.employeeService.experience$ },
-      'Employee Facility': { fetchData: () => this.employeeService.getEmployeeFacilityDetails(), dataStream: this.employeeService.facility$ },
-      'Employee Speciality': { fetchData: () => this.employeeService.getEmployeeSpecialityDetails(), dataStream: this.employeeService.speciality$ },
-      'Employee Subspeciality': { fetchData: () => this.employeeService.getEmployeeSubSpecialityDetails(), dataStream: this.employeeService.subSpeciality$ },
+    const dataMap: {
+      [key: string]: { fetchData: () => void; dataStream: Observable<any[]> };
+    } = {
+      Awards: {
+        fetchData: () => this.employeeService.getEmployeeAwardDetails(),
+        dataStream: this.employeeService.employeeAwards$,
+      },
+      'Bank Details': {
+        fetchData: () => this.employeeService.getEmployeeBankDetails(),
+        dataStream: this.employeeService.bankDetails$,
+      },
+      'Education Info': {
+        fetchData: () => this.employeeService.getEmployeeEducationDetails(),
+        dataStream: this.employeeService.education$,
+      },
+      'Employee Department': {
+        fetchData: () => this.employeeService.getEmployeeDepartmentDetails(),
+        dataStream: this.employeeService.department$,
+      },
+      'Employee Sub Department': {
+        fetchData: () => this.employeeService.getEmployeeSubDepartmentDetails(),
+        dataStream: this.employeeService.subDepartment$,
+      },
+      'Employee Designation': {
+        fetchData: () => this.employeeService.getEmployeeDesignationDetails(),
+        dataStream: this.employeeService.designation$,
+      },
+      'Employee Experience': {
+        fetchData: () => this.employeeService.getEmployeeExperienceDetails(),
+        dataStream: this.employeeService.experience$,
+      },
+      'Employee Facility': {
+        fetchData: () => this.employeeService.getEmployeeFacilityDetails(),
+        dataStream: this.employeeService.facility$,
+      },
+      'Employee Speciality': {
+        fetchData: () => this.employeeService.getEmployeeSpecialityDetails(),
+        dataStream: this.employeeService.speciality$,
+      },
+      'Employee Subspeciality': {
+        fetchData: () => this.employeeService.getEmployeeSubSpecialityDetails(),
+        dataStream: this.employeeService.subSpeciality$,
+      },
     };
-  
-    this.employeeFormStructure.tabs?.forEach(tab => {
+
+    this.employeeFormStructure.tabs?.forEach((tab) => {
       if (dataMap[tab.tabName]) {
         dataMap[tab.tabName].fetchData();
-        
-        const subscription = dataMap[tab.tabName].dataStream.subscribe((data: any[]) => {
-          tab.tableData = data;
-        });
-  
+
+        const subscription = dataMap[tab.tabName].dataStream.subscribe(
+          (data: any[]) => {
+            tab.tableData = data;
+          }
+        );
+
         tab.dataSubscription = subscription; // Store it in the tab object (optional)
         this.subscriptions.push(subscription); // Store in the array for cleanup
       }
     });
   }
 
-  fetchDropdowns(){
-    
-       // Fetch and set job types
-       this.dropDownService.getJobTypes().subscribe((jobtypes: JobType[]) => {
-        this.updateDropdownOptions('jobTypeId', jobtypes);
+  fetchDropdowns() {
+    // Fetch and set job types
+    this.dropDownService.getJobTypes().subscribe((jobtypes: JobType[]) => {
+      this.updateDropdownOptions('jobTypeId', jobtypes);
+    });
+
+    // Fetch and set scales
+    this.dropDownService.getScales().subscribe((scales: Scale[]) => {
+      console.log('scales ', scales);
+      this.updateDropdownOptions('scaleId', scales);
+    });
+    this.dropDownService
+      .getBloodGroups()
+      .subscribe((bloodgroups: TypeTable[]) => {
+        console.log('bloodgroups ', bloodgroups);
+        this.updateDropdownOptions('bloodGroupId', bloodgroups);
       });
-  
-      // Fetch and set scales
-      this.dropDownService.getScales().subscribe((scales: Scale[]) => {
-        console.log('scales ', scales);
-        this.updateDropdownOptions('scaleId', scales);
+
+    this.dropDownService
+      .getGuardianTypes()
+      .subscribe((guardianTypes: GuardianType[]) => {
+        this.updateDropdownOptions('guadianTypeId', guardianTypes);
       });
-      this.dropDownService
-        .getBloodGroups()
-        .subscribe((bloodgroups: TypeTable[]) => {
-          console.log('bloodgroups ', bloodgroups);
-          this.updateDropdownOptions('bloodGroupId', bloodgroups);
-        });
-  
-      this.dropDownService
-        .getGuardianTypes()
-        .subscribe((guardianTypes: GuardianType[]) => {
-          this.updateDropdownOptions('guadianTypeId', guardianTypes);
-        });
-  
-      this.dropDownService
-        .getEmploymentStatuses()
-        .subscribe((empStatuses: EmploymentStatus[]) => {
-          this.updateDropdownOptions('empStatusId', empStatuses);
-        });
-  
-      this.dropDownService.getRelations().subscribe((relations: Relation[]) => {
-        console.log('relations ',relations);
-        this.updateDropdownOptions('nokrelationId', relations);
+
+    this.dropDownService
+      .getEmploymentStatuses()
+      .subscribe((empStatuses: EmploymentStatus[]) => {
+        this.updateDropdownOptions('empStatusId', empStatuses);
       });
-      this.dropDownService.getCountries().subscribe((countries: Country[]) => {
-        console.log('countries ',countries);
-        this.updateDropdownOptions('country', countries);
-        this.updateDropdownOptions('countryId', countries);
-        
-        
-      });
-  
-      this.dropDownService.getProvinces().subscribe((provinces: Province[]) => {
-        console.log('provinces ',provinces);
-        this.updateDropdownOptions('province', provinces);
-      });
-      this.dropDownService.getEducationInstitutions().subscribe((eduInstitutes: EducationInstitution[]) => {
-        console.log('eduIntId',eduInstitutes);
+
+    this.dropDownService.getRelations().subscribe((relations: Relation[]) => {
+      console.log('relations ', relations);
+      this.updateDropdownOptions('nokrelationId', relations);
+    });
+    this.dropDownService.getCountries().subscribe((countries: Country[]) => {
+      console.log('countries ', countries);
+      this.updateDropdownOptions('country', countries);
+      this.updateDropdownOptions('countryId', countries);
+    });
+
+    this.dropDownService.getProvinces().subscribe((provinces: Province[]) => {
+      console.log('provinces ', provinces);
+      this.updateDropdownOptions('province', provinces);
+    });
+    this.dropDownService
+      .getEducationInstitutions()
+      .subscribe((eduInstitutes: EducationInstitution[]) => {
+        console.log('eduIntId', eduInstitutes);
         this.updateDropdownOptions('eduIntId', eduInstitutes);
       });
-      this.dropDownService.getFieldOfStudies().subscribe((fieldOfStudes: FieldOfStudy[]) => {
-        console.log('fsid',fieldOfStudes);
+    this.dropDownService
+      .getFieldOfStudies()
+      .subscribe((fieldOfStudes: FieldOfStudy[]) => {
+        console.log('fsid', fieldOfStudes);
         this.updateDropdownOptions('fsid', fieldOfStudes);
       });
-      this.dropDownService.getEducationDegrees().subscribe((degrees: EducationDegree[]) => {
-        console.log('degId',degrees);
+    this.dropDownService
+      .getEducationDegrees()
+      .subscribe((degrees: EducationDegree[]) => {
+        console.log('degId', degrees);
         this.updateDropdownOptions('degId', degrees);
+      });
+
+    this.dropDownService
+      .getBanks()
+      .subscribe((banks: Bank[]) => {
+        console.log('bankId', banks);
+        this.updateDropdownOptions('bankId', banks);
       });
   }
   // Generic method to update dropdown options
@@ -180,26 +237,19 @@ export class AddEmployeeComponent implements OnInit {
     this.isLoading.set(true);
     event.apiToCall(submittedData).subscribe({
       next: (data: any) => {
-        this.notyf.success({
-          message: 'Success',
-          duration: 3000,
-          icon: false,
-          background:'green'
-        });
+        this.notificationService.showSuccess('Operation successful!');
 
-      this.isLoading.set(false);
+
+        this.isLoading.set(false);
       },
       error: () => {
-      Swal.fire({
-        title: 'Oops!',
-        text: 'Something went wrong! Try again.',
-        icon: 'error',
-      });
-      this.isLoading.set(false);
+        this.notificationService.showError('Could not register Employee! Please Try Again');
+
+        this.isLoading.set(false);
       },
       complete: () => {
-      console.log('Request completed');
-      }
+        console.log('Request completed');
+      },
     });
   }
   employeeFormStructure: FormStructure = {
@@ -285,9 +335,9 @@ export class AddEmployeeComponent implements OnInit {
         tabName: 'Awards',
         apiToCall: this.employeeService.addEmployeeAwardDetails,
 
-        tableData:[],
-        showTable:true,
-        
+        tableData: [],
+        showTable: true,
+
         sections: [
           {
             title: 'Awards Information',
@@ -315,9 +365,9 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Bank Information',
 
             fields: [
-            
               { name: 'accountTitle', label: 'Account Title', type: 'text' },
               { name: 'accountNo', label: 'Account Number', type: 'text' },
+              { name: 'bankId', label: 'Bank Name', type: 'select' },
               { name: 'branchName', label: 'Branch Name', type: 'text' },
               { name: 'branchCode', label: 'Branch Code', type: 'text' },
               { name: 'iban', label: 'IBAN', type: 'text' },
@@ -359,9 +409,6 @@ export class AddEmployeeComponent implements OnInit {
               // { name: 'isCurrent', label: 'Is Current', type: 'text' },
             ],
           },
-        
-       
-         
         ],
       },
       {
@@ -608,9 +655,8 @@ export class AddEmployeeComponent implements OnInit {
   // };
 
   ngOnDestroy() {
-    console.log('Clearing Subscriptions ')
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    console.log('Clearing Subscriptions ');
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
     this.subscriptions = []; // Clear the array after unsubscribing
   }
-  
 }
