@@ -60,6 +60,17 @@ export class DynamicFormComponent implements OnInit {
       this.currentTab.set(this.formStructure.tabs[0].tabName);
     }
   }
+  receivedData(data:any){
+    console.log('data received ',data);
+    if(this.form){
+      Object.keys(data).forEach((key:any)=>{
+        if(this.form.controls[key]){
+          this.form.controls[key].setValue(data[key])
+        }
+      })
+    }
+    
+  }
   onTabChange(event: any) {
     console.log('calling onTabChange');
     console.log('change event ', event);
@@ -102,7 +113,7 @@ export class DynamicFormComponent implements OnInit {
     const formattedDate = `${year}-${month}-${day}`;
     this.form.get(fieldName)?.setValue(formattedDate);
   }
-  
+
   onSubmit(): void {
 
     if (this.form.valid && this.formStructure?.tabs) {

@@ -1,23 +1,33 @@
-import { Component, computed, inject, Inject, Input, OnInit } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Inject, Input, OnInit, Output } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { Tag } from 'primeng/tag';
 import { EmployeeService } from '../../core/services/employee.service';
+import { SpeedDial } from 'primeng/speeddial';
 
 @Component({
   selector: 'app-dynamic-table',
-  imports: [TableModule, CommonModule, IconFieldModule, InputIconModule, Tag],
+  imports: [TableModule, CommonModule, IconFieldModule, InputIconModule, Tag,SpeedDial],
   templateUrl: './dynamic-table.component.html',
   styleUrl: './dynamic-table.component.scss',
 })
 export class DynamicTableComponent implements OnInit {
   constructor(){
   }
+  
+  
 
+  getActionItems(employee: any) {
+    return [
+        { label: 'Edit', icon: 'pi pi-pencil', command: () => this.editRow(employee) },
+        { label: 'Delete', icon: 'pi pi-trash', command: () => this.deleteItem(employee) }
+    ];
+}
   @Input() tableData: any[] = [];
   @Input() tableTitle: string = '';
+  @Output() dataEmitter=new EventEmitter<any>()
   ngOnInit(): void {}
   getKeys(): any[] {
     return this.tableData.length > 0
@@ -35,6 +45,15 @@ export class DynamicTableComponent implements OnInit {
         )
       : [];
   }
+  editRow(employee: any) {
+    console.log('Editing Employee:', employee);
+    this.dataEmitter.emit(employee)
+}
+
+deleteItem(employee: any) {
+    console.log('Deleting Employee:', employee);
+    // Your delete logic here
+}
   formatStringName(name: string): string {
     if (name === 'empAwrdId') {
       return 'Award ID';

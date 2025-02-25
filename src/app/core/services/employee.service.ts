@@ -81,8 +81,12 @@ export class EmployeeService {
       );
   };
 
-  addEmployeeAwardDetails = (awardDetails: EmployeeAward): Observable<any> => {
-    awardDetails = { ...awardDetails, ...this.defaultObj, empAwrdId: 0 };
+  addEmployeeAwardDetails = (awardDetails: EmployeeAward,isEdit=false,status:number=1): Observable<any> => {
+    awardDetails = { ...awardDetails, ...this.defaultObj, empAwrdId: 0 ,status};
+    if(isEdit){
+      awardDetails={...awardDetails, modifiedById: 0,
+      modifiedOn: new Date().toISOString()}
+    }
     return this.http
       .post(`${this.apiUrl}/empaward`, awardDetails)
       .pipe(tap(() => this.getEmployeeAwardDetails()));

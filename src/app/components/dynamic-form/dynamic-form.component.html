@@ -152,6 +152,7 @@
           *ngIf="tab.tableData"
           [tableTitle]="tab.tabName"
           [tableData]="tab.tableData"
+          (dataEmitter)="receivedData($event)"
         ></app-dynamic-table>
       </p-tabpanel>
     </p-tabpanels>
