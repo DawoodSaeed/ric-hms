@@ -1,4 +1,5 @@
 export interface EmployeeAward {
+  empId: number;
     empAwrdId: number;
     name: string;
     code: string;

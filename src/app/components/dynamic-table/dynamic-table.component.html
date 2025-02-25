@@ -54,7 +54,7 @@
         </td>
         <td class="px-4 py-3 text-gray-900 text-base relative">
           <!-- <p-speedDial [model]="actionItems" className="flex "></p-speedDial> -->
-          <p-speeddial [model]="getActionItems(employee)" [radius]="80" [style]="{ position: 'absolute', top: 0 }" type="circle" [buttonProps]="{ rounded: true }" (click)="$event.preventDefault(); $event.stopPropagation();" />
+          <p-speeddial [model]="getActionItems(employee)"  type="semi-circle" direction="left" [radius]="50" [style]="{ position: 'absolute', top: 0 }"  [buttonProps]="{ rounded: true }" (click)="$event.preventDefault(); $event.stopPropagation();" />
         </td>
       </tr>
     </ng-template>

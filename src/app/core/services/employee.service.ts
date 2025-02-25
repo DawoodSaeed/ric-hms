@@ -72,8 +72,7 @@ export class EmployeeService {
           if (response?.empid) {
             this.registeredEmpIDSignal.set(response.empid);
             this.defaultObj.empId = response.empid;
-          }
-          else{
+          } else {
             this.registeredEmpIDSignal.set(null);
             // this.defaultObj.empId = response.empid;
           }
@@ -81,29 +80,71 @@ export class EmployeeService {
       );
   };
 
-  addEmployeeAwardDetails = (awardDetails: EmployeeAward,isEdit=false,status:number=1): Observable<any> => {
-    awardDetails = { ...awardDetails, ...this.defaultObj, empAwrdId: 0 ,status};
-    if(isEdit){
-      awardDetails={...awardDetails, modifiedById: 0,
-      modifiedOn: new Date().toISOString()}
+  addEmployeeAwardDetails = (
+    awardDetails: EmployeeAward,
+    isEdit = false,
+    status: number = 1
+  ): Observable<any> => {
+    console.log('isEdit value ', isEdit);
+    if (isEdit) {
+      awardDetails = {
+        ...awardDetails,
+        empId: this.defaultObj.empId,
+        modifiedById: this.defaultObj.createdById,
+        status,
+        modifiedOn: new Date().toISOString(),
+      };
+      delete awardDetails.createdOn;
+      delete awardDetails.createdById;
+      console.log('final award ', awardDetails);
+    } else {
+      let empAwrdId = 0;
+      awardDetails = { ...awardDetails, ...this.defaultObj, empAwrdId, status };
     }
+
     return this.http
       .post(`${this.apiUrl}/empaward`, awardDetails)
       .pipe(tap(() => this.getEmployeeAwardDetails()));
   };
   getEmployeeAwardDetails = (): void => {
     this.http
-      .get(`${this.apiUrl}/empaward`).pipe(map((response:any)=>{
-return response.filter((data:any)=> data.status===1)
-      }))
+      .get(`${this.apiUrl}/empaward`)
+      .pipe(
+        map((response: any) => {
+          return response.filter((data: any) => data.status === 1);
+        })
+      )
       .subscribe((data: any) => this.employeeAwardSubject.next(data));
   };
 
-  addEmployeeBankDetails = (
-    bankDetails: EmployeeBankDetails
-  ): Observable<any> => {
-    bankDetails = { ...bankDetails, ...this.defaultObj, empBankId: 0 };
+  // addEmployeeBankDetails = (
+  //   bankDetails: EmployeeBankDetails
+  // ): Observable<any> => {
+  //   bankDetails = { ...bankDetails, ...this.defaultObj, empBankId: 0 };
 
+  //   return this.http
+  //     .post(`${this.apiUrl}/empbank`, bankDetails)
+  //     .pipe(tap(() => this.getEmployeeBankDetails()));
+  // };
+  addEmployeeBankDetails = (
+    bankDetails: EmployeeBankDetails,
+    isEdit = false,
+    status: number = 1
+  ): Observable<any> => {
+    if (isEdit) {
+      bankDetails = {
+        ...bankDetails,
+        empId: this.defaultObj.empId,
+        modifiedById: this.defaultObj.createdById,
+        status,
+        modifiedOn: new Date().toISOString(),
+      };
+      delete bankDetails.createdOn;
+      delete bankDetails.createdById;
+    } else {
+      bankDetails = { ...bankDetails, ...this.defaultObj, empBankId: 0, status };
+    }
+  
     return this.http
       .post(`${this.apiUrl}/empbank`, bankDetails)
       .pipe(tap(() => this.getEmployeeBankDetails()));
@@ -114,11 +155,40 @@ return response.filter((data:any)=> data.status===1)
       .subscribe((data: any) => this.bankDetailsSubject.next(data));
   };
 
-  addEmployeeEducationDetails = (
-    educationDetails: EmployeeEducation
-  ): Observable<any> => {
-    educationDetails = { ...educationDetails, ...this.defaultObj, empEduId: 0 };
+  // addEmployeeEducationDetails = (
+  //   educationDetails: EmployeeEducation
+  // ): Observable<any> => {
+  //   educationDetails = { ...educationDetails, ...this.defaultObj, empEduId: 0 };
 
+  //   return this.http
+  //     .post(`${this.apiUrl}/empeducation`, educationDetails)
+  //     .pipe(tap(() => this.getEmployeeEducationDetails()));
+  // };
+
+  addEmployeeEducationDetails = (
+    educationDetails: EmployeeEducation,
+    isEdit = false,
+    status: number = 1
+  ): Observable<any> => {
+    if (isEdit) {
+      educationDetails = {
+        ...educationDetails,
+        empId: this.defaultObj.empId,
+        modifiedById: this.defaultObj.createdById,
+        status,
+        modifiedOn: new Date().toISOString(),
+      };
+      delete educationDetails.createdOn;
+      delete educationDetails.createdById;
+    } else {
+      educationDetails = {
+        ...educationDetails,
+        ...this.defaultObj,
+        empEduId: 0,
+        status,
+      };
+    }
+  
     return this.http
       .post(`${this.apiUrl}/empeducation`, educationDetails)
       .pipe(tap(() => this.getEmployeeEducationDetails()));
@@ -131,9 +201,30 @@ return response.filter((data:any)=> data.status===1)
   };
 
   addEmployeeDepartmentDetails = (
-    departmentDetails: EmployeeDepartment
+    departmentDetails: EmployeeDepartment,
+    isEdit = false,
+    status: number = 1
   ): Observable<any> => {
-    departmentDetails = { ...departmentDetails, ...this.defaultObj, empDid: 0 };
+    if (isEdit) {
+      departmentDetails = {
+        ...departmentDetails,
+        empId: this.defaultObj.empId,
+        modifiedById: this.defaultObj.createdById,
+        // 
+        // status,
+        modifiedOn: new Date().toISOString(),
+      };
+      delete departmentDetails.createdOn;
+      delete departmentDetails.createdById;
+    } else {
+      departmentDetails = {
+        ...departmentDetails,
+        ...this.defaultObj,
+        empDid: 0,
+        // status,
+      };
+    }
+  
     return this.http
       .post(`${this.apiUrl}/empdept`, departmentDetails)
       .pipe(tap(() => this.getEmployeeDepartmentDetails()));
@@ -144,11 +235,39 @@ return response.filter((data:any)=> data.status===1)
       .subscribe((data: any) => this.departmentSubject.next(data));
   };
 
-  addEmployeesubDepartmentDetails = (
-    subDeptDetails: EmployeeSubDepartment
-  ): Observable<any> => {
-    subDeptDetails = { ...subDeptDetails, ...this.defaultObj, empSubDid: 0 };
+  // addEmployeesubDepartmentDetails = (
+  //   subDeptDetails: EmployeeSubDepartment
+  // ): Observable<any> => {
+  //   subDeptDetails = { ...subDeptDetails, ...this.defaultObj, empSubDid: 0 };
 
+  //   return this.http
+  //     .post(`${this.apiUrl}/empsubdept`, subDeptDetails)
+  //     .pipe(tap(() => this.getEmployeeSubDepartmentDetails()));
+  // };
+  addEmployeesubDepartmentDetails = (
+    subDeptDetails: EmployeeSubDepartment,
+    isEdit = false,
+    status: number = 1
+  ): Observable<any> => {
+    if (isEdit) {
+      subDeptDetails = {
+        ...subDeptDetails,
+        empId: this.defaultObj.empId,
+        modifiedById: this.defaultObj.createdById,
+        // status,
+        modifiedOn: new Date().toISOString(),
+      };
+      delete subDeptDetails.createdOn;
+      delete subDeptDetails.createdById;
+    } else {
+      subDeptDetails = {
+        ...subDeptDetails,
+        ...this.defaultObj,
+        empSubDid: 0,
+        // status,
+      };
+    }
+  
     return this.http
       .post(`${this.apiUrl}/empsubdept`, subDeptDetails)
       .pipe(tap(() => this.getEmployeeSubDepartmentDetails()));
@@ -159,15 +278,43 @@ return response.filter((data:any)=> data.status===1)
       .subscribe((data: any) => this.subDepartmentSubject.next(data));
   };
 
-  addEmployeeDesignationDetails = (
-    designationDetails: EmployeeDesignation
-  ): Observable<any> => {
-    designationDetails = {
-      ...designationDetails,
-      ...this.defaultObj,
-      empDesgnId: 0,
-    };
+  // addEmployeeDesignationDetails = (
+  //   designationDetails: EmployeeDesignation
+  // ): Observable<any> => {
+  //   designationDetails = {
+  //     ...designationDetails,
+  //     ...this.defaultObj,
+  //     empDesgnId: 0,
+  //   };
 
+  //   return this.http
+  //     .post(`${this.apiUrl}/empdesg`, designationDetails)
+  //     .pipe(tap(() => this.getEmployeeDesignationDetails()));
+  // };
+  addEmployeeDesignationDetails = (
+    designationDetails: EmployeeDesignation,
+    isEdit = false,
+    status: number = 1
+  ): Observable<any> => {
+    if (isEdit) {
+      designationDetails = {
+        ...designationDetails,
+        empId: this.defaultObj.empId,
+        modifiedById: this.defaultObj.createdById,
+        // status,
+        modifiedOn: new Date().toISOString(),
+      };
+      delete designationDetails.createdOn;
+      delete designationDetails.createdById;
+    } else {
+      designationDetails = {
+        ...designationDetails,
+        ...this.defaultObj,
+        empDesgnId: 0,
+        // status,
+      };
+    }
+  
     return this.http
       .post(`${this.apiUrl}/empdesg`, designationDetails)
       .pipe(tap(() => this.getEmployeeDesignationDetails()));
@@ -178,28 +325,81 @@ return response.filter((data:any)=> data.status===1)
       .subscribe((data: any) => this.designationSubject.next(data));
   };
 
-  addEmployeeExpDetails = (expDetails: EmployeeExperience): Observable<any> => {
-    expDetails = { ...expDetails, ...this.defaultObj, empExpId: 0 };
+  // addEmployeeExpDetails = (expDetails: EmployeeExperience): Observable<any> => {
+  //   expDetails = { ...expDetails, ...this.defaultObj, empExpId: 0 };
 
-    return this.http
-      .post(`${this.apiUrl}/empexperience`, expDetails)
-      .pipe(tap(() => this.getEmployeeExperienceDetails()));
-  };
+  //   return this.http
+  //     .post(`${this.apiUrl}/empexperience`, expDetails)
+  //     .pipe(tap(() => this.getEmployeeExperienceDetails()));
+  // };
+
+addEmployeeExpDetails = (
+  expDetails: EmployeeExperience,
+  isEdit = false,
+  status: number = 1
+): Observable<any> => {
+  if (isEdit) {
+    expDetails = {
+      ...expDetails,
+      empId: this.defaultObj.empId,
+      modifiedById: this.defaultObj.createdById,
+      status,
+      modifiedOn: new Date().toISOString(),
+    };
+    delete expDetails.createdOn;
+    delete expDetails.createdById;
+  } else {
+    expDetails = { ...expDetails, ...this.defaultObj, empExpId: 0, status };
+  }
+
+  return this.http
+    .post(`${this.apiUrl}/empexperience`, expDetails)
+    .pipe(tap(() => this.getEmployeeExperienceDetails()));
+};
+
   getEmployeeExperienceDetails = (): void => {
     this.http
       .get(`${this.apiUrl}/empexperience`)
       .subscribe((data: any) => this.experienceSubject.next(data));
   };
 
-  addEmployeeFacilityDetails = (
-    facilityDetails: EmployeeFacility
-  ): Observable<any> => {
-    facilityDetails = {
-      ...facilityDetails,
-      ...this.defaultObj,
-      empFacilityId: 0,
-    };
+  // addEmployeeFacilityDetails = (
+  //   facilityDetails: EmployeeFacility
+  // ): Observable<any> => {
+  //   facilityDetails = {
+  //     ...facilityDetails,
+  //     ...this.defaultObj,
+  //     empFacilityId: 0,
+  //   };
 
+  //   return this.http
+  //     .post(`${this.apiUrl}/empfacility`, facilityDetails)
+  //     .pipe(tap(() => this.getEmployeeFacilityDetails()));
+  // };
+  addEmployeeFacilityDetails = (
+    facilityDetails: EmployeeFacility,
+    isEdit = false,
+    status: number = 1
+  ): Observable<any> => {
+    if (isEdit) {
+      facilityDetails = {
+        ...facilityDetails,
+        empId: this.defaultObj.empId,
+        modifiedById: this.defaultObj.createdById,
+        // status,
+        modifiedOn: new Date().toISOString(),
+      };
+      delete facilityDetails.createdOn;
+      delete facilityDetails.createdById;
+    } else {
+      facilityDetails = {
+        ...facilityDetails,
+        ...this.defaultObj,
+        empFacilityId: 0,
+        // status,
+      };
+    }
+  
     return this.http
       .post(`${this.apiUrl}/empfacility`, facilityDetails)
       .pipe(tap(() => this.getEmployeeFacilityDetails()));
@@ -210,15 +410,43 @@ return response.filter((data:any)=> data.status===1)
       .subscribe((data: any) => this.facilitySubject.next(data));
   };
 
-  addEmployeeSpecialityDetails = (
-    specialityDetails: EmployeeSpecialization
-  ): Observable<any> => {
-    specialityDetails = {
-      ...specialityDetails,
-      ...this.defaultObj,
-      empSpId: 0,
-    };
+  // addEmployeeSpecialityDetails = (
+  //   specialityDetails: EmployeeSpecialization
+  // ): Observable<any> => {
+  //   specialityDetails = {
+  //     ...specialityDetails,
+  //     ...this.defaultObj,
+  //     empSpId: 0,
+  //   };
 
+  //   return this.http
+  //     .post(`${this.apiUrl}/empspeciality`, specialityDetails)
+  //     .pipe(tap(() => this.getEmployeeSpecialityDetails()));
+  // };
+  addEmployeeSpecialityDetails = (
+    specialityDetails: EmployeeSpecialization,
+    isEdit = false,
+    status: number = 1
+  ): Observable<any> => {
+    if (isEdit) {
+      specialityDetails = {
+        ...specialityDetails,
+        empId: this.defaultObj.empId,
+        modifiedById: this.defaultObj.createdById,
+        status,
+        modifiedOn: new Date().toISOString(),
+      };
+      delete specialityDetails.createdOn;
+      delete specialityDetails.createdById;
+    } else {
+      specialityDetails = {
+        ...specialityDetails,
+        ...this.defaultObj,
+        empSpId: 0,
+        status,
+      };
+    }
+  
     return this.http
       .post(`${this.apiUrl}/empspeciality`, specialityDetails)
       .pipe(tap(() => this.getEmployeeSpecialityDetails()));
@@ -229,15 +457,43 @@ return response.filter((data:any)=> data.status===1)
       .subscribe((data: any) => this.specialitySubject.next(data));
   };
 
-  addEmployeeSubSpecialityDetails = (
-    subSpecialityDetails: EmployeeSubSpecialization
-  ): Observable<any> => {
-    subSpecialityDetails = {
-      ...subSpecialityDetails,
-      ...this.defaultObj,
-      empSubSpId: 0,
-    };
+  // addEmployeeSubSpecialityDetails = (
+  //   subSpecialityDetails: EmployeeSubSpecialization
+  // ): Observable<any> => {
+  //   subSpecialityDetails = {
+  //     ...subSpecialityDetails,
+  //     ...this.defaultObj,
+  //     empSubSpId: 0,
+  //   };
 
+  //   return this.http
+  //     .post(`${this.apiUrl}/empsubspeciality`, subSpecialityDetails)
+  //     .pipe(tap(() => this.getEmployeeSubSpecialityDetails()));
+  // };
+  addEmployeeSubSpecialityDetails = (
+    subSpecialityDetails: EmployeeSubSpecialization,
+    isEdit = false,
+    status: number = 1
+  ): Observable<any> => {
+    if (isEdit) {
+      subSpecialityDetails = {
+        ...subSpecialityDetails,
+        empId: this.defaultObj.empId,
+        modifiedById: this.defaultObj.createdById,
+        status,
+        modifiedOn: new Date().toISOString(),
+      };
+      delete subSpecialityDetails.createdOn;
+      delete subSpecialityDetails.createdById;
+    } else {
+      subSpecialityDetails = {
+        ...subSpecialityDetails,
+        ...this.defaultObj,
+        empSubSpId: 0,
+        status,
+      };
+    }
+  
     return this.http
       .post(`${this.apiUrl}/empsubspeciality`, subSpecialityDetails)
       .pipe(tap(() => this.getEmployeeSubSpecialityDetails()));
