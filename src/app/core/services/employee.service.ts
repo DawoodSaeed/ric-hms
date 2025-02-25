@@ -83,25 +83,35 @@ export class EmployeeService {
   addEmployeeAwardDetails = (
     awardDetails: EmployeeAward,
     isEdit = false,
+    isDelete = false,
     status: number = 1
   ): Observable<any> => {
-    console.log('isEdit value ', isEdit);
-    if (isEdit) {
-      awardDetails = {
-        ...awardDetails,
-        empId: this.defaultObj.empId,
-        modifiedById: this.defaultObj.createdById,
-        status,
-        modifiedOn: new Date().toISOString(),
-      };
-      delete awardDetails.createdOn;
-      delete awardDetails.createdById;
-      console.log('final award ', awardDetails);
+    if (isDelete) {
+     awardDetails.status=0
+     awardDetails.empId=this.defaultObj.empId
     } else {
-      let empAwrdId = 0;
-      awardDetails = { ...awardDetails, ...this.defaultObj, empAwrdId, status };
+      if (isEdit) {
+        awardDetails = {
+          ...awardDetails,
+          empId: this.defaultObj.empId,
+          modifiedById: this.defaultObj.createdById,
+          status,
+          modifiedOn: new Date().toISOString(),
+        };
+        delete awardDetails.createdOn;
+        delete awardDetails.createdById;
+      } else {
+        let empAwrdId = 0;
+        awardDetails = {
+          ...awardDetails,
+          ...this.defaultObj,
+          empAwrdId,
+          status,
+        };
+      }
     }
-
+    
+    console.log('final award ', awardDetails);
     return this.http
       .post(`${this.apiUrl}/empaward`, awardDetails)
       .pipe(tap(() => this.getEmployeeAwardDetails()));
@@ -129,9 +139,13 @@ export class EmployeeService {
   addEmployeeBankDetails = (
     bankDetails: EmployeeBankDetails,
     isEdit = false,
+    isDelete = false,
     status: number = 1
   ): Observable<any> => {
-    if (isEdit) {
+    if (isDelete) {
+      bankDetails.status = 0;
+      bankDetails.empId = this.defaultObj.empId;
+    } else if (isEdit) {
       bankDetails = {
         ...bankDetails,
         empId: this.defaultObj.empId,
@@ -144,7 +158,7 @@ export class EmployeeService {
     } else {
       bankDetails = { ...bankDetails, ...this.defaultObj, empBankId: 0, status };
     }
-  
+
     return this.http
       .post(`${this.apiUrl}/empbank`, bankDetails)
       .pipe(tap(() => this.getEmployeeBankDetails()));
@@ -165,12 +179,17 @@ export class EmployeeService {
   //     .pipe(tap(() => this.getEmployeeEducationDetails()));
   // };
 
+ 
   addEmployeeEducationDetails = (
     educationDetails: EmployeeEducation,
     isEdit = false,
+    isDelete = false,
     status: number = 1
   ): Observable<any> => {
-    if (isEdit) {
+    if (isDelete) {
+      educationDetails.status = 0;
+      educationDetails.empId = this.defaultObj.empId;
+    } else if (isEdit) {
       educationDetails = {
         ...educationDetails,
         empId: this.defaultObj.empId,
@@ -181,14 +200,9 @@ export class EmployeeService {
       delete educationDetails.createdOn;
       delete educationDetails.createdById;
     } else {
-      educationDetails = {
-        ...educationDetails,
-        ...this.defaultObj,
-        empEduId: 0,
-        status,
-      };
+      educationDetails = { ...educationDetails, ...this.defaultObj, empEduId: 0, status };
     }
-  
+
     return this.http
       .post(`${this.apiUrl}/empeducation`, educationDetails)
       .pipe(tap(() => this.getEmployeeEducationDetails()));
@@ -203,28 +217,26 @@ export class EmployeeService {
   addEmployeeDepartmentDetails = (
     departmentDetails: EmployeeDepartment,
     isEdit = false,
+    isDelete = false,
     status: number = 1
   ): Observable<any> => {
-    if (isEdit) {
+    if (isDelete) {
+      departmentDetails.status = 0;
+      departmentDetails.empId = this.defaultObj.empId;
+    } else if (isEdit) {
       departmentDetails = {
         ...departmentDetails,
         empId: this.defaultObj.empId,
         modifiedById: this.defaultObj.createdById,
-        // 
-        // status,
+        status,
         modifiedOn: new Date().toISOString(),
       };
       delete departmentDetails.createdOn;
       delete departmentDetails.createdById;
     } else {
-      departmentDetails = {
-        ...departmentDetails,
-        ...this.defaultObj,
-        empDid: 0,
-        // status,
-      };
+      departmentDetails = { ...departmentDetails, ...this.defaultObj, empDid: 0, status };
     }
-  
+
     return this.http
       .post(`${this.apiUrl}/empdept`, departmentDetails)
       .pipe(tap(() => this.getEmployeeDepartmentDetails()));
@@ -247,14 +259,18 @@ export class EmployeeService {
   addEmployeesubDepartmentDetails = (
     subDeptDetails: EmployeeSubDepartment,
     isEdit = false,
+    isDelete = false,
     status: number = 1
   ): Observable<any> => {
-    if (isEdit) {
+    if (isDelete) {
+      subDeptDetails.status = 0;
+      subDeptDetails.empId = this.defaultObj.empId;
+    } else if (isEdit) {
       subDeptDetails = {
         ...subDeptDetails,
         empId: this.defaultObj.empId,
         modifiedById: this.defaultObj.createdById,
-        // status,
+        status,
         modifiedOn: new Date().toISOString(),
       };
       delete subDeptDetails.createdOn;
@@ -264,7 +280,7 @@ export class EmployeeService {
         ...subDeptDetails,
         ...this.defaultObj,
         empSubDid: 0,
-        // status,
+        status,
       };
     }
   
@@ -272,6 +288,7 @@ export class EmployeeService {
       .post(`${this.apiUrl}/empsubdept`, subDeptDetails)
       .pipe(tap(() => this.getEmployeeSubDepartmentDetails()));
   };
+  
   getEmployeeSubDepartmentDetails = (): void => {
     this.http
       .get(`${this.apiUrl}/empsubdept`)
@@ -294,14 +311,18 @@ export class EmployeeService {
   addEmployeeDesignationDetails = (
     designationDetails: EmployeeDesignation,
     isEdit = false,
+    isDelete = false,
     status: number = 1
   ): Observable<any> => {
-    if (isEdit) {
+    if (isDelete) {
+      designationDetails.status = 0;
+      designationDetails.empId = this.defaultObj.empId;
+    } else if (isEdit) {
       designationDetails = {
         ...designationDetails,
         empId: this.defaultObj.empId,
         modifiedById: this.defaultObj.createdById,
-        // status,
+        status,
         modifiedOn: new Date().toISOString(),
       };
       delete designationDetails.createdOn;
@@ -311,7 +332,7 @@ export class EmployeeService {
         ...designationDetails,
         ...this.defaultObj,
         empDesgnId: 0,
-        // status,
+        status,
       };
     }
   
@@ -319,6 +340,7 @@ export class EmployeeService {
       .post(`${this.apiUrl}/empdesg`, designationDetails)
       .pipe(tap(() => this.getEmployeeDesignationDetails()));
   };
+  
   getEmployeeDesignationDetails = (): void => {
     this.http
       .get(`${this.apiUrl}/empdesg`)
@@ -333,29 +355,39 @@ export class EmployeeService {
   //     .pipe(tap(() => this.getEmployeeExperienceDetails()));
   // };
 
-addEmployeeExpDetails = (
-  expDetails: EmployeeExperience,
-  isEdit = false,
-  status: number = 1
-): Observable<any> => {
-  if (isEdit) {
-    expDetails = {
-      ...expDetails,
-      empId: this.defaultObj.empId,
-      modifiedById: this.defaultObj.createdById,
-      status,
-      modifiedOn: new Date().toISOString(),
-    };
-    delete expDetails.createdOn;
-    delete expDetails.createdById;
-  } else {
-    expDetails = { ...expDetails, ...this.defaultObj, empExpId: 0, status };
-  }
-
-  return this.http
-    .post(`${this.apiUrl}/empexperience`, expDetails)
-    .pipe(tap(() => this.getEmployeeExperienceDetails()));
-};
+  addEmployeeExpDetails = (
+    expDetails: EmployeeExperience,
+    isEdit = false,
+    isDelete = false,
+    status: number = 1
+  ): Observable<any> => {
+    if (isDelete) {
+      expDetails.status = 0;
+      expDetails.empId = this.defaultObj.empId;
+    } else if (isEdit) {
+      expDetails = {
+        ...expDetails,
+        empId: this.defaultObj.empId,
+        modifiedById: this.defaultObj.createdById,
+        status,
+        modifiedOn: new Date().toISOString(),
+      };
+      delete expDetails.createdOn;
+      delete expDetails.createdById;
+    } else {
+      expDetails = {
+        ...expDetails,
+        ...this.defaultObj,
+        empExpId: 0,
+        status,
+      };
+    }
+  
+    return this.http
+      .post(`${this.apiUrl}/empexperience`, expDetails)
+      .pipe(tap(() => this.getEmployeeExperienceDetails()));
+  };
+  
 
   getEmployeeExperienceDetails = (): void => {
     this.http
@@ -379,14 +411,18 @@ addEmployeeExpDetails = (
   addEmployeeFacilityDetails = (
     facilityDetails: EmployeeFacility,
     isEdit = false,
+    isDelete = false,
     status: number = 1
   ): Observable<any> => {
-    if (isEdit) {
+    if (isDelete) {
+      facilityDetails.status = 0;
+      facilityDetails.empId = this.defaultObj.empId;
+    } else if (isEdit) {
       facilityDetails = {
         ...facilityDetails,
         empId: this.defaultObj.empId,
         modifiedById: this.defaultObj.createdById,
-        // status,
+        status,
         modifiedOn: new Date().toISOString(),
       };
       delete facilityDetails.createdOn;
@@ -396,7 +432,7 @@ addEmployeeExpDetails = (
         ...facilityDetails,
         ...this.defaultObj,
         empFacilityId: 0,
-        // status,
+        status,
       };
     }
   
@@ -404,6 +440,7 @@ addEmployeeExpDetails = (
       .post(`${this.apiUrl}/empfacility`, facilityDetails)
       .pipe(tap(() => this.getEmployeeFacilityDetails()));
   };
+  
   getEmployeeFacilityDetails = (): void => {
     this.http
       .get(`${this.apiUrl}/empfacility`)
@@ -426,9 +463,13 @@ addEmployeeExpDetails = (
   addEmployeeSpecialityDetails = (
     specialityDetails: EmployeeSpecialization,
     isEdit = false,
+    isDelete = false,
     status: number = 1
   ): Observable<any> => {
-    if (isEdit) {
+    if (isDelete) {
+      specialityDetails.status = 0;
+      specialityDetails.empId = this.defaultObj.empId;
+    } else if (isEdit) {
       specialityDetails = {
         ...specialityDetails,
         empId: this.defaultObj.empId,
@@ -451,6 +492,7 @@ addEmployeeExpDetails = (
       .post(`${this.apiUrl}/empspeciality`, specialityDetails)
       .pipe(tap(() => this.getEmployeeSpecialityDetails()));
   };
+  
   getEmployeeSpecialityDetails = (): void => {
     this.http
       .get(`${this.apiUrl}/empspeciality`)
@@ -473,9 +515,13 @@ addEmployeeExpDetails = (
   addEmployeeSubSpecialityDetails = (
     subSpecialityDetails: EmployeeSubSpecialization,
     isEdit = false,
+    isDelete = false,
     status: number = 1
   ): Observable<any> => {
-    if (isEdit) {
+    if (isDelete) {
+      subSpecialityDetails.status = 0;
+      subSpecialityDetails.empId = this.defaultObj.empId;
+    } else if (isEdit) {
       subSpecialityDetails = {
         ...subSpecialityDetails,
         empId: this.defaultObj.empId,
@@ -498,6 +544,7 @@ addEmployeeExpDetails = (
       .post(`${this.apiUrl}/empsubspeciality`, subSpecialityDetails)
       .pipe(tap(() => this.getEmployeeSubSpecialityDetails()));
   };
+  
   getEmployeeSubSpecialityDetails = (): void => {
     this.http
       .get(`${this.apiUrl}/empsubspeciality`)

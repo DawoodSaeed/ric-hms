@@ -53,7 +53,9 @@ export class DynamicTableComponent implements OnInit {
 
 deleteItem(employee: any) {
     console.log('Deleting Employee:', employee);
-    // Your delete logic here
+    let isDelete=true
+    this.dataEmitter.emit({employee,isDelete})
+
 }
   formatStringName(name: string): string {
     if (name === 'empAwrdId') {

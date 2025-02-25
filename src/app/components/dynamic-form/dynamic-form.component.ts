@@ -44,6 +44,7 @@ export class DynamicFormComponent implements OnInit {
   dataReceivedFromChild:any=null
   entriesCount:number=2
   isEdit:boolean=false
+  isDelete:boolean=false
   form!: FormGroup;
   uploadedImages: { [key: string]: string | ArrayBuffer } = {};
   selectedTabIndex: number = 0;
@@ -64,13 +65,22 @@ export class DynamicFormComponent implements OnInit {
   }
   receivedData(data:any){
     console.log('data received ',data);
-    this.dataReceivedFromChild=data
-    if(this.form){
-      Object.keys(data).forEach((key:any)=>{
-        if(this.form.controls[key]){
-          this.form.controls[key].setValue(data[key])
-        }
-      })
+    if(data.isDelete){
+this.dataReceivedFromChild=data.employee
+this.isDelete=true
+this.isEdit=false
+this.onSubmit()
+    }else{
+      this.dataReceivedFromChild=data
+this.isEdit=true
+      if(this.form){
+        Object.keys(data).forEach((key:any)=>{
+          if(this.form.controls[key]){
+            this.form.controls[key].setValue(data[key])
+          }
+        })
+      }
+
     }
     
   }
@@ -141,12 +151,12 @@ export class DynamicFormComponent implements OnInit {
         tabData= Object.assign(tabData, Object.fromEntries(
            Object.entries(this.dataReceivedFromChild).filter(([key]) => !(key in tabData))
          ));
-this.isEdit=true
       }
       this.dataEmitter.emit({
         apiToCall,
         data: tabData,
-        isEdit:this.isEdit
+        isEdit:this.isEdit,
+        isDelete:this.isDelete
       }); // Emit selected tab data
     } else {
       console.log('Form is invalid or formStructure is not defined');

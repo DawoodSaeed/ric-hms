@@ -252,7 +252,7 @@ export class AddEmployeeComponent implements OnInit {
     console.log('submittedForm ', event.data);
     this.formatDatesInObject(submittedData);
     this.isLoading.set(true);
-    event.apiToCall(submittedData,event.isEdit).subscribe({
+    event.apiToCall(submittedData,event.isEdit,event.isDelete).subscribe({
       next: (data: any) => {
         this.notificationService.showSuccess('Operation successful!');
 
