@@ -1,4 +1,11 @@
-import { Component, computed, inject, Inject, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  Inject,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -8,13 +15,12 @@ import { EmployeeService } from '../../core/services/employee.service';
 
 @Component({
   selector: 'app-dynamic-table',
-  imports: [TableModule, CommonModule, IconFieldModule, InputIconModule, Tag],
+  imports: [TableModule, CommonModule, IconFieldModule, InputIconModule],
   templateUrl: './dynamic-table.component.html',
   styleUrl: './dynamic-table.component.scss',
 })
 export class DynamicTableComponent implements OnInit {
-  constructor(){
-  }
+  constructor() {}
 
   @Input() tableData: any[] = [];
   @Input() tableTitle: string = '';
@@ -30,7 +36,7 @@ export class DynamicTableComponent implements OnInit {
               'modifiedOn',
               'empId',
               'bankId',
-              'isCurrent'
+              'isCurrent',
             ].includes(key)
         )
       : [];
