@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
+  Input,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -35,6 +36,12 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { SkeletonModule } from 'primeng/skeleton';
+import { Bank } from '../../../../core/interfaces/typetable';
+import {
+  Building,
+  Floor,
+  Room,
+} from '../../../../core/interfaces/branch.interface';
 
 interface cols {
   field: string;
@@ -75,7 +82,7 @@ interface cols {
 })
 export class EmployeesComponent {
   private employeeService = inject(EmployeeService);
-
+  @Input() data!: Bank[] | Building[] | Room[] | Floor[];
   employees = signal<Employee[]>([]);
   cols = signal<cols[]>([]);
   selectedEmployee: Employee | null = null;

@@ -1,4 +1,5 @@
 import { Component, computed, EventEmitter, inject, Inject, Input, OnInit, Output } from '@angular/core';
+
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -10,6 +11,7 @@ import { SpeedDial } from 'primeng/speeddial';
 @Component({
   selector: 'app-dynamic-table',
   imports: [TableModule, CommonModule, IconFieldModule, InputIconModule, Tag,SpeedDial],
+
   templateUrl: './dynamic-table.component.html',
   styleUrl: './dynamic-table.component.scss',
 })
@@ -17,7 +19,7 @@ export class DynamicTableComponent implements OnInit {
   constructor(){
   }
   
-  
+
 
   getActionItems(employee: any) {
     return [
@@ -42,6 +44,7 @@ export class DynamicTableComponent implements OnInit {
               'bankId',
               'isCurrent',
               'status'
+
             ].includes(key)
         )
       : [];

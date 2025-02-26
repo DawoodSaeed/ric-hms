@@ -1,12 +1,17 @@
 <div class="card">
   <p-contextmenu #cm [model]="contextItems" />
-
+  @if(data()){
   <p-table
+    [scrollable]="true"
+    scrollHeight="flex"
+    #dt
+    [value]="data()"
+    [columns]="tableColumns()"
+    [loading]="loading()"
+    dataKey="id"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
     [showCurrentPageReport]="true"
     [size]="'large'"
-    #dt
-    [value]="banks()"
     [tableStyle]="{ 'min-width': '60rem' }"
     [paginator]="true"
     [rows]="10"
@@ -14,12 +19,10 @@
     responsiveLayout="scroll"
     class="custom-table"
     [rowsPerPageOptions]="[5, 10, 20]"
-    dataKey="empId"
-    [globalFilterFields]="['name', 'bankId']"
+    [globalFilterFields]="globalFilterFields()"
     [(contextMenuSelection)]="selectedItem"
     [contextMenu]="cm"
     stateStorage="session"
-    [loading]="loading()"
     stateKey="statedemo-session"
   >
     <ng-template #caption>
@@ -34,10 +37,9 @@
           p-button
           icon="pi pi-plus"
           (click)="showDialog()"
-          label="Add Bank"
+          [label]="getAddButtonLabel()"
           styleClass="ml-2"
         />
-
         <p-iconfield iconPosition="left" class="ml-auto">
           <p-inputicon>
             <i class="pi pi-search"></i>
@@ -45,70 +47,74 @@
           <input
             pInputText
             type="text"
-            [value]="searchValue()"
             (input)="dt.filterGlobal($any($event.target).value, 'contains')"
             placeholder="Keyboard Search"
           />
         </p-iconfield>
       </div>
     </ng-template>
-
-    <ng-template pTemplate="header">
+    <ng-template pTemplate="header" let-columns>
       <tr>
-        <th pSortableColumn="bankId">Bank ID <p-sortIcon field="bankId" /></th>
-        <th pSortableColumn="name">Bank Name <p-sortIcon field="name" /></th>
-        <th pSortableColumn="description">
-          Description <p-sortIcon field="description" />
+        @for (col of columns; track col) {
+        <th [pSortableColumn]="col.field">
+          {{ col.header }} <p-sortIcon [field]="col.field" />
         </th>
-        <th pSortableColumn="abbrivation">
-          Abbreviation <p-sortIcon field="abbrivation" />
-        </th>
-        <th pSortableColumn="code">Bank Code <p-sortIcon field="code" /></th>
-
-        <th pSortableColumn="createdOn">
-          Created On <p-sortIcon field="createdOn" />
-        </th>
-
-        <th pSortableColumn="isActive">
-          Status <p-sortIcon field="isActive" />
-        </th>
+        }
+        <th>Status</th>
+        <th>Actions</th>
       </tr>
     </ng-template>
-
-    <ng-template pTemplate="body" let-bank>
-      <tr [pContextMenuRow]="bank" *ngIf="banks().length > 0">
-        <td>{{ bank.bankId }}</td>
-        <td>{{ bank.name }}</td>
-        <td>{{ bank.description }}</td>
-        <td>{{ bank.abbrivation }}</td>
-        <td>{{ bank.code }}</td>
-        <td>{{ bank.createdOn | date : "MMM d, y" }}</td>
-
+    <ng-template
+      pTemplate="body"
+      let-rowData
+      let-columns="columns"
+      let-rowIndex="rowIndex"
+    >
+      <tr [pContextMenuRow]="rowData" [pSelectableRow]="rowData">
+        @for (col of columns; track col) {
+        <td>{{ rowData[col.field] }}</td>
+        }
         <td>
           <span
             [ngClass]="{
-              'bg-green-100 text-green-800': bank.isActive === 1,
-              'bg-red-100 text-red-800': bank.isActive === 0
+              'bg-green-100 text-green-800': rowData['status'] === 1,
+              'bg-red-100 text-red-800': rowData['status'] === 0
             }"
             class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
           >
-            {{ bank.isActive === 1 ? "Active" : "Inactive" }}
+            {{ rowData["status"] === 1 ? "Active" : "Inactive" }}
           </span>
+        </td>
+        <td>
+          <button
+            pButton
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-text"
+            (click)="editRow(rowData)"
+          ></button>
+
+          <button
+            pButton
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-text p-button-danger"
+            (click)="deleteItemConfrimatin(rowData)"
+          ></button>
         </td>
       </tr>
     </ng-template>
   </p-table>
-
+  }
   <p-dialog
-    header="Add New Bank"
+    [header]="getDialogHeader()"
     [visible]="displayDialog()"
     styleClass="w-full md:w-[45rem]"
     [closable]="false"
     [maximizable]="true"
+    (onHide)="onDialogDismiss()"
   >
     <ng-template #header>
       <div class="flex items-center justify-between w-[100%]">
-        <h3 class="font-semibold text-lg">Add Bank Details</h3>
+        <h3 class="font-semibold text-lg">{{ getDialogHeader() }} Details</h3>
         <button
           pButton
           icon="pi pi-times"
@@ -117,62 +123,387 @@
         ></button>
       </div>
     </ng-template>
-    <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
-      <label for="abbreviation" class="text-right font-medium"
-        >Abbreviation</label
-      >
-      <input
-        pInputText
-        [(ngModel)]="newBank.abbrivation"
-        id="abbreviation"
-        placeholder="Abbreviation"
-        required
-        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-      />
-    </div>
-    <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
-      <label for="name" class="text-right font-medium">Bank Name</label>
-      <input
-        pInputText
-        [(ngModel)]="newBank.name"
-        id="name"
-        placeholder="Bank Name"
-        required
-        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-      />
-    </div>
-    <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
-      <label for="code" class="text-right font-medium">Bank Code</label>
-      <input
-        pInputText
-        [(ngModel)]="newBank.code"
-        id="code"
-        placeholder="Bank Code"
-        required
-        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-      />
-    </div>
-    <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-start">
-      <label for="description" class="text-right font-medium"
-        >Description</label
-      >
-      <textarea
-        pInputTextarea
-        [(ngModel)]="newBank.description"
-        id="description"
-        placeholder="Description"
-        required
-        rows="5"
-        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-      ></textarea>
-    </div>
+
+    <!-- To add the floor #################### -->
+    <ng-container *ngIf="currentDataType === 'floors'">
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Select Branch</label
+        >
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="branches()"
+          [(ngModel)]="selectedBranch"
+          optionLabel="branchName"
+          placeholder="Select Branch"
+          class="w-full md:w-56"
+          required
+          (ngModelChange)="onDropdownChange($event, 'branch')"
+        />
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Select Building</label
+        >
+        @if(buildings$ | async; as buildings){
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="buildings"
+          [(ngModel)]="selectedBuilding"
+          optionLabel="name"
+          placeholder="Select Building"
+          class="w-full md:w-56"
+          required
+          (ngModelChange)="onDropdownChange($event, 'building')"
+          [disabled]="this.selectedBranchSubj.value == 0 && !selectedBuilding"
+        />
+        }
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="name" class="text-right font-medium">Floor Name</label>
+        <input
+          pInputText
+          [(ngModel)]="newFloor.name"
+          id="name"
+          placeholder="Floor Name"
+          required
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-start">
+        <label for="description" class="text-right font-medium"
+          >Description</label
+        >
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newFloor.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-start">
+        <label for="description" class="text-right font-medium">Status</label>
+        <p-checkbox [(ngModel)]="newFloor.status" [binary]="true" />
+      </div>
+    </ng-container>
+
+    <!-- To add the bulding ############## -->
+    <ng-container *ngIf="currentDataType === 'buildings'">
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="name" class="text-right font-medium">Building Name</label>
+        <input
+          pInputText
+          [(ngModel)]="newBuilding.name"
+          id="name"
+          placeholder="Building Name"
+          required
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-start">
+        <label for="description" class="text-right font-medium"
+          >Description</label
+        >
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newBuilding.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-start">
+        <label for="description" class="text-right font-medium">Status</label>
+        <p-checkbox [(ngModel)]="newBuilding.status" [binary]="true" />
+      </div>
+    </ng-container>
+
+    <!-- To add the room -->
+    <ng-container *ngIf="currentDataType === 'rooms'">
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Select Branch</label
+        >
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="branches()"
+          [(ngModel)]="selectedBranch"
+          optionLabel="branchName"
+          placeholder="Select Branch"
+          class="w-full md:w-56"
+          required
+          (ngModelChange)="onDropdownChange($event, 'branch')"
+        />
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Select Building</label
+        >
+        @if(buildings$ | async; as buildings){
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="buildings"
+          [(ngModel)]="selectedBuilding"
+          optionLabel="name"
+          placeholder="Select Building"
+          class="w-full md:w-56"
+          required
+          (ngModelChange)="onDropdownChange($event, 'building')"
+          [disabled]="this.selectedBranchSubj.value == 0 && !selectedBuilding"
+        />
+        }
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Select Floor</label
+        >
+        @if(floors$ | async; as floors){
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="floors"
+          [(ngModel)]="selectedFloor"
+          optionLabel="name"
+          placeholder="Select Floor"
+          class="w-full md:w-56"
+          required
+          (ngModelChange)="onDropdownChange($event, 'floor')"
+          [disabled]="
+            (this.selectedBuildingSubj.value == 0 ||
+              this.selectedBranchSubj.value == 0) &&
+            !selectedFloor
+          "
+        />
+        }
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="name" class="text-right font-medium">Room Name</label>
+        <input
+          pInputText
+          [(ngModel)]="newRoom.name"
+          id="name"
+          placeholder="Room Name"
+          required
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-start">
+        <label for="description" class="text-right font-medium"
+          >Description</label
+        >
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newRoom.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-start">
+        <label for="description" class="text-right font-medium">Status</label>
+        <p-checkbox [(ngModel)]="newRoom.status" [binary]="true" />
+      </div>
+    </ng-container>
+
+    <!-- To add the Bed -->
+    <ng-container *ngIf="currentDataType === 'beds'">
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Select Branch</label
+        >
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="branches()"
+          [(ngModel)]="selectedBranch"
+          optionLabel="branchName"
+          placeholder="Select Branch"
+          class="w-full md:w-56"
+          required
+          (ngModelChange)="onDropdownChange($event, 'branch')"
+        />
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Select Building</label
+        >
+        @if(buildings$ | async; as buildings){
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="buildings"
+          [(ngModel)]="selectedBuilding"
+          optionLabel="name"
+          placeholder="Select Building"
+          class="w-full md:w-56"
+          required
+          (ngModelChange)="onDropdownChange($event, 'building')"
+          [disabled]="this.selectedBranchSubj.value == 0 && !selectedBuilding"
+        />
+        }
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Select Floor</label
+        >
+        @if(floors$ | async; as floors){
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="floors"
+          [(ngModel)]="selectedFloor"
+          optionLabel="name"
+          placeholder="Select Floor"
+          class="w-full md:w-56"
+          required
+          (ngModelChange)="onDropdownChange($event, 'floor')"
+          [disabled]="
+            (this.selectedBuildingSubj.value == 0 ||
+              this.selectedBranchSubj.value == 0) &&
+            !selectedFloor
+          "
+        />
+        }
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Select Room</label
+        >
+        @if(rooms$ | async; as rooms){
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="rooms"
+          [(ngModel)]="selectedRoom"
+          optionLabel="name"
+          placeholder="Select Room"
+          class="w-full md:w-56"
+          required
+          (ngModelChange)="onDropdownChange($event, 'room')"
+          [disabled]="
+            (this.selectedBuildingSubj.value == 0 ||
+              this.selectedBranchSubj.value == 0 ||
+              this.selectedFloorSub.value == 0) &&
+            !selectedRoom
+          "
+        />
+        }
+      </div>
+
+      <!-- Get the charges type -->
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Charges Type</label
+        >
+        @if(chargesType$ | async; as charges){
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="charges"
+          [(ngModel)]="selectedCharges"
+          optionLabel="name"
+          placeholder="Select Charges Type"
+          class="w-full md:w-56"
+          required
+        />
+        }
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="abbreviation" class="text-right font-medium"
+          >Min and Max</label
+        >
+        <p-slider [(ngModel)]="minMaxRange" [range]="true" styleClass="w-56" />
+      </div>
+
+      <!-- Dropdown Ends here  ########### -->
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+        <label for="name" class="text-right font-medium">Bed Name</label>
+        <input
+          pInputText
+          [(ngModel)]="newBed.name"
+          id="name"
+          placeholder="Bed Name"
+          required
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-start">
+        <label for="description" class="text-right font-medium"
+          >Description</label
+        >
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newBed.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+
+      <div class="grid grid-cols-[120px_1fr] gap-4 mb-4 items-start">
+        <label for="description" class="text-right font-medium">Status</label>
+        <p-checkbox [(ngModel)]="newBed.status" [binary]="true" />
+      </div>
+    </ng-container>
     <div class="flex justify-end mt-4">
       <button
         pButton
         label="Save"
-        (click)="addBank()"
+        (click)="addOrUpdateItem()"
         class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
       ></button>
     </div>
   </p-dialog>
+
+  <!-- for the deletion confrimation -->
+  <p-confirmDialog>
+    <ng-template pTemplate="footer" let-confirmation>
+      <button
+        pButton
+        type="button"
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-secondary"
+        (click)="this.confirmationService.close()"
+      ></button>
+
+      <button
+        pButton
+        type="button"
+        label="Proceed"
+        icon="pi pi-check"
+        class="p-button-danger"
+        (click)="deleteItem()"
+      ></button>
+    </ng-template>
+  </p-confirmDialog>
 </div>
