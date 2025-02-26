@@ -36,26 +36,26 @@ export class NavbarComponent implements OnInit {
     this.sidebarService.toggleDrawer(!this.isDrawerOpen);
   }
   topMenuItems: MenuItem[] = [
-    { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },
-    {
-      label: 'Projects',
-      icon: 'pi pi-folder',
-      items: [
-        {
-          label: 'Active Projects',
-          icon: 'pi pi-play',
-          routerLink: '/projects/active',
-        },
-        {
-          label: 'Archived Projects',
-          icon: 'pi pi-archive',
-          routerLink: '/projects/archived',
-        },
-      ],
-    },
-    { label: 'Teams', icon: 'pi pi-users', routerLink: '/teams' },
-    { label: 'Settings', icon: 'pi pi-cog', routerLink: '/settings' },
-    { label: 'Logout', icon: 'pi pi-sign-out', command: () => this.logout() },
+    // { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },
+    // {
+    //   label: 'Projects',
+    //   icon: 'pi pi-folder',
+    //   items: [
+    //     {
+    //       label: 'Active Projects',
+    //       icon: 'pi pi-play',
+    //       routerLink: '/projects/active',
+    //     },
+    //     {
+    //       label: 'Archived Projects',
+    //       icon: 'pi pi-archive',
+    //       routerLink: '/projects/archived',
+    //     },
+    //   ],
+    // },
+    // { label: 'Teams', icon: 'pi pi-users', routerLink: '/teams' },
+    // { label: 'Settings', icon: 'pi pi-cog', routerLink: '/settings' },
+    // { label: 'Logout', icon: 'pi pi-sign-out', command: () => this.logout() },
   ];
 
   logout() {

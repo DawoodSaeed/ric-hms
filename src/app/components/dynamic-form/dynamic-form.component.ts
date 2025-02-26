@@ -146,11 +146,15 @@ this.isEdit=true
       });
       console.log('dataReceivedFromChild ',this.dataReceivedFromChild)
       console.log('tabDataxx ',tabData,'')
-      if(this.dataReceivedFromChild){
+      if(this.isEdit){
 // Putting missing key,values from tabData that are present in dataReceivedFromChild in tabData
         tabData= Object.assign(tabData, Object.fromEntries(
            Object.entries(this.dataReceivedFromChild).filter(([key]) => !(key in tabData))
          ));
+      }
+      if(this.isDelete){
+        tabData=this.dataReceivedFromChild
+        
       }
       this.dataEmitter.emit({
         apiToCall,
@@ -159,6 +163,8 @@ this.isEdit=true
         isDelete:this.isDelete
       }); // Emit selected tab data
     } else {
+      this.form.markAllAsTouched(); // Mark all fields as touched to show validation errors
+
       console.log('Form is invalid or formStructure is not defined');
     }
   }

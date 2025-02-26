@@ -68,11 +68,7 @@ export class LoginComponent implements OnInit {
         },
 
         error: (err) => {
-          if (!err.status) {
-            this.authForm.setErrors({
-              noConnection: true,
-            });
-          } else if (err.status == 401) {
+           if (err.status == 401) {
             this.authForm.setErrors({
               unAuth: true,
             });

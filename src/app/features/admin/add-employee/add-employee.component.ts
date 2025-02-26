@@ -260,7 +260,7 @@ export class AddEmployeeComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: () => {
-        this.notificationService.showError('Could not register Employee! Please Try Again');
+        this.notificationService.showError('Some! Please Try Again');
 
         this.isLoading.set(false);
       },
@@ -280,25 +280,26 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Personal Information',
             fields: [
               // { name: 'empId', label: 'Employee ID', type: 'number' },
-              { name: 'firstName', label: 'First Name', type: 'text' },
+              { name: 'firstName', label: 'First Name', type: 'text' ,required:true},
               { name: 'lastName', label: 'Last Name', type: 'text' },
               { name: 'picture', label: 'Profile Picture', type: 'image' },
               { name: 'cnic', label: 'CNIC', type: 'text' },
               { name: 'passport', label: 'Passport', type: 'text' },
-              { name: 'dob', label: 'Date of Birth', type: 'date' },
-              { name: 'gender', label: 'Gender', type: 'text' },
-              { name: 'maritalStatus', label: 'Marital Status', type: 'text' },
+              { name: 'dob', label: 'Date of Birth', type: 'date',required:true },
+              { name: 'dob', label: 'Date of Birth', type: 'date',required:true },
+              { name: 'gender', label: 'Gender', type: 'text',required:true },
+              { name: 'maritalStatus', label: 'Marital Status', type: 'text',required:true,},
               { name: 'religion', label: 'Religion', type: 'text' },
               {
                 name: 'bloodGroupId',
                 label: 'Blood Group',
                 type: 'select',
               },
-              { name: 'country', label: 'Country', type: 'select' },
-              { name: 'province', label: 'Province', type: 'select' },
-              { name: 'cityDistrict', label: 'City/District', type: 'select' },
-              { name: 'address', label: 'Address', type: 'text' },
-              { name: 'mobileNo', label: 'Mobile No', type: 'text' },
+              { name: 'country', label: 'Country', type: 'select',required:true },
+              { name: 'province', label: 'Province', type: 'select' ,required:true},
+              { name: 'cityDistrict', label: 'City/District', type: 'select',required:true },
+              { name: 'address', label: 'Address', type: 'text',required:true },
+              { name: 'mobileNo', label: 'Mobile No', type: 'text',required:true },
               { name: 'phone', label: 'Phone', type: 'text' },
               { name: 'email', label: 'Email', type: 'text' },
               {
@@ -366,8 +367,8 @@ export class AddEmployeeComponent implements OnInit {
               { name: 'description', label: 'Description', type: 'text' },
               { name: 'awardDate', label: 'Award Date', type: 'date' },
               // { name: 'status', label: 'Status', type: 'radio' },
-              // { name: 'createdById', label: 'Created By', type: 'number' },
-              // { name: 'createdOn', label: 'Created On', type: 'date' },
+              { name: 'createdById', label: 'Created By', type: 'number',hide:true  },
+              { name: 'createdOn', label: 'Created On', type: 'date',hide:true },
               // { name: 'modifiedById', label: 'Modified By', type: 'number' },
               // { name: 'modifiedOn', label: 'Modified On', type: 'date' },
             ],
