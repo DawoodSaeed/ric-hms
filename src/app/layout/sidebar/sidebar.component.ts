@@ -109,6 +109,25 @@ export class SidebarComponent implements OnInit {
           },
         ],
       },
+
+      {
+        label: 'User Management',
+        icon: 'fas fa-users-cog blue',
+        expanded: false,
+        items: [
+          {
+            label: 'Users',
+            icon: 'pi pi-users', // Changed to pi-users for a group of users
+            route: '/admin/user-management/users',
+          },
+          {
+            label: 'Roles',
+            icon: 'pi pi-shield', // Changed to pi-shield, which is more relevant for roles/permissions
+            route: '/admin/user-management/users', // Consider changing this route to something more role-related
+          },
+        ],
+      },
+
       {
         label: 'Organization Setup',
         icon: 'fas fa-sitemap blue',

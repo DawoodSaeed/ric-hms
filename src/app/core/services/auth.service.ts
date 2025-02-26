@@ -13,15 +13,15 @@ export class AuthService {
   private http = inject(HttpClient);
   private tokenService = inject(TokenService);
   private router = inject(Router);
-private apiUrl = environment.apiUrl + 'auth';
+  private apiUrl = environment.apiUrl + 'auth';
 
   private user = new BehaviorSubject<User | null>(null);
   user$ = this.user.asObservable();
-  private loggedInUserId=new BehaviorSubject<string>('')
-  loggedInUserId$=this.loggedInUserId.asObservable()
+  private loggedInUserId = new BehaviorSubject<string>('');
+  loggedInUserId$ = this.loggedInUserId.asObservable();
   private role = '';
   login(username: string, password: string) {
-    console.log('login called')
+    console.log('login called');
     return this.http
       .post<User>(`${this.apiUrl}/login`, {
         username: username,
@@ -45,7 +45,7 @@ private apiUrl = environment.apiUrl + 'auth';
     return this.http.get<CheckAuth>(`${this.apiUrl}/verify-token/`).pipe(
       map((auth) => {
         const { valid, role, username, userId } = auth;
-        this.loggedInUserId.next(userId)
+        this.loggedInUserId.next(userId);
         this.setRole(role.toLocaleLowerCase());
         return auth;
       })
@@ -72,4 +72,6 @@ private apiUrl = environment.apiUrl + 'auth';
   setUser(user: User | null) {
     this.user.next(user);
   }
+
+  getUser() {}
 }

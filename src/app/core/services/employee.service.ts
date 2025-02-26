@@ -32,10 +32,10 @@ export class EmployeeService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl + 'Employee';
   employee$ = this.http.get<Employee[]>(`${this.apiUrl}`).pipe(
-    tap(response => console.log('Delta response:', response)), // Log full response
-    map(response => response.filter(employee => employee.empStatusId === 1)) // Filter array
+    tap((response) => console.log('Delta response:', response)), // Log full response
+    map((response) => response.filter((employee) => employee.empStatusId === 1)) // Filter array
   );
-  
+
   private employeeAwardSubject = new BehaviorSubject<any[]>([]);
   employeeAwards$ = this.employeeAwardSubject.asObservable();
   private bankDetailsSubject = new BehaviorSubject<any[]>([]);
@@ -88,8 +88,11 @@ export class EmployeeService {
       isDelete
     );
     if (isDelete) {
-      employee = { ...employee, empId: this.registeredEmpIDSignal() ?? -1,empStatusId:0 };
-
+      employee = {
+        ...employee,
+        empId: this.registeredEmpIDSignal() ?? -1,
+        empStatusId: 0,
+      };
     } else if (isEdit) {
       console.log('updating employee...');
       employee = { ...employee, empId: this.registeredEmpIDSignal() ?? -1 };
@@ -211,6 +214,8 @@ export class EmployeeService {
       .get(`${this.apiUrl}/empbank`, { params })
       .subscribe((data: any) => this.bankDetailsSubject.next(data));
   };
+
+  employeeBankDetails$ = this.http.get(`${this.apiUrl}/empbank`);
 
   // addEmployeeEducationDetails = (
   //   educationDetails: EmployeeEducation

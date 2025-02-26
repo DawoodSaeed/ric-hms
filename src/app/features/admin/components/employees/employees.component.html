@@ -61,7 +61,7 @@
       [columns]="cols()"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
       [showCurrentPageReport]="true"
-      [size]="'large'"
+      [size]="'small'"
       #dt
       showGridlines
       [value]="employees()"
@@ -88,7 +88,7 @@
       stateKey="statedemo-session"
     >
       <ng-template #caption>
-        <div class="flex">
+        <div class="flex flex-wrap">
           <p-button
             label="Clear"
             [outlined]="true"
@@ -112,7 +112,7 @@
 
       <ng-template pTemplate="header">
         <tr>
-          <th pSortableColumn="empId">Emp ID <p-sortIcon field="empId" /></th>
+          <!-- <th pSortableColumn="empId">Emp ID <p-sortIcon field="empId" /></th> -->
           <th>Name</th>
           <th>CNIC</th>
           <th>Gender</th>
@@ -126,7 +126,7 @@
 
       <ng-template pTemplate="body" let-employee>
         <tr [pContextMenuRow]="employee" *ngIf="!loading()">
-          <td>{{ employee.empId }}</td>
+          <!-- <td>{{ employee.empId }}</td> -->
           <td>
             <div class="name-cell">
               {{ employee.firstName }} {{ employee.lastName }}
