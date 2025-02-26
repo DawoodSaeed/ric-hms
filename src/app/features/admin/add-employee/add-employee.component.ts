@@ -1,3 +1,4 @@
+import { OrganisationService } from './../../../core/services/organisation.service';
 import {
   Component,
   Inject,
@@ -23,6 +24,7 @@ import {
   JobType,
   Province,
   Relation,
+  Religion,
   Scale,
   TypeTable,
 } from '../../../core/interfaces/typetable';
@@ -33,6 +35,7 @@ import { NOTYF } from './../../../shared/utils/notyf.token';
 import { Notyf } from 'notyf';
 import { Observable, Subscription } from 'rxjs';
 import { NotificationService } from '../../../core/services/notification.service';
+import { Department, SubDepartment } from '../../../core/interfaces/organisation';
 // import { FormStructure } from '../../../core/interfaces/dynamicform';
 @Component({
   selector: 'app-add-employee',
@@ -44,11 +47,11 @@ export class AddEmployeeComponent implements OnInit {
   constructor(
     private notificationService: NotificationService,
     private messageService: MessageService,
-    @Inject(NOTYF) private notyf: Notyf
   ) {}
   subscriptions: Subscription[] = [];
   dropDownService = inject(TypeTableService);
   employeeService = inject(EmployeeService);
+  organizationService=inject(OrganisationService)
   isLoading = signal<boolean>(false);
   ngOnInit(): void {
     this.fetchDropdowns();
@@ -119,9 +122,15 @@ export class AddEmployeeComponent implements OnInit {
   }
 
   fetchDropdowns() {
+    
     // Fetch and set job types
     this.dropDownService.getJobTypes().subscribe((jobtypes: JobType[]) => {
       this.updateDropdownOptions('jobTypeId', jobtypes);
+    });
+    // Fetch and set job types
+    this.dropDownService.getReligions().subscribe((religions: Religion[]) => {
+      console.log('religions ',religions)
+      this.updateDropdownOptions('religion', religions);
     });
 
     // Fetch and set scales
@@ -188,11 +197,14 @@ export class AddEmployeeComponent implements OnInit {
         this.updateDropdownOptions('bankId', banks);
       });
 
-      this.dropDownService
-      .getDepartmentCategories()
-      .subscribe((departments: DepartmentCategory[]) => {
-        console.log('did', departments);
+      this.organizationService.getAllDepartments().subscribe((departments: Department[]) => {
+        console.log('departments', departments);
         this.updateDropdownOptions('did', departments);
+      });
+
+      this.organizationService.getAllSubDepartments().subscribe((subDepartments: SubDepartment[]) => {
+        console.log('subDid', subDepartments);
+        this.updateDropdownOptions('subDid', subDepartments);
       });
       this.dropDownService
       .getDesignations()
@@ -260,7 +272,7 @@ export class AddEmployeeComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: () => {
-        this.notificationService.showError('Some! Please Try Again');
+        this.notificationService.showError('Error! Please Try Again');
 
         this.isLoading.set(false);
       },
@@ -286,10 +298,9 @@ export class AddEmployeeComponent implements OnInit {
               { name: 'cnic', label: 'CNIC', type: 'text' },
               { name: 'passport', label: 'Passport', type: 'text' },
               { name: 'dob', label: 'Date of Birth', type: 'date',required:true },
-              { name: 'dob', label: 'Date of Birth', type: 'date',required:true },
-              { name: 'gender', label: 'Gender', type: 'text',required:true },
-              { name: 'maritalStatus', label: 'Marital Status', type: 'text',required:true,},
-              { name: 'religion', label: 'Religion', type: 'text' },
+              { name: 'gender', label: 'Gender', type: 'select',required:true ,options:[{value:'Male',label:'Male'},{value:'Female',label:'Female'}]},
+              { name: 'maritalStatus', label: 'Marital Status', type: 'select',required:true,options:[{value:'Single',label:'Single'},{value:'Married',label:'Married'},{value:'Divorced',label:'Divorced'},{value:'Widow',label:'Widow'}]},
+              { name: 'religion', label: 'Religion', type: 'select', required:true},
               {
                 name: 'bloodGroupId',
                 label: 'Blood Group',
@@ -297,7 +308,7 @@ export class AddEmployeeComponent implements OnInit {
               },
               { name: 'country', label: 'Country', type: 'select',required:true },
               { name: 'province', label: 'Province', type: 'select' ,required:true},
-              { name: 'cityDistrict', label: 'City/District', type: 'select',required:true },
+              { name: 'cityDistrict', label: 'City/District', type: 'select' },
               { name: 'address', label: 'Address', type: 'text',required:true },
               { name: 'mobileNo', label: 'Mobile No', type: 'text',required:true },
               { name: 'phone', label: 'Phone', type: 'text' },

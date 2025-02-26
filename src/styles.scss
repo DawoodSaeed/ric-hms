@@ -12,14 +12,18 @@ body {
   font-family: "Inter";
   color: var(--color);
 }
+.p-panelmenu-panel {
+  border: none !important;
+  padding: 0 !important;
 
-// .cstm-panel .p-panelmenu-panel {
-//   border: 1px solid #2929bb !important;
-// }
-// .cstm-panel .pi-circle-off,
-// .pi-circle-on {
-//   font-size: 6px !important;
-// }
+}
+.cstm-panel .p-panelmenu-panel {
+  border: 1px solid white !important;
+}
+.cstm-panel .pi-circle-off,
+.pi-circle-on {
+  font-size: 6px !important;
+}
 
 // customizing the route animation
 /* Custom transition */

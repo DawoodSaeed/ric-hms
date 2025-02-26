@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from './layout/navbar/navbar.component';
 import { filter, map, Observable, startWith } from 'rxjs';
 import { SidebarService } from './core/services/sidebar.service';
+import { EmployeeService } from './core/services/employee.service';
 @Component({
   selector: 'app-root',
   imports: [
@@ -25,10 +26,15 @@ export class AppComponent {
   private router = inject(Router);
   sidebarService = inject(SidebarService);
   isDrawerOpen = signal(false);
+    private emplyeeService=inject(EmployeeService)
+  
   ngOnInit(): void {
     this.sidebarService.isDrawerOpen$.subscribe((state: boolean) =>
       this.isDrawerOpen.set(state)
     );
+
+    this.emplyeeService.setRegisteredEmpID(null)
+
   }
 
   topMenuItems: MenuItem[] = [

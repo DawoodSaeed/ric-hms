@@ -17,6 +17,10 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 import { NOTYF } from './../../shared/utils/notyf.token';
 import { Notyf } from 'notyf';
 import { EmployeeService } from '../../core/services/employee.service';
+import { NotificationService } from '../../core/services/notification.service';
+import { ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
+
 @Component({
   selector: 'app-dynamic-form',
   imports: [
@@ -51,17 +55,32 @@ export class DynamicFormComponent implements OnInit {
   currentTab = signal('');
   private emplyeeService=inject(EmployeeService)
   registeredEmpID=computed(()=>this.emplyeeService.registeredEmpIDSignal())
+  receivedEmployee: any;
 
-  constructor(private dynamicFormService: DynamicFormService,@Inject(NOTYF) private notyf: Notyf) {
+  constructor(    private location: Location // Inject Location Service
+,    private dynamicFormService: DynamicFormService ,   private notificationService: NotificationService,private route: ActivatedRoute
+  ) {
 
   }
 
   ngOnInit(): void {
     console.log('Form Structure:', this.formStructure);
+    
     this.form = this.dynamicFormService.createForm(this.formStructure);
     if (this.formStructure.tabs) {
       this.currentTab.set(this.formStructure.tabs[0].tabName);
     }
+    const receivedEmployee = history.state.employee;
+  console.log('Received Employee:', receivedEmployee);
+  if(receivedEmployee){
+    this.emplyeeService.setRegisteredEmpID(receivedEmployee.empId)
+    this.receivedEmployee=receivedEmployee
+    this.form.patchValue(receivedEmployee);
+    // / ✅ Clear `history.state` after processing
+      setTimeout(() => {
+        this.location.replaceState('/admin/addEmployee'); // Replace state with an empty URL
+      }, 0);
+  }
   }
   receivedData(data:any){
     console.log('data received ',data);
@@ -85,6 +104,8 @@ this.isEdit=true
     
   }
   onTabChange(event: any) {
+    // this.form.patchValue(this.receivedEmployee);
+
     console.log('calling onTabChange');
     console.log('change event ', event);
     this.selectedTabIndex = event; // Update selected tab index
@@ -165,119 +186,10 @@ this.isEdit=true
     } else {
       this.form.markAllAsTouched(); // Mark all fields as touched to show validation errors
 
-      console.log('Form is invalid or formStructure is not defined');
+      this.notificationService.showError('Please fill all required fields');
+
     }
   }
 }
 
-// How to pass data
-// There are three ways to pass and show input fields
-// Tabs Based
-// 👉 Use when you want multiple tabs, with each tab containing sections of fields.
-// const formStructureWithTabs = {
-//   globalTitle: "Employee Details", // Always shown at the top of the form
-//   tabs: [
-//     {
-//       tabName: "Basic Info",
-//       sections: [
-//         {
-//           title: "Personal Information",
-//           fields: [
-//             { name: "firstName", label: "First Name", type: "text" },
-//             { name: "lastName", label: "Last Name", type: "text" },
-//             { name: "dob", label: "Date of Birth", type: "text" }
-//           ]
-//         },
-//         {
-//           title: "Contact Information",
-//           fields: [
-//             { name: "email", label: "Email", type: "text" },
-//             { name: "phone", label: "Phone", type: "text" }
-//           ]
-//         }
-//       ]
-//     },
-//     {
-//       tabName: "Job Details",
-//       sections: [
-//         {
-//           title: "Contract Information",
-//           fields: [
-//             {
-//               name: "jobType",
-//               label: "Job Type",
-//               type: "select",
-//               options: [
-//                 { value: "full-time", label: "Full-Time" },
-//                 { value: "part-time", label: "Part-Time" }
-//               ]
-//             },
-//             { name: "ntnNumber", label: "NTN Number", type: "text" }
-//           ]
-//         }
-//       ]
-//     }
-//   ]
-// };
 
-// Flat Form with Sections
-
-// 👉 Use when you don’t want tabs, but you want sections with their own titles and fields.
-// const formStructureWithSections = {
-//   globalTitle: "Employee Details", // Always shown at the top of the form
-//   sections: [
-//     {
-//       title: "Personal Information",
-//       fields: [
-//         { name: "firstName", label: "First Name", type: "text" },
-//         { name: "lastName", label: "Last Name", type: "text" },
-//         { name: "dob", label: "Date of Birth", type: "text" }
-//       ]
-//     },
-//     {
-//       title: "Contact Information",
-//       fields: [
-//         { name: "email", label: "Email", type: "text" },
-//         { name: "phone", label: "Phone", type: "text" }
-//       ]
-//     },
-//     {
-//       title: "Job Information",
-//       fields: [
-//         {
-//           name: "jobType",
-//           label: "Job Type",
-//           type: "select",
-//           options: [
-//             { value: "full-time", label: "Full-Time" },
-//             { value: "part-time", label: "Part-Time" }
-//           ]
-//         },
-//         { name: "ntnNumber", label: "NTN Number", type: "text" }
-//       ]
-//     }
-//   ]
-// };
-
-// Simple Flat Form (No Tabs, No Sections)
-
-// 👉 Use when you just want a single-level form without tabs or sections.
-// const formStructureSimple = {
-//   globalTitle: "Employee Details", // Always shown at the top of the form
-//   fields: [
-//     { name: "firstName", label: "First Name", type: "text" },
-//     { name: "lastName", label: "Last Name", type: "text" },
-//     { name: "email", label: "Email", type: "text" },
-//     { name: "phone", label: "Phone", type: "text" },
-//     {
-//       name: "jobType",
-//       label: "Job Type",
-//       type: "select",
-//       options: [
-//         { value: "full-time", label: "Full-Time" },
-//         { value: "part-time", label: "Part-Time" }
-//       ]
-//     },
-//     { name: "ntnNumber", label: "NTN Number", type: "text" }
-//   ]
-// };
