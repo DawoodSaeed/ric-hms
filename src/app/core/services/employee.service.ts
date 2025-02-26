@@ -14,7 +14,7 @@ import {
   EmployeeSubDepartment,
   EmployeeSubSpecialization,
 } from '../interfaces/employeeinterfaces';
-import { BehaviorSubject, map, Observable, tap } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, tap } from 'rxjs';
 import { Signal } from '@angular/core';
 import { AuthService } from './auth.service';
 @Injectable({
@@ -31,7 +31,11 @@ export class EmployeeService {
   }
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl + 'Employee';
-  employee$ = this.http.get<Employee[]>(`${this.apiUrl}`);
+  employee$ = this.http.get<Employee[]>(`${this.apiUrl}`).pipe(
+    tap((response) => console.log('Delta response:', response)), // Log full response
+    map((response) => response.filter((employee) => employee.empStatusId === 1)) // Filter array
+  );
+
   private employeeAwardSubject = new BehaviorSubject<any[]>([]);
   employeeAwards$ = this.employeeAwardSubject.asObservable();
   private bankDetailsSubject = new BehaviorSubject<any[]>([]);
@@ -70,9 +74,32 @@ export class EmployeeService {
   setRegisteredEmpID(empID: number | null) {
     this.registeredEmpIDSignal.set(empID);
   }
-  registerEmployee = (employee: Employee): Observable<any> => {
-    console.log(employee);
-    employee = { ...employee, empId: 0 };
+  registerEmployee = (
+    employee: Employee,
+    isEdit: boolean = false,
+    isDelete: boolean = false
+  ): Observable<any> => {
+    console.log(
+      'register service employee ',
+      employee,
+      'isEdit value ',
+      isEdit,
+      'isDelte value ',
+      isDelete
+    );
+    if (isDelete) {
+      employee = {
+        ...employee,
+        empId: this.registeredEmpIDSignal() ?? -1,
+        empStatusId: 0,
+      };
+    } else if (isEdit) {
+      console.log('updating employee...');
+      employee = { ...employee, empId: this.registeredEmpIDSignal() ?? -1 };
+    } else {
+      employee = { ...employee, empId: 0 };
+    }
+    console.log('final employee data ', employee);
     return this.http
       .post<{ message: string; empid: number }>(
         `${this.apiUrl}/register`,
@@ -187,6 +214,8 @@ export class EmployeeService {
       .get(`${this.apiUrl}/empbank`, { params })
       .subscribe((data: any) => this.bankDetailsSubject.next(data));
   };
+
+  employeeBankDetails$ = this.http.get(`${this.apiUrl}/empbank`);
 
   // addEmployeeEducationDetails = (
   //   educationDetails: EmployeeEducation

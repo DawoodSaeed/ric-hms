@@ -87,6 +87,8 @@ export class EmployeesComponent {
   employees = signal<Employee[]>([]);
   cols = signal<cols[]>([]);
   selectedEmployee: Employee | null = null;
+
+  // employees$ =
   employeeSidebarVisible = false;
   // Options for SelectButton
   viewOptions = [
@@ -105,7 +107,7 @@ export class EmployeesComponent {
   isCardView = signal(false);
   loading = signal(true);
 
-  constructor(private messageService: MessageService,private router: Router) {
+  constructor(private messageService: MessageService, private router: Router) {
     this.employeeService.employee$
       .pipe(map((employees) => employees.slice(0, 12)))
       .subscribe({
@@ -182,7 +184,6 @@ export class EmployeesComponent {
         console.log(this.selectedEmployee);
         this.employeeSidebarVisible = true;
       },
-      
     },
 
     {
@@ -203,9 +204,10 @@ export class EmployeesComponent {
   editRow(employee: any) {
     console.log('Editing Employee:', employee);
     // this.dataEmitter.emit(employee)
-    this.router.navigate(['admin/addEmployee'], { state: { employee ,isEdit:true} });
-
-}
+    this.router.navigate(['admin/addEmployee'], {
+      state: { employee, isEdit: true },
+    });
+  }
   getActionItems(employee: any) {
     return (this.items = [
       {
@@ -216,7 +218,11 @@ export class EmployeesComponent {
           this.showDetails(employee);
         },
       },
-    { label: 'Edit', icon: 'pi pi-pencil', command: () => this.editRow(employee) },
+      {
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        command: () => this.editRow(employee),
+      },
 
       {
         icon: 'pi pi-refresh',
@@ -230,8 +236,8 @@ export class EmployeesComponent {
       {
         icon: 'pi pi-trash',
         command: () => {
-          console.log('Clicked');
-          this.showDetails(this.selectedEmployee);
+          console.log('Deleteing now');
+          this.deleteEmployee(employee);
         },
 
         label: 'Delete Employee',
@@ -249,6 +255,8 @@ export class EmployeesComponent {
 
   deleteEmployee(employee: any) {
     console.log('Deleting', employee);
+    this.employeeService.setRegisteredEmpID(employee.empId);
+    this.employeeService.registerEmployee(employee, false, true).subscribe();
   }
 
   // Default View
