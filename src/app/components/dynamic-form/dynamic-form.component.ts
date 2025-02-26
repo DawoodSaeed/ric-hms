@@ -1,4 +1,13 @@
-import { Component, computed, inject, Inject, Input, OnInit, Output, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  Inject,
+  Input,
+  OnInit,
+  Output,
+  signal,
+} from '@angular/core';
 import { FormGroup, FormsModule, FormControl } from '@angular/forms';
 import { FormStructure } from '../../core/interfaces/dynamicforminterface';
 import { DynamicFormService } from '../../core/services/dynamic-form.service';
@@ -35,73 +44,76 @@ import { Location } from '@angular/common';
     RadioButton,
     FileUploadModule,
     ProgressSpinner,
-    DynamicTableComponent
+    DynamicTableComponent,
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',
 })
 export class DynamicFormComponent implements OnInit {
- 
   @Input() formStructure!: FormStructure;
   @Output() dataEmitter = new EventEmitter<any>();
   @Input() isLoading: boolean = false;
-  dataReceivedFromChild:any=null
-  entriesCount:number=2
-  isEdit:boolean=false
-  isDelete:boolean=false
+  dataReceivedFromChild: any = null;
+  entriesCount: number = 2;
+  isEdit: boolean = false;
+  isDelete: boolean = false;
   form!: FormGroup;
   uploadedImages: { [key: string]: string | ArrayBuffer } = {};
   selectedTabIndex: number = 0;
   currentTab = signal('');
-  private emplyeeService=inject(EmployeeService)
-  registeredEmpID=computed(()=>this.emplyeeService.registeredEmpIDSignal())
+  private emplyeeService = inject(EmployeeService);
+  registeredEmpID = computed(() => this.emplyeeService.registeredEmpIDSignal());
   receivedEmployee: any;
 
-  constructor(    private location: Location // Inject Location Service
-,    private dynamicFormService: DynamicFormService ,   private notificationService: NotificationService,private route: ActivatedRoute
-  ) {
-
-  }
+  constructor(
+    private location: Location, // Inject Location Service
+    private dynamicFormService: DynamicFormService,
+    private notificationService: NotificationService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     console.log('Form Structure:', this.formStructure);
-    
     this.form = this.dynamicFormService.createForm(this.formStructure);
     if (this.formStructure.tabs) {
       this.currentTab.set(this.formStructure.tabs[0].tabName);
     }
     const receivedEmployee = history.state.employee;
-  console.log('Received Employee:', receivedEmployee);
-  if(receivedEmployee){
-    this.emplyeeService.setRegisteredEmpID(receivedEmployee.empId)
-    this.receivedEmployee=receivedEmployee
-    this.form.patchValue(receivedEmployee);
-    // / ✅ Clear `history.state` after processing
+    console.log('Received Employee:', receivedEmployee);
+    if (receivedEmployee) {
+      this.emplyeeService.setRegisteredEmpID(receivedEmployee.empId);
+      this.receivedEmployee = receivedEmployee;
+      this.form.patchValue(receivedEmployee);
+  this.dataReceivedFromChild = null;
+
+      this.isEdit=true
+      this.isDelete=false
+
+      // / ✅ Clear `history.state` after processing
       setTimeout(() => {
         this.location.replaceState('/admin/addEmployee'); // Replace state with an empty URL
       }, 0);
-  }
-  }
-  receivedData(data:any){
-    console.log('data received ',data);
-    if(data.isDelete){
-this.dataReceivedFromChild=data.employee
-this.isDelete=true
-this.isEdit=false
-this.onSubmit()
-    }else{
-      this.dataReceivedFromChild=data
-this.isEdit=true
-      if(this.form){
-        Object.keys(data).forEach((key:any)=>{
-          if(this.form.controls[key]){
-            this.form.controls[key].setValue(data[key])
-          }
-        })
-      }
 
     }
-    
+  }
+  receivedData(data: any) {
+    console.log('data received ', data);
+    if (data.isDelete) {
+      this.dataReceivedFromChild = data.employee;
+      this.isDelete = true;
+      this.isEdit = false;
+      this.onSubmit();
+    } else {
+      this.dataReceivedFromChild = data;
+      this.isEdit = true;
+      if (this.form) {
+        Object.keys(data).forEach((key: any) => {
+          if (this.form.controls[key]) {
+            this.form.controls[key].setValue(data[key]);
+          }
+        });
+      }
+    }
   }
   onTabChange(event: any) {
     // this.form.patchValue(this.receivedEmployee);
@@ -110,10 +122,12 @@ this.isEdit=true
     console.log('change event ', event);
     this.selectedTabIndex = event; // Update selected tab index
     if (this.formStructure.tabs) {
-      this.currentTab.set(this.formStructure.tabs[this.selectedTabIndex].tabName);
-    } 
-    this.dataReceivedFromChild=null
-    this.isEdit=false
+      this.currentTab.set(
+        this.formStructure.tabs[this.selectedTabIndex].tabName
+      );
+    }
+    this.dataReceivedFromChild = null;
+    this.isEdit = false;
   }
   onImageUpload(event: any, fieldName: string) {
     // PrimeNG file upload returns files in event.files array
@@ -151,7 +165,6 @@ this.isEdit=true
   }
 
   onSubmit(): void {
-
     if (this.form.valid && this.formStructure?.tabs) {
       // Ensure formStructure and tabs exist before accessing
       const selectedTab = this.formStructure.tabs[this.selectedTabIndex];
@@ -159,37 +172,39 @@ this.isEdit=true
       // Extract only the form data from the selected tab
       const apiToCall = selectedTab.apiToCall;
       let tabData: any = {};
-      console.log('selectedTab ',selectedTab)
+      console.log('selectedTab ', selectedTab);
       selectedTab.sections.forEach((section) => {
         section.fields.forEach((field) => {
           tabData[field.name] = this.form.value[field.name];
         });
       });
-      console.log('dataReceivedFromChild ',this.dataReceivedFromChild)
-      console.log('tabDataxx ',tabData,'')
-      if(this.isEdit){
-// Putting missing key,values from tabData that are present in dataReceivedFromChild in tabData
-        tabData= Object.assign(tabData, Object.fromEntries(
-           Object.entries(this.dataReceivedFromChild).filter(([key]) => !(key in tabData))
-         ));
+      console.log('dataReceivedFromChild ', this.dataReceivedFromChild);
+      console.log('tabDataxx ', tabData, '');
+      if (this.isEdit && this.dataReceivedFromChild) {
+        console.log('this.dataReceivedFromChild ',this.dataReceivedFromChild)
+        // Putting missing key,values from tabData that are present in dataReceivedFromChild in tabData
+        tabData = Object.assign(
+          tabData,
+          Object.fromEntries(
+            Object.entries(this.dataReceivedFromChild).filter(
+              ([key]) => !(key in tabData)
+            )
+          )
+        );
       }
-      if(this.isDelete){
-        tabData=this.dataReceivedFromChild
-        
+      if (this.isDelete) {
+        tabData = this.dataReceivedFromChild;
       }
       this.dataEmitter.emit({
         apiToCall,
         data: tabData,
-        isEdit:this.isEdit,
-        isDelete:this.isDelete
+        isEdit: this.isEdit,
+        isDelete: this.isDelete,
       }); // Emit selected tab data
     } else {
       this.form.markAllAsTouched(); // Mark all fields as touched to show validation errors
 
       this.notificationService.showError('Please fill all required fields');
-
     }
   }
 }
-
-

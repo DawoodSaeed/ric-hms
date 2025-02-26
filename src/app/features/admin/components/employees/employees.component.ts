@@ -230,8 +230,8 @@ export class EmployeesComponent {
       {
         icon: 'pi pi-trash',
         command: () => {
-          console.log('Clicked');
-          this.showDetails(this.selectedEmployee);
+          console.log('Deleteing now');
+         this.deleteEmployee(employee);
         },
 
         label: 'Delete Employee',
@@ -249,6 +249,8 @@ export class EmployeesComponent {
 
   deleteEmployee(employee: any) {
     console.log('Deleting', employee);
+    this.employeeService.setRegisteredEmpID(employee.empId)
+    this.employeeService.registerEmployee(employee,false,true).subscribe()
   }
 
   // Default View
