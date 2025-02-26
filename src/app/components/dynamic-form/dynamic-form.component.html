@@ -11,8 +11,7 @@
   >
     <p-tablist>
 
-      <p-tab *ngFor="let tab of formStructure.tabs; let i = index" [value]="i" >
-        <!-- [disabled]="i!==0 && !registeredEmpID()" -->
+      <p-tab *ngFor="let tab of formStructure.tabs; let i = index" [value]="i" [disabled]="i!==0 && !registeredEmpID()">
 
         {{ tab.tabName }}
       </p-tab>
@@ -28,13 +27,16 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div *ngFor="let field of section.fields" class="flex flex-col">
-              <label class="text-sm font-medium mb-1">{{ field.label }}</label>
+              <label class="text-sm font-medium mb-1" *ngIf="!field.hide">{{ field.label }}</label>
 
               <!-- Text Input -->
               <input
+              [ngClass]="{
+                'ng-invalid ng-dirty': form.controls[field.name].invalid && form.controls[field.name].touched
+              }"
                 variant="filled"
                 pInputText
-                *ngIf="field.type === 'text'"
+                *ngIf="field.type === 'text' "
                 type="text"
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder || field.label"
@@ -51,13 +53,16 @@
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder || 'Select ' + field.label"
                 class="w-full"
+                [ngClass]="{
+                  'ng-invalid ng-dirty': form.controls[field.name].invalid && form.controls[field.name].touched
+                }"
               >
               </p-select>
 
               <!-- Date Input -->
               <p-calendar
                 variant="filled"
-                *ngIf="field && field.type === 'date'"
+                *ngIf="field && field.type === 'date'  && !field.hide"
                 type="date"
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder || field.label"
@@ -65,16 +70,22 @@
                 [yearRange]="'2000:2030'"
                 [style]="{ width: '100%' }"
                 [inputStyle]="{ width: '100%' }"
+                [ngClass]="{
+                  'ng-invalid ng-dirty': form.controls[field.name].invalid && form.controls[field.name].touched
+                }"
               />
 
               <!-- Number Input -->
               <input
                 variant="filled"
-                *ngIf="field.type === 'number'"
+                *ngIf="field.type === 'number'  && !field.hide"
                 type="number"
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder || field.label"
                 class="p-inputtext p-component w-full py-2 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                [ngClass]="{
+                  'ng-invalid ng-dirty': form.controls[field.name].invalid 
+                }"
               />
 
               <!-- Radio Inpput -->

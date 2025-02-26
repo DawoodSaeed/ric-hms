@@ -1,5 +1,5 @@
 
-<div class="card bg-gray-100 shadow-2xl rounded-2xl mt-[8px]">
+<div class="card bg-gray-100 shadow-2xl rounded-2xl mt-[8px]" *ngIf="getKeys().length>0">
   <p-table
     #dt2
     [value]="tableData"
