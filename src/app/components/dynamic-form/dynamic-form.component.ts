@@ -41,7 +41,10 @@ export class DynamicFormComponent implements OnInit {
   @Input() formStructure!: FormStructure;
   @Output() dataEmitter = new EventEmitter<any>();
   @Input() isLoading: boolean = false;
+  dataReceivedFromChild:any=null
   entriesCount:number=2
+  isEdit:boolean=false
+  isDelete:boolean=false
   form!: FormGroup;
   uploadedImages: { [key: string]: string | ArrayBuffer } = {};
   selectedTabIndex: number = 0;
@@ -60,6 +63,27 @@ export class DynamicFormComponent implements OnInit {
       this.currentTab.set(this.formStructure.tabs[0].tabName);
     }
   }
+  receivedData(data:any){
+    console.log('data received ',data);
+    if(data.isDelete){
+this.dataReceivedFromChild=data.employee
+this.isDelete=true
+this.isEdit=false
+this.onSubmit()
+    }else{
+      this.dataReceivedFromChild=data
+this.isEdit=true
+      if(this.form){
+        Object.keys(data).forEach((key:any)=>{
+          if(this.form.controls[key]){
+            this.form.controls[key].setValue(data[key])
+          }
+        })
+      }
+
+    }
+    
+  }
   onTabChange(event: any) {
     console.log('calling onTabChange');
     console.log('change event ', event);
@@ -67,6 +91,8 @@ export class DynamicFormComponent implements OnInit {
     if (this.formStructure.tabs) {
       this.currentTab.set(this.formStructure.tabs[this.selectedTabIndex].tabName);
     } 
+    this.dataReceivedFromChild=null
+    this.isEdit=false
   }
   onImageUpload(event: any, fieldName: string) {
     // PrimeNG file upload returns files in event.files array
@@ -102,7 +128,7 @@ export class DynamicFormComponent implements OnInit {
     const formattedDate = `${year}-${month}-${day}`;
     this.form.get(fieldName)?.setValue(formattedDate);
   }
-  
+
   onSubmit(): void {
 
     if (this.form.valid && this.formStructure?.tabs) {
@@ -111,16 +137,26 @@ export class DynamicFormComponent implements OnInit {
       if (!selectedTab) return; // Safety check
       // Extract only the form data from the selected tab
       const apiToCall = selectedTab.apiToCall;
-      const tabData: any = {};
+      let tabData: any = {};
+      console.log('selectedTab ',selectedTab)
       selectedTab.sections.forEach((section) => {
         section.fields.forEach((field) => {
           tabData[field.name] = this.form.value[field.name];
         });
       });
+      console.log('dataReceivedFromChild ',this.dataReceivedFromChild)
+      console.log('tabDataxx ',tabData,'')
+      if(this.dataReceivedFromChild){
+// Putting missing key,values from tabData that are present in dataReceivedFromChild in tabData
+        tabData= Object.assign(tabData, Object.fromEntries(
+           Object.entries(this.dataReceivedFromChild).filter(([key]) => !(key in tabData))
+         ));
+      }
       this.dataEmitter.emit({
-        tabIndex: this.selectedTabIndex,
         apiToCall,
         data: tabData,
+        isEdit:this.isEdit,
+        isDelete:this.isDelete
       }); // Emit selected tab data
     } else {
       console.log('Form is invalid or formStructure is not defined');

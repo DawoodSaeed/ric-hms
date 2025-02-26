@@ -1,4 +1,5 @@
 export interface EmployeeAward {
+  empId: number;
     empAwrdId: number;
     name: string;
     code: string;
@@ -59,6 +60,8 @@ export interface EmployeeAward {
     createdOn?: string; // ISO datetime format
     modifiedById?: number;
     modifiedOn?: string; // ISO datetime format
+    status?: number;
+
   }
   
   export interface EmployeeSubDepartment {
@@ -69,6 +72,8 @@ export interface EmployeeAward {
     createdOn?: string; // ISO datetime format
     modifiedById?: number;
     modifiedOn?: string; // ISO datetime format
+    status?: number;
+
   }
 
   export interface EmployeeDesignation {
@@ -79,6 +84,8 @@ export interface EmployeeAward {
     createdOn?: string; // ISO datetime format
     modifiedById?: number;
     modifiedOn?: string; // ISO datetime format
+    status?: number;
+
   }
 
   export interface EmployeeExperience {
@@ -89,7 +96,7 @@ export interface EmployeeAward {
     description: string;
     fromDate: string; // "YYYY-MM-DD" format
     toDate: string; // "YYYY-MM-DD" format
-    status: number;
+    status?: number;
     createdById?: number;
     createdOn?: string; // ISO datetime format
     modifiedById?: number;
@@ -104,6 +111,8 @@ export interface EmployeeAward {
     createdOn?: string; // ISO datetime format
     modifiedById?: number;
     modifiedOn?: string; // ISO datetime format
+    status?: number;
+
   }
   export interface EmployeeSpecialization {
     empSpId: number;

@@ -1,3 +1,4 @@
+
 <div class="card bg-gray-100 shadow-2xl rounded-2xl mt-[8px]">
   <p-table
     #dt2
@@ -11,6 +12,8 @@
     [rows]="5"
     [globalFilterFields]="getKeys()"
     class="w-full rounded-lg overflow-hidden bg-gray-50"
+    dataKey="id"
+    [metaKeySelection]="false"
   >
     <!-- Search Bar -->
     <ng-template #caption>
@@ -39,14 +42,19 @@
         >
           {{formatStringName(key) }}
         </th>
+        <th class="px-4 py-3 text-left font-semibold text-base">Action</th>
       </tr>
     </ng-template>
 
     <!-- Table Body -->
-    <ng-template #body let-product>
-      <tr class="border-b border-gray-300 even:bg-blue-50 odd:bg-white hover:bg-blue-200 transition">
+    <ng-template #body let-employee>
+      <tr class="border-b border-gray-300 even:bg-blue-50 odd:bg-white hover:bg-blue-200 transition" [pSelectableRow]="employee" selectionMode="single" >
         <td *ngFor="let key of getKeys()" class="px-4 py-3 text-gray-900 text-base">
-                 {{product[key]}}
+                 {{employee[key]}}
+        </td>
+        <td class="px-4 py-3 text-gray-900 text-base relative">
+          <!-- <p-speedDial [model]="actionItems" className="flex "></p-speedDial> -->
+          <p-speeddial [model]="getActionItems(employee)"  type="semi-circle" direction="left" [radius]="50" [style]="{ position: 'absolute', top: 0 }"  [buttonProps]="{ rounded: true }" (click)="$event.preventDefault(); $event.stopPropagation();" />
         </td>
       </tr>
     </ng-template>

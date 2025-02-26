@@ -248,10 +248,11 @@ export class AddEmployeeComponent implements OnInit {
   }
   handleFormData(event: any) {
     let submittedData = event.data;
+
     console.log('submittedForm ', event.data);
     this.formatDatesInObject(submittedData);
     this.isLoading.set(true);
-    event.apiToCall(submittedData).subscribe({
+    event.apiToCall(submittedData,event.isEdit,event.isDelete).subscribe({
       next: (data: any) => {
         this.notificationService.showSuccess('Operation successful!');
 
@@ -364,7 +365,7 @@ export class AddEmployeeComponent implements OnInit {
               { name: 'awardedBy', label: 'Awarded By', type: 'text' },
               { name: 'description', label: 'Description', type: 'text' },
               { name: 'awardDate', label: 'Award Date', type: 'date' },
-              { name: 'status', label: 'Status', type: 'radio' },
+              // { name: 'status', label: 'Status', type: 'radio' },
               // { name: 'createdById', label: 'Created By', type: 'number' },
               // { name: 'createdOn', label: 'Created On', type: 'date' },
               // { name: 'modifiedById', label: 'Modified By', type: 'number' },
@@ -387,7 +388,7 @@ export class AddEmployeeComponent implements OnInit {
               { name: 'branchName', label: 'Branch Name', type: 'text' },
               { name: 'branchCode', label: 'Branch Code', type: 'text' },
               { name: 'iban', label: 'IBAN', type: 'text' },
-              { name: 'status', label: 'Status', type: 'radio' },
+              // { name: 'status', label: 'Status', type: 'radio' },
               // { name: 'createdById', label: 'Created By', type: 'number' },
               // { name: 'createdOn', label: 'Created On', type: 'date' },
               // { name: 'modifiedById', label: 'Modified By', type: 'number' },
@@ -421,7 +422,7 @@ export class AddEmployeeComponent implements OnInit {
               { name: 'gradingId', label: 'Grading', type: 'select' },
               { name: 'totalMarks', label: 'Total Marks', type: 'text' },
               { name: 'obtainMarks', label: 'Obtain Marks', type: 'text' },
-              { name: 'status', label: 'Status', type: 'radio' },
+              // { name: 'status', label: 'Status', type: 'radio' },
               {
                 name: 'certificatePath',
                 label: 'Certificate Path',
@@ -511,7 +512,7 @@ export class AddEmployeeComponent implements OnInit {
                 label: 'Certificate Path',
                 type: 'text',
               },
-              { name: 'status', label: 'Status', type: 'radio' },
+              // { name: 'status', label: 'Status', type: 'radio' },
             ],
           },
         ],

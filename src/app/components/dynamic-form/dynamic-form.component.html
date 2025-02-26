@@ -10,7 +10,10 @@
     scrollable
   >
     <p-tablist>
-      <p-tab *ngFor="let tab of formStructure.tabs; let i = index" [value]="i">
+
+      <p-tab *ngFor="let tab of formStructure.tabs; let i = index" [value]="i" >
+        <!-- [disabled]="i!==0 && !registeredEmpID()" -->
+
         {{ tab.tabName }}
       </p-tab>
     </p-tablist>
@@ -151,6 +154,7 @@
           *ngIf="tab.tableData"
           [tableTitle]="tab.tabName"
           [tableData]="tab.tableData"
+          (dataEmitter)="receivedData($event)"
         ></app-dynamic-table>
       </p-tabpanel>
     </p-tabpanels>
