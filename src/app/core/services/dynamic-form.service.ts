@@ -19,7 +19,7 @@ export class DynamicFormService {
               field.name,
               this.fb.control(
                 // field.type === 'select' ? 0 : field.type === 'date' ? null:'',
-                field.type === 'select' ? 0 : null,
+                null,
                 field.required ? Validators.required : null
               )
             );

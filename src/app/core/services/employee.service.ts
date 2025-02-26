@@ -66,6 +66,10 @@ export class EmployeeService {
 
     return `${year}-${month}-${day}`;
 }
+
+setRegisteredEmpID(empID:number|null){
+  this.registeredEmpIDSignal.set(empID)
+}
   registerEmployee = (employee: Employee): Observable<any> => {
     console.log(employee);
     employee = { ...employee, empId: 0 };

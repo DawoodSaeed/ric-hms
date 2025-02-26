@@ -2,7 +2,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import {
   Bank,
@@ -234,7 +234,14 @@ export class TypeTableService {
   }
 
   getReligions(): Observable<Religion[]> {
-    return this.getAll<Religion>('Religions');
+    return this.getAll<Religion>('Religions').pipe(
+      map(religions =>
+        religions.map(religion => ({
+          ...religion,
+          id: religion.name as unknown as number 
+        }))
+      )
+    );
   }
 
   addUpdateReligion(religion: Religion): Observable<Religion> {

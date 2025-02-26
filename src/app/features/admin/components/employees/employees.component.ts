@@ -42,6 +42,7 @@ import {
   Floor,
   Room,
 } from '../../../../core/interfaces/branch.interface';
+import { Router } from '@angular/router';
 
 interface cols {
   field: string;
@@ -104,7 +105,7 @@ export class EmployeesComponent {
   isCardView = signal(false);
   loading = signal(true);
 
-  constructor(private messageService: MessageService) {
+  constructor(private messageService: MessageService,private router: Router) {
     this.employeeService.employee$
       .pipe(map((employees) => employees.slice(0, 12)))
       .subscribe({
@@ -181,7 +182,9 @@ export class EmployeesComponent {
         console.log(this.selectedEmployee);
         this.employeeSidebarVisible = true;
       },
+      
     },
+
     {
       icon: 'pi pi-refresh',
       command: () => {
@@ -197,6 +200,12 @@ export class EmployeesComponent {
       label: 'Delete Employee',
     },
   ];
+  editRow(employee: any) {
+    console.log('Editing Employee:', employee);
+    // this.dataEmitter.emit(employee)
+    this.router.navigate(['admin/addEmployee'], { state: { employee ,isEdit:true} });
+
+}
   getActionItems(employee: any) {
     return (this.items = [
       {
@@ -207,6 +216,8 @@ export class EmployeesComponent {
           this.showDetails(employee);
         },
       },
+    { label: 'Edit', icon: 'pi pi-pencil', command: () => this.editRow(employee) },
+
       {
         icon: 'pi pi-refresh',
         command: () => {
