@@ -56,16 +56,16 @@ export class EmployeeService {
   defaultObj = {
     empId: this.registeredEmpIDSignal() ?? -1,
     createdById: 0,
-    createdOn:this.formatDate(new Date().toISOString()),
+    createdOn: this.formatDate(new Date().toISOString()),
   };
-  formatDate(isoString:string) {
+  formatDate(isoString: string) {
     const date = new Date(isoString);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
     const day = String(date.getDate()).padStart(2, '0'); // Get the day
 
     return `${year}-${month}-${day}`;
-}
+  }
   registerEmployee = (employee: Employee): Observable<any> => {
     console.log(employee);
     employee = { ...employee, empId: 0 };
@@ -94,8 +94,8 @@ export class EmployeeService {
     status: number = 1
   ): Observable<any> => {
     if (isDelete) {
-     awardDetails.status=0
-     awardDetails.empId=this.defaultObj.empId
+      awardDetails.status = 0;
+      awardDetails.empId = this.defaultObj.empId;
     } else {
       if (isEdit) {
         awardDetails = {
@@ -117,16 +117,16 @@ export class EmployeeService {
         };
       }
     }
-    
+
     console.log('final award ', awardDetails);
     return this.http
       .post(`${this.apiUrl}/empaward`, awardDetails)
       .pipe(tap(() => this.getEmployeeAwardDetails()));
   };
   getEmployeeAwardDetails = (): void => {
-    const params=new HttpParams().set('empId',this.defaultObj.empId)
+    const params = new HttpParams().set('empId', this.defaultObj.empId);
     this.http
-      .get(`${this.apiUrl}/empaward`,{params})
+      .get(`${this.apiUrl}/empaward`, { params })
       .pipe(
         map((response: any) => {
           return response.filter((data: any) => data.status === 1);
@@ -164,7 +164,12 @@ export class EmployeeService {
       delete bankDetails.createdOn;
       delete bankDetails.createdById;
     } else {
-      bankDetails = { ...bankDetails, ...this.defaultObj, empBankId: 0, status };
+      bankDetails = {
+        ...bankDetails,
+        ...this.defaultObj,
+        empBankId: 0,
+        status,
+      };
     }
 
     return this.http
@@ -172,10 +177,10 @@ export class EmployeeService {
       .pipe(tap(() => this.getEmployeeBankDetails()));
   };
   getEmployeeBankDetails = (): void => {
-    const params=new HttpParams().set('empId',this.defaultObj.empId)
+    const params = new HttpParams().set('empId', this.defaultObj.empId);
 
     this.http
-      .get(`${this.apiUrl}/empbank`,{params})
+      .get(`${this.apiUrl}/empbank`, { params })
       .subscribe((data: any) => this.bankDetailsSubject.next(data));
   };
 
@@ -189,7 +194,6 @@ export class EmployeeService {
   //     .pipe(tap(() => this.getEmployeeEducationDetails()));
   // };
 
- 
   addEmployeeEducationDetails = (
     educationDetails: EmployeeEducation,
     isEdit = false,
@@ -210,7 +214,12 @@ export class EmployeeService {
       delete educationDetails.createdOn;
       delete educationDetails.createdById;
     } else {
-      educationDetails = { ...educationDetails, ...this.defaultObj, empEduId: 0, status };
+      educationDetails = {
+        ...educationDetails,
+        ...this.defaultObj,
+        empEduId: 0,
+        status,
+      };
     }
 
     return this.http
@@ -218,12 +227,14 @@ export class EmployeeService {
       .pipe(tap(() => this.getEmployeeEducationDetails()));
   };
   getEmployeeEducationDetails = (): void => {
-    const params=new HttpParams().set('empId',this.defaultObj.empId)
+    const params = new HttpParams().set('empId', this.defaultObj.empId);
 
-    this.http.get(`${this.apiUrl}/empeducation`,{params}).subscribe((data: any) => {
-      console.log('education data ', data);
-      this.educationSubject.next(data);
-    });
+    this.http
+      .get(`${this.apiUrl}/empeducation`, { params })
+      .subscribe((data: any) => {
+        console.log('education data ', data);
+        this.educationSubject.next(data);
+      });
   };
 
   addEmployeeDepartmentDetails = (
@@ -246,7 +257,12 @@ export class EmployeeService {
       delete departmentDetails.createdOn;
       delete departmentDetails.createdById;
     } else {
-      departmentDetails = { ...departmentDetails, ...this.defaultObj, empDid: 0, status };
+      departmentDetails = {
+        ...departmentDetails,
+        ...this.defaultObj,
+        empDid: 0,
+        status,
+      };
     }
 
     return this.http
@@ -254,10 +270,10 @@ export class EmployeeService {
       .pipe(tap(() => this.getEmployeeDepartmentDetails()));
   };
   getEmployeeDepartmentDetails = (): void => {
-    const params=new HttpParams().set('empId',this.defaultObj.empId)
+    const params = new HttpParams().set('empId', this.defaultObj.empId);
 
     this.http
-      .get(`${this.apiUrl}/empdept`,{params})
+      .get(`${this.apiUrl}/empdept`, { params })
       .subscribe((data: any) => this.departmentSubject.next(data));
   };
 
@@ -297,17 +313,17 @@ export class EmployeeService {
         status,
       };
     }
-  
+
     return this.http
       .post(`${this.apiUrl}/empsubdept`, subDeptDetails)
       .pipe(tap(() => this.getEmployeeSubDepartmentDetails()));
   };
-  
+
   getEmployeeSubDepartmentDetails = (): void => {
-    const params=new HttpParams().set('empId',this.defaultObj.empId)
+    const params = new HttpParams().set('empId', this.defaultObj.empId);
 
     this.http
-      .get(`${this.apiUrl}/empsubdept`,{params})
+      .get(`${this.apiUrl}/empsubdept`, { params })
       .subscribe((data: any) => this.subDepartmentSubject.next(data));
   };
 
@@ -351,17 +367,17 @@ export class EmployeeService {
         status,
       };
     }
-  
+
     return this.http
       .post(`${this.apiUrl}/empdesg`, designationDetails)
       .pipe(tap(() => this.getEmployeeDesignationDetails()));
   };
-  
+
   getEmployeeDesignationDetails = (): void => {
-    const params=new HttpParams().set('empId',this.defaultObj.empId)
+    const params = new HttpParams().set('empId', this.defaultObj.empId);
 
     this.http
-      .get(`${this.apiUrl}/empdesg`,{params})
+      .get(`${this.apiUrl}/empdesg`, { params })
       .subscribe((data: any) => this.designationSubject.next(data));
   };
 
@@ -400,18 +416,17 @@ export class EmployeeService {
         status,
       };
     }
-  
+
     return this.http
       .post(`${this.apiUrl}/empexperience`, expDetails)
       .pipe(tap(() => this.getEmployeeExperienceDetails()));
   };
-  
 
   getEmployeeExperienceDetails = (): void => {
-    const params=new HttpParams().set('empId',this.defaultObj.empId)
+    const params = new HttpParams().set('empId', this.defaultObj.empId);
 
     this.http
-      .get(`${this.apiUrl}/empexperience`,{params})
+      .get(`${this.apiUrl}/empexperience`, { params })
       .subscribe((data: any) => this.experienceSubject.next(data));
   };
 
@@ -455,17 +470,17 @@ export class EmployeeService {
         status,
       };
     }
-  
+
     return this.http
       .post(`${this.apiUrl}/empfacility`, facilityDetails)
       .pipe(tap(() => this.getEmployeeFacilityDetails()));
   };
-  
+
   getEmployeeFacilityDetails = (): void => {
-    const params=new HttpParams().set('empId',this.defaultObj.empId)
+    const params = new HttpParams().set('empId', this.defaultObj.empId);
 
     this.http
-      .get(`${this.apiUrl}/empfacility`,{params})
+      .get(`${this.apiUrl}/empfacility`, { params })
       .subscribe((data: any) => this.facilitySubject.next(data));
   };
 
@@ -509,17 +524,17 @@ export class EmployeeService {
         status,
       };
     }
-  
+
     return this.http
       .post(`${this.apiUrl}/empspeciality`, specialityDetails)
       .pipe(tap(() => this.getEmployeeSpecialityDetails()));
   };
-  
+
   getEmployeeSpecialityDetails = (): void => {
-    const params=new HttpParams().set('empId',this.defaultObj.empId)
+    const params = new HttpParams().set('empId', this.defaultObj.empId);
 
     this.http
-      .get(`${this.apiUrl}/empspeciality`,{params})
+      .get(`${this.apiUrl}/empspeciality`, { params })
       .subscribe((data: any) => this.specialitySubject.next(data));
   };
 
@@ -563,17 +578,17 @@ export class EmployeeService {
         status,
       };
     }
-  
+
     return this.http
       .post(`${this.apiUrl}/empsubspeciality`, subSpecialityDetails)
       .pipe(tap(() => this.getEmployeeSubSpecialityDetails()));
   };
-  
+
   getEmployeeSubSpecialityDetails = (): void => {
-    const params=new HttpParams().set('empId',this.defaultObj.empId)
+    const params = new HttpParams().set('empId', this.defaultObj.empId);
 
     this.http
-      .get(`${this.apiUrl}/empsubspeciality`,{params})
+      .get(`${this.apiUrl}/empsubspeciality`, { params })
       .subscribe((data: any) => this.subSpecialitySubject.next(data));
   };
 }

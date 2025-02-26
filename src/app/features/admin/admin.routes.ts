@@ -4,6 +4,7 @@ import { AddEmployeeComponent } from './add-employee/add-employee.component';
 import { EmployeesComponent } from './components/employees/employees.component';
 import { TableComponent } from '../../core/components/table/table.component';
 import { FloorsComponent } from '../../core/components/organization-building/floors/floors.component';
+import { UserManagementComponent } from '../../core/components/user-management/user-management.component';
 export const adminRoutes: Routes = [
   {
     path: '',
@@ -51,6 +52,29 @@ export const adminRoutes: Routes = [
       {
         path: '', // Default route when organizational-building is accessed
         redirectTo: 'buildings', // Redirect to buildings as a default
+        pathMatch: 'full',
+      },
+    ],
+  },
+
+  {
+    path: 'user-management', // Corrected spelling and used kebab-case
+    children: [
+      // Added children for nested routes
+      {
+        path: 'roles',
+        component: UserManagementComponent,
+        data: { dataType: 'beds' },
+      },
+      {
+        path: 'users',
+        component: UserManagementComponent,
+        data: { dataType: 'floors' },
+      },
+
+      {
+        path: '', // Default route when organizational-building is accessed
+        redirectTo: 'users', // Redirect to buildings as a default
         pathMatch: 'full',
       },
     ],
