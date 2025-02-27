@@ -29,6 +29,7 @@ import { EmployeeService } from '../../core/services/employee.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
+import { Message } from 'primeng/message';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -45,6 +46,7 @@ import { Location } from '@angular/common';
     FileUploadModule,
     ProgressSpinner,
     DynamicTableComponent,
+    Message
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',
@@ -81,6 +83,7 @@ export class DynamicFormComponent implements OnInit {
     const receivedEmployee = history.state.employee;
     console.log('Received Employee:', receivedEmployee);
     if (receivedEmployee) {
+      // Yahan pr apis call krani hein
       this.emplyeeService.setRegisteredEmpID(receivedEmployee.empId);
       this.receivedEmployee = receivedEmployee;
       this.form.patchValue(receivedEmployee);
@@ -89,7 +92,7 @@ export class DynamicFormComponent implements OnInit {
       this.isEdit=true
       this.isDelete=false
 
-      // / ✅ Clear `history.state` after processing
+      //  Clear `history.state` after processing
       setTimeout(() => {
         this.location.replaceState('/admin/addEmployee'); // Replace state with an empty URL
       }, 0);
@@ -106,6 +109,8 @@ export class DynamicFormComponent implements OnInit {
     } else {
       this.dataReceivedFromChild = data;
       this.isEdit = true;
+      this.isDelete=false
+
       if (this.form) {
         Object.keys(data).forEach((key: any) => {
           if (this.form.controls[key]) {

@@ -31,10 +31,7 @@ export class EmployeeService {
   }
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl + 'Employee';
-  employee$ = this.http.get<Employee[]>(`${this.apiUrl}`).pipe(
-    tap((response) => console.log('Delta response:', response)), // Log full response
-    map((response) => response.filter((employee) => employee.empStatusId === 1)) // Filter array
-  );
+  employee$ = this.http.get<Employee[]>(`${this.apiUrl}`);
 
   private employeeAwardSubject = new BehaviorSubject<any[]>([]);
   employeeAwards$ = this.employeeAwardSubject.asObservable();
@@ -58,10 +55,12 @@ export class EmployeeService {
   subSpeciality$ = this.subSpecialitySubject.asObservable();
   registeredEmpIDSignal = signal<number | null>(null);
   defaultObj = {
-    empId: this.registeredEmpIDSignal() ?? -1,
+    empId: this.registeredEmpIDSignal() ?? -2,
     createdById: 0,
     createdOn: this.formatDate(new Date().toISOString()),
   };
+
+ 
   formatDate(isoString: string) {
     const date = new Date(isoString);
     const year = date.getFullYear();
@@ -90,12 +89,11 @@ export class EmployeeService {
     if (isDelete) {
       employee = {
         ...employee,
-        empId: this.registeredEmpIDSignal() ?? -1,
-        empStatusId: 0,
+        empId: this.registeredEmpIDSignal() ?? -2,
       };
     } else if (isEdit) {
       console.log('updating employee...');
-      employee = { ...employee, empId: this.registeredEmpIDSignal() ?? -1 };
+      employee = { ...employee, empId: this.registeredEmpIDSignal() ?? -2 };
     } else {
       employee = { ...employee, empId: 0 };
     }
@@ -131,7 +129,7 @@ export class EmployeeService {
       if (isEdit) {
         awardDetails = {
           ...awardDetails,
-          empId: this.defaultObj.empId,
+          empId: this.registeredEmpIDSignal() ?? -2,
           modifiedById: this.defaultObj.createdById,
           status,
           modifiedOn: new Date().toISOString(),
@@ -143,6 +141,8 @@ export class EmployeeService {
         awardDetails = {
           ...awardDetails,
           ...this.defaultObj,
+          empId: this.registeredEmpIDSignal() ?? -2,
+
           empAwrdId,
           status,
         };
@@ -155,7 +155,10 @@ export class EmployeeService {
       .pipe(tap(() => this.getEmployeeAwardDetails()));
   };
   getEmployeeAwardDetails = (): void => {
-    const params = new HttpParams().set('empId', this.defaultObj.empId);
+    const params = new HttpParams().set(
+      'empId',
+      this.registeredEmpIDSignal() ?? -2
+    );
     this.http
       .get(`${this.apiUrl}/empaward`, { params })
       .pipe(
@@ -198,6 +201,8 @@ export class EmployeeService {
       bankDetails = {
         ...bankDetails,
         ...this.defaultObj,
+    empId: this.registeredEmpIDSignal() ?? -2,
+
         empBankId: 0,
         status,
       };
@@ -208,7 +213,7 @@ export class EmployeeService {
       .pipe(tap(() => this.getEmployeeBankDetails()));
   };
   getEmployeeBankDetails = (): void => {
-    const params = new HttpParams().set('empId', this.defaultObj.empId);
+    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -2);
 
     this.http
       .get(`${this.apiUrl}/empbank`, { params })
@@ -250,6 +255,8 @@ export class EmployeeService {
       educationDetails = {
         ...educationDetails,
         ...this.defaultObj,
+    empId: this.registeredEmpIDSignal() ?? -2,
+
         empEduId: 0,
         status,
       };
@@ -260,7 +267,7 @@ export class EmployeeService {
       .pipe(tap(() => this.getEmployeeEducationDetails()));
   };
   getEmployeeEducationDetails = (): void => {
-    const params = new HttpParams().set('empId', this.defaultObj.empId);
+    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -2);
 
     this.http
       .get(`${this.apiUrl}/empeducation`, { params })
@@ -293,6 +300,8 @@ export class EmployeeService {
       departmentDetails = {
         ...departmentDetails,
         ...this.defaultObj,
+    empId: this.registeredEmpIDSignal() ?? -2,
+
         empDid: 0,
         status,
       };
@@ -303,7 +312,7 @@ export class EmployeeService {
       .pipe(tap(() => this.getEmployeeDepartmentDetails()));
   };
   getEmployeeDepartmentDetails = (): void => {
-    const params = new HttpParams().set('empId', this.defaultObj.empId);
+    const params = new HttpParams().set('empId', this.registeredEmpIDSignal() ?? -2);
 
     this.http
       .get(`${this.apiUrl}/empdept`, { params })
@@ -342,6 +351,8 @@ export class EmployeeService {
       subDeptDetails = {
         ...subDeptDetails,
         ...this.defaultObj,
+    empId: this.registeredEmpIDSignal() ?? -2,
+
         empSubDid: 0,
         status,
       };
@@ -353,7 +364,7 @@ export class EmployeeService {
   };
 
   getEmployeeSubDepartmentDetails = (): void => {
-    const params = new HttpParams().set('empId', this.defaultObj.empId);
+    const params = new HttpParams().set('empId', this.registeredEmpIDSignal() ?? -2);
 
     this.http
       .get(`${this.apiUrl}/empsubdept`, { params })
@@ -396,6 +407,8 @@ export class EmployeeService {
       designationDetails = {
         ...designationDetails,
         ...this.defaultObj,
+    empId: this.registeredEmpIDSignal() ?? -2,
+
         empDesgnId: 0,
         status,
       };
@@ -407,7 +420,7 @@ export class EmployeeService {
   };
 
   getEmployeeDesignationDetails = (): void => {
-    const params = new HttpParams().set('empId', this.defaultObj.empId);
+    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -2);
 
     this.http
       .get(`${this.apiUrl}/empdesg`, { params })
@@ -445,6 +458,8 @@ export class EmployeeService {
       expDetails = {
         ...expDetails,
         ...this.defaultObj,
+    empId: this.registeredEmpIDSignal() ?? -2,
+
         empExpId: 0,
         status,
       };
@@ -456,7 +471,7 @@ export class EmployeeService {
   };
 
   getEmployeeExperienceDetails = (): void => {
-    const params = new HttpParams().set('empId', this.defaultObj.empId);
+    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -2);
 
     this.http
       .get(`${this.apiUrl}/empexperience`, { params })
@@ -499,6 +514,8 @@ export class EmployeeService {
       facilityDetails = {
         ...facilityDetails,
         ...this.defaultObj,
+    empId: this.registeredEmpIDSignal() ?? -2,
+
         empFacilityId: 0,
         status,
       };
@@ -510,7 +527,7 @@ export class EmployeeService {
   };
 
   getEmployeeFacilityDetails = (): void => {
-    const params = new HttpParams().set('empId', this.defaultObj.empId);
+    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -2);
 
     this.http
       .get(`${this.apiUrl}/empfacility`, { params })
@@ -553,6 +570,8 @@ export class EmployeeService {
       specialityDetails = {
         ...specialityDetails,
         ...this.defaultObj,
+    empId: this.registeredEmpIDSignal() ?? -2,
+
         empSpId: 0,
         status,
       };
@@ -564,7 +583,7 @@ export class EmployeeService {
   };
 
   getEmployeeSpecialityDetails = (): void => {
-    const params = new HttpParams().set('empId', this.defaultObj.empId);
+    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -2);
 
     this.http
       .get(`${this.apiUrl}/empspeciality`, { params })
@@ -607,6 +626,8 @@ export class EmployeeService {
       subSpecialityDetails = {
         ...subSpecialityDetails,
         ...this.defaultObj,
+    empId: this.registeredEmpIDSignal() ?? -2,
+
         empSubSpId: 0,
         status,
       };
@@ -618,7 +639,7 @@ export class EmployeeService {
   };
 
   getEmployeeSubSpecialityDetails = (): void => {
-    const params = new HttpParams().set('empId', this.defaultObj.empId);
+    const params = new HttpParams().set('empId', this.registeredEmpIDSignal() ?? -2);
 
     this.http
       .get(`${this.apiUrl}/empsubspeciality`, { params })

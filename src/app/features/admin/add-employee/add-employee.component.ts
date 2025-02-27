@@ -14,11 +14,11 @@ import swal from 'sweetalert2';
 import {
   Bank,
   Country,
-  DepartmentCategory,
   Designation,
   EducationDegree,
   EducationInstitution,
   EmploymentStatus,
+  Facility,
   FieldOfStudy,
   GuardianType,
   JobType,
@@ -31,8 +31,6 @@ import {
 import { EmployeeService } from '../../../core/services/employee.service';
 import { MessageService } from 'primeng/api';
 import Swal from 'sweetalert2';
-import { NOTYF } from './../../../shared/utils/notyf.token';
-import { Notyf } from 'notyf';
 import { Observable, Subscription } from 'rxjs';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Department, SubDepartment } from '../../../core/interfaces/organisation';
@@ -186,31 +184,30 @@ export class AddEmployeeComponent implements OnInit {
     this.dropDownService
       .getEducationDegrees()
       .subscribe((degrees: EducationDegree[]) => {
-        console.log('degId', degrees);
         this.updateDropdownOptions('degId', degrees);
       });
 
     this.dropDownService
       .getBanks()
       .subscribe((banks: Bank[]) => {
-        console.log('bankId', banks);
         this.updateDropdownOptions('bankId', banks);
       });
 
       this.organizationService.getAllDepartments().subscribe((departments: Department[]) => {
-        console.log('departments', departments);
         this.updateDropdownOptions('did', departments);
       });
 
       this.organizationService.getAllSubDepartments().subscribe((subDepartments: SubDepartment[]) => {
-        console.log('subDid', subDepartments);
         this.updateDropdownOptions('subDid', subDepartments);
       });
       this.dropDownService
       .getDesignations()
       .subscribe((designations: Designation[]) => {
-        console.log('desgnId', designations);
         this.updateDropdownOptions('desgnId', designations);
+      });
+      this.dropDownService.getFacilities().subscribe((facilities: Facility[]) => {
+        console.log('facilities', facilities);
+        this.updateDropdownOptions('empFacilityId', facilities);
       });
 
   }
@@ -318,7 +315,7 @@ export class AddEmployeeComponent implements OnInit {
                 label: 'Job Type',
                 type: 'select',
               },
-              { name: 'empStatusId', label: 'Employee Status', type: 'select' },
+              { name: 'empStatusId', label: 'Employee Status', type: 'select' ,required:true},
               { name: 'scaleId', label: 'Scale', type: 'select' },
               {
                 name: 'personalNumber',

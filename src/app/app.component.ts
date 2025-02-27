@@ -33,7 +33,7 @@ export class AppComponent {
       this.isDrawerOpen.set(state)
     );
 
-    this.emplyeeService.setRegisteredEmpID(null)
+    // this.emplyeeService.setRegisteredEmpID(null)
 
   }
 

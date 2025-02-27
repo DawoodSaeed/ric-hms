@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   inject,
   Input,
@@ -19,11 +20,11 @@ import { PanelModule } from 'primeng/panel';
 import { DividerModule } from 'primeng/divider';
 import { RippleModule } from 'primeng/ripple';
 import { CustomSidebarComponent } from '../../../../core/components/custom-sidebar/custom-sidebar.component';
-import { map } from 'rxjs';
+import { combineLatest, forkJoin, map, switchMap, take, timer } from 'rxjs';
 import { TabViewModule } from 'primeng/tabview'; // For the tabs
 import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Popover } from 'primeng/popover';
 import { PopoverModule } from 'primeng/popover';
 import { SpeedDial } from 'primeng/speeddial';
@@ -37,12 +38,15 @@ import { InputIconModule } from 'primeng/inputicon';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { SkeletonModule } from 'primeng/skeleton';
 import { Bank } from '../../../../core/interfaces/typetable';
+import { ConfirmDialog } from 'primeng/confirmdialog';
+
 import {
   Building,
   Floor,
   Room,
 } from '../../../../core/interfaces/branch.interface';
 import { Router } from '@angular/router';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 interface cols {
   field: string;
@@ -78,8 +82,9 @@ interface cols {
     InputIconModule,
     ContextMenuModule,
     SkeletonModule,
+    ConfirmDialog
   ],
-  providers: [MessageService],
+  providers: [MessageService,ConfirmationService],
 })
 export class EmployeesComponent {
   private employeeService = inject(EmployeeService);
@@ -87,6 +92,7 @@ export class EmployeesComponent {
   employees = signal<Employee[]>([]);
   cols = signal<cols[]>([]);
   selectedEmployee: Employee | null = null;
+  cachedEmployeeData: { [empId: string]: Employee } = {};
 
   // employees$ =
   employeeSidebarVisible = false;
@@ -106,13 +112,23 @@ export class EmployeesComponent {
 
   isCardView = signal(false);
   loading = signal(true);
+  employeeToDelete: any;
+  cachedempId: number|null=null;
 
-  constructor(private messageService: MessageService, private router: Router) {
+  constructor(
+    private messageService: MessageService,
+    private router: Router,
+    private cdr:ChangeDetectorRef,
+        private notificationService: NotificationService,
+    
+    public confirmationService: ConfirmationService
+  ) {
     this.employeeService.employee$
-      .pipe(map((employees) => employees.slice(0, 12)))
+      // .pipe(map((employees) => employees.slice(0, 12)))
       .subscribe({
         next: (data: Employee[]) => {
           console.log(data.length);
+          console.log('employee data ',data)
           const keys = Object.keys(data);
           const cols: cols[] = [];
           keys.forEach((key) => {
@@ -126,6 +142,7 @@ export class EmployeesComponent {
         },
 
         complete: () => {
+          console.log('this.employees ',this.employees())
           this.loading.set(false);
         },
       });
@@ -134,14 +151,104 @@ export class EmployeesComponent {
   rowNumbers(rows: number): number[] {
     return Array.from({ length: rows }, (_, i) => i + 1);
   }
+  editRow(employee: any) {
+    console.log('Editing Employee:', employee);
 
+    this.employeeService.setRegisteredEmpID(employee.empId);
+
+    this.router.navigate(['admin/addEmployee'], {
+      state: { employee, isEdit: true },
+    });
+  }
   showDetails(employee: Employee | null) {
-    console.log(employee);
     if (employee) {
-      this.selectedEmployee = employee;
+      console.log('employee.empId ',employee.empId,' this.cachedempId',this.cachedempId);
       this.employeeSidebarVisible = true;
+      if(this.cachedempId===employee.empId){
+        return
+      }
+      this.cachedempId=employee.empId
+      this.employeeService.setRegisteredEmpID(employee.empId);
+      // Call all APIs first
+      this.employeeService.getEmployeeAwardDetails();
+      this.employeeService.getEmployeeBankDetails();
+      this.employeeService.getEmployeeEducationDetails();
+      this.employeeService.getEmployeeDepartmentDetails();
+      this.employeeService.getEmployeeSubDepartmentDetails();
+      this.employeeService.getEmployeeDesignationDetails();
+      this.employeeService.getEmployeeExperienceDetails();
+      this.employeeService.getEmployeeFacilityDetails();
+      this.employeeService.getEmployeeSpecialityDetails();
+      this.employeeService.getEmployeeSubSpecialityDetails();
+      // Small delay to ensure API calls are made
+      timer(300)
+        .pipe(
+          switchMap(() =>
+            combineLatest([
+              this.employeeService.employeeAwards$,
+              this.employeeService.bankDetails$,
+              this.employeeService.education$,
+              this.employeeService.department$,
+              this.employeeService.subDepartment$,
+              this.employeeService.designation$,
+              this.employeeService.experience$,
+              this.employeeService.facility$,
+              this.employeeService.speciality$,
+              this.employeeService.subSpeciality$,
+            ])
+          )
+        )
+        .subscribe(
+          ([
+            awards,
+            bankDetails,
+            education,
+            department,
+            subDepartment,
+            designation,
+            experience,
+            facility,
+            speciality,
+            subSpeciality,
+          ]) => {
+            console.log('All Data:', {
+              awards,
+              bankDetails,
+              education,
+              department,
+              subDepartment,
+              designation,
+              experience,
+              facility,
+              speciality,
+              subSpeciality,
+            });
+  
+            employee = {
+              ...employee,
+              awardData: awards,
+              bankDetails: bankDetails,
+              educationData: education,
+              departmentData: department,
+              subDepartmentData: subDepartment,
+              designationData: designation,
+              experienceData: experience,
+              facilityData: facility,
+              specialityData: speciality,
+              subSpecialityData: subSpeciality,
+            } as Employee;
+  
+            console.log('Final Employee:', employee);
+
+            this.selectedEmployee = employee;
+  this.cdr.detectChanges()
+          }
+        );
     }
   }
+  
+  
+  
 
   closeDetails() {
     this.selectedEmployee = null;
@@ -201,13 +308,7 @@ export class EmployeesComponent {
       label: 'Delete Employee',
     },
   ];
-  editRow(employee: any) {
-    console.log('Editing Employee:', employee);
-    // this.dataEmitter.emit(employee)
-    this.router.navigate(['admin/addEmployee'], {
-      state: { employee, isEdit: true },
-    });
-  }
+
   getActionItems(employee: any) {
     return (this.items = [
       {
@@ -233,15 +334,16 @@ export class EmployeesComponent {
 
         label: 'Refresh Employee',
       },
-      {
-        icon: 'pi pi-trash',
-        command: () => {
-          console.log('Deleteing now');
-          this.deleteEmployee(employee);
-        },
+      // {
+      //   icon: 'pi pi-trash',
+      //   command: () => {
+      //     console.log('Deleteing now');
+      //     this.employeeToDelete=employee
+      //     this.deleteEmployee(employee);
+      //   },
 
-        label: 'Delete Employee',
-      },
+      //   label: 'Delete Employee',
+      // },
     ]);
   }
 
@@ -249,16 +351,41 @@ export class EmployeesComponent {
     this.showDetails(employee);
   }
 
-  editEmployee(employee: any) {
-    console.log('Editing', employee);
-  }
+  
+  // deleteEmployee(employee: any) {
+  //   console.log('Deleting', employee);
+  //   this.confirmationService.confirm({
+  //     message: 'Are you sure you want to delete this item?',
+  //     header: 'Confirm Deletion',
+  //     icon: 'pi pi-exclamation-triangle',
+  //     accept: () => {
+  //       this.confirmDeletion()
+  //     },
+  //     reject: () => {
+  //       this.confirmationService.close();
+  //       console.log('Action canceled.');
+  //       return;
+  //     },
+  //   });
+  // }
+confirmDeletion(){
+  this.employeeService.setRegisteredEmpID(this.employeeToDelete.empId);
+  this.employeeService.registerEmployee(this.employeeToDelete, false, true).subscribe({
+    next:(response)=>{
+      if(response){
+        this.notificationService.showSuccess('Employee Deleted Successfully!');
 
-  deleteEmployee(employee: any) {
-    console.log('Deleting', employee);
-    this.employeeService.setRegisteredEmpID(employee.empId);
-    this.employeeService.registerEmployee(employee, false, true).subscribe();
-  }
+      }
+    },
+    error:(err)=>{
+      this.notificationService.showError('Error!Employee could not be deleted');
+    },
+    complete:()=>{
 
+    }
+  });
+  this.confirmationService.close()
+}
   // Default View
   toggleView(event: SelectButtonChangeEvent) {
     const { value } = event.value;
