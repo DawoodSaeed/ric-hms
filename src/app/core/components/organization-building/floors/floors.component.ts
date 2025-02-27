@@ -136,14 +136,7 @@ export class FloorsComponent implements OnInit {
     this.confirmationService.confirm({
       message: 'Are you sure you want to delete this floor?',
       accept: () => {
-        // this.branchService.deleteFloor(item.id).subscribe(() => {
-        //   this.fetchData();
-        //   this.messageService.add({
-        //     severity: 'success',
-        //     summary: 'Deleted',
-        //     detail: 'Floor deleted successfully',
-        //   });
-        // });
+      
       },
     });
   }

@@ -31,8 +31,6 @@ import {
 import { EmployeeService } from '../../../core/services/employee.service';
 import { MessageService } from 'primeng/api';
 import Swal from 'sweetalert2';
-import { NOTYF } from './../../../shared/utils/notyf.token';
-import { Notyf } from 'notyf';
 import { Observable, Subscription } from 'rxjs';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Department, SubDepartment } from '../../../core/interfaces/organisation';
@@ -318,7 +316,7 @@ export class AddEmployeeComponent implements OnInit {
                 label: 'Job Type',
                 type: 'select',
               },
-              { name: 'empStatusId', label: 'Employee Status', type: 'select' },
+              { name: 'empStatusId', label: 'Employee Status', type: 'select' ,required:true},
               { name: 'scaleId', label: 'Scale', type: 'select' },
               {
                 name: 'personalNumber',

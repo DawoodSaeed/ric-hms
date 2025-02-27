@@ -52,6 +52,7 @@ export class LoginComponent implements OnInit {
   });
 
   login() {
+    console.log('login clicked');
     if (this.authForm.invalid) {
       return;
     }
@@ -64,6 +65,8 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: (user) => {
           // console.log(user.token);
+    console.log('navigating');
+
           this.router.navigate(['/admin/']);
         },
 

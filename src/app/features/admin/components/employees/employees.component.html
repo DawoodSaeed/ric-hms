@@ -136,7 +136,7 @@
           <td>{{ employee.gender }}</td>
           <td>{{ employee.email }}</td>
           <td>{{ employee.mobileNo }}</td>
-          <td>{{ employee.jobTypeId }}</td>
+          <td>{{ employee.jobName }}</td>
           <td>{{ employee.address }}</td>
           <td>
             <div class="icon-group">
@@ -300,5 +300,27 @@
         </div>
       </p-tabPanel>
     </p-tabView>
+    <!-- for the deletion confirmation -->
+  <p-confirmDialog>
+    <ng-template pTemplate="footer" let-confirmation>
+      <button
+        pButton
+        type="button"
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-secondary"
+        (click)="this.confirmationService.close()"
+      ></button>
+
+      <button
+        pButton
+        type="button"
+        label="Proceed"
+        icon="pi pi-check"
+        class="p-button-danger"
+        (click)="confirmDeletion()"
+      ></button>
+    </ng-template>
+  </p-confirmDialog>
   </app-custom-sidebar>
 </div>
