@@ -33,7 +33,7 @@
         icon="pi pi-plus"
         label="Add User"
         styleClass="ml-2"
-        (click)="displayDialog.set(true)"
+        (click)="formState.set('addUser'); displayDialog.set(true)"
       />
       <p-iconfield iconPosition="left" class="ml-auto">
         <p-inputicon>
@@ -83,9 +83,32 @@
       </td>
       <td>
         <button
+          title="Change Password"
+          pButton
+          icon="pi pi-key"
+          class="p-button-rounded p-button-text"
+          (click)="changePassword(rowData, 'changePassword')"
+          pTooltip="Change Password"
+          tooltipPosition="top"
+        ></button>
+
+        <button
+          title="Reset Password"
+          pButton
+          icon="pi pi-undo"
+          class="p-button-rounded p-button-text"
+          (click)="changePassword(rowData, 'resetPassword')"
+          pTooltip="Reset Password"
+          tooltipPosition="top"
+        ></button>
+
+        <button
           pButton
           icon="pi pi-pencil"
           class="p-button-rounded p-button-text"
+          (click)="editUser(rowData)"
+          pTooltip="Edit User"
+          tooltipPosition="top"
         ></button>
 
         <button
@@ -93,6 +116,8 @@
           icon="pi pi-trash"
           (click)="deleteUser(rowData)"
           class="p-button-rounded p-button-text p-button-danger"
+          pTooltip="Delete User"
+          tooltipPosition="top"
         ></button>
       </td>
     </tr>
@@ -104,10 +129,14 @@
   styleClass="w-full md:w-[40rem]"
   [closable]="false"
   [maximizable]="true"
+  (onHide)="dialogClose()"
 >
   <ng-template #header>
     <div class="flex items-center justify-between w-full">
-      <h3 class="font-semibold text-lg">Register User</h3>
+      <h3 class="font-semibold text-lg">
+        @if(formState() == 'addUser'){ Register User } @else if(formState() ==
+        'changePassword'){ Change Password }@else { Reset Password }
+      </h3>
       <button
         pButton
         icon="pi pi-times"
@@ -117,6 +146,7 @@
     </div>
   </ng-template>
 
+  @if(formState() === 'addUser'){
   <form [formGroup]="userForm" (ngSubmit)="submitForm()">
     <div class="p-fluid grid gap-3">
       <!-- Employee ID -->
@@ -249,4 +279,108 @@
       ></button>
     </div>
   </form>
+  }@else if (formState() === 'changePassword') {
+  <form [formGroup]="chPwd" (ngSubmit)="changePasswordFormSubmission()">
+    <!-- Current Password -->
+    <div class="col-12 flex flex-col md:flex-row items-center gap-2">
+      <label for="currentPwd" class="w-full md:w-1/3 font-medium"
+        >Current Password</label
+      >
+      <div class="w-full md:w-2/3">
+        <p-password
+          formControlName="currentPwd"
+          id="currentPwd"
+          placeholder="Current Password"
+          class="w-full"
+          type="password"
+          [toggleMask]="true"
+        />
+        <p-message
+          class="mt-2"
+          *ngIf="
+            userForm.get('currentPwd')?.invalid &&
+            (userForm.get('currentPwd')?.dirty ||
+              userForm.get('currentPwd')?.touched)
+          "
+          severity="error"
+          text="Current password is required."
+        ></p-message>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="col-12 flex flex-col md:flex-row items-center gap-2 mt-5">
+      <label for="newPwd" class="w-full md:w-1/3 font-medium"
+        >New Password</label
+      >
+      <div class="w-full md:w-2/3">
+        <p-password
+          formControlName="newPwd"
+          id="newPwd"
+          placeholder="New Password"
+          class="w-full"
+          type="password"
+          [toggleMask]="true"
+        />
+        <p-message
+          class="mt-2"
+          *ngIf="
+            userForm.get('newPwd')?.invalid &&
+            (userForm.get('newPwd')?.dirty || userForm.get('newPwd')?.touched)
+          "
+          severity="error"
+          text="New password is required."
+        ></p-message>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex justify-end mt-4">
+      <button
+        pButton
+        label="Save"
+        type="submit"
+        class="p-button p-button-primary"
+      ></button>
+    </div>
+  </form>
+  }@else {
+  <form [formGroup]="chPwd" (ngSubmit)="resetPassword()">
+    <!-- New  Password -->
+    <div class="col-12 flex flex-col md:flex-row items-center gap-2">
+      <label for="newPwd" class="w-full md:w-1/3 font-medium"
+        >New Password</label
+      >
+      <div class="w-full md:w-2/3">
+        <p-password
+          formControlName="newPwd"
+          id="newPwd"
+          placeholder="New Password"
+          class="w-full"
+          type="password"
+          [toggleMask]="true"
+        />
+        <p-message
+          class="mt-2"
+          *ngIf="
+            userForm.get('newPwd')?.invalid &&
+            (userForm.get('newPwd')?.dirty || userForm.get('newPwd')?.touched)
+          "
+          severity="error"
+          text="New password is required."
+        ></p-message>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex justify-end mt-4">
+      <button
+        pButton
+        label="Save"
+        type="submit"
+        class="p-button p-button-primary"
+      ></button>
+    </div>
+  </form>
+  }
 </p-dialog>

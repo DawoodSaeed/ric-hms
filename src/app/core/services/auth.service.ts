@@ -54,7 +54,7 @@ export class AuthService {
 
   logout() {
     this.tokenService.clearToken();
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/']);
   }
 
   getRole(): string | null {
