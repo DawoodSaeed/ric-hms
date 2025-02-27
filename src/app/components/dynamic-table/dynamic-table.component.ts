@@ -1,4 +1,13 @@
-import { Component, computed, EventEmitter, inject, Inject, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  computed,
+  EventEmitter,
+  inject,
+  Inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
@@ -10,26 +19,38 @@ import { SpeedDial } from 'primeng/speeddial';
 
 @Component({
   selector: 'app-dynamic-table',
-  imports: [TableModule, CommonModule, IconFieldModule, InputIconModule, Tag,SpeedDial],
+  imports: [
+    TableModule,
+    CommonModule,
+    IconFieldModule,
+    InputIconModule,
+    Tag,
+    SpeedDial,
+  ],
 
   templateUrl: './dynamic-table.component.html',
   styleUrl: './dynamic-table.component.scss',
 })
 export class DynamicTableComponent implements OnInit {
-  constructor(){
-  }
-  
-
+  constructor() {}
 
   getActionItems(employee: any) {
     return [
-        { label: 'Edit', icon: 'pi pi-pencil', command: () => this.editRow(employee) },
-        { label: 'Delete', icon: 'pi pi-trash', command: () => this.deleteItem(employee) }
+      {
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        command: () => this.editRow(employee),
+      },
+      {
+        label: 'Delete',
+        icon: 'pi pi-trash',
+        command: () => this.deleteItem(employee),
+      },
     ];
-}
+  }
   @Input() tableData: any[] = [];
   @Input() tableTitle: string = '';
-  @Output() dataEmitter=new EventEmitter<any>()
+  @Output() dataEmitter = new EventEmitter<any>();
   ngOnInit(): void {}
   getKeys(): any[] {
     return this.tableData.length > 0
@@ -44,23 +65,32 @@ export class DynamicTableComponent implements OnInit {
               'bankId',
               'isCurrent',
               'status',
-              'empAwrdId', 'empBankId','empEduId','countryId','eduIntId','degId','fsid','gradingId'
-
+              'empAwrdId',
+              'empBankId',
+              'empEduId',
+              'countryId',
+              'eduIntId',
+              'degId',
+              'fsid',
+              'gradingId',
+              'did',
+              'empDid',
+              'subDid',
+              'empSubDid','desgnId','empDesgnId','empExpId'
             ].includes(key)
         )
       : [];
   }
   editRow(employee: any) {
     console.log('Editing Employee:', employee);
-    this.dataEmitter.emit(employee)
-}
+    this.dataEmitter.emit(employee);
+  }
 
-deleteItem(employee: any) {
+  deleteItem(employee: any) {
     console.log('Deleting Employee:', employee);
-    let isDelete=true
-    this.dataEmitter.emit({employee,isDelete})
-
-}
+    let isDelete = true;
+    this.dataEmitter.emit({ employee, isDelete });
+  }
   formatStringName(name: string): string {
     if (name === 'empAwrdId') {
       return 'Award ID';

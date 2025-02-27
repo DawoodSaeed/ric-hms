@@ -266,7 +266,185 @@
           </div>
         </div>
       </p-tabPanel>
-
+      <p-tabPanel header="Awards">
+        <div class="info-grid" *ngIf="selectedEmployee?.awardData?.length; else noAward">
+          <div *ngFor="let award of selectedEmployee!.awardData" class="award-card">
+            <div class="info-item">
+              <span class="info-label">Award Name:</span>
+              <span class="info-value">{{ award.name || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Code:</span>
+              <span class="info-value">{{ award.code || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Awarded By:</span>
+              <span class="info-value">{{ award.awardedBy || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Description:</span>
+              <span class="info-value">{{ award.description || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Award Date:</span>
+              <span class="info-value">{{ award.awardDate | date: 'dd-MM-yyyy' }}</span>
+            </div>
+          </div>
+        </div>
+      
+        <!-- If No Awards -->
+        <ng-template #noAward>
+          <div class="no-data">
+            No Awards Available
+          </div>
+        </ng-template>
+      </p-tabPanel>
+      <p-tabPanel header="Bank Details">
+        <div class="info-grid" *ngIf="selectedEmployee?.bankDetails?.length; else noBank">
+          <div *ngFor="let bank of selectedEmployee!.bankDetails" class="bank-card">
+            <div class="info-item">
+              <span class="info-label">Bank Name:</span>
+              <span class="info-value">{{ bank.bank || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Account Title:</span>
+              <span class="info-value">{{ bank.accountTitle || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Account Number:</span>
+              <span class="info-value">{{ bank.accountNo || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Branch Name:</span>
+              <span class="info-value">{{ bank.branchName || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Branch Code:</span>
+              <span class="info-value">{{ bank.branchCode || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">IBAN:</span>
+              <span class="info-value">{{ bank.iban || '-' }}</span>
+            </div>
+          
+          </div>
+        </div>
+      
+        <!-- If No Bank Details -->
+        <ng-template #noBank>
+          <div class="no-data">
+            No Bank Details Available
+          </div>
+        </ng-template>
+      </p-tabPanel>
+      <p-tabPanel header="Education">
+        <div class="info-grid" *ngIf="selectedEmployee?.educationData?.length; else noEducation">
+          <div *ngFor="let education of selectedEmployee!.educationData" class="education-card">
+            <div class="info-item">
+              <span class="info-label">Institution Name:</span>
+              <span class="info-value">{{ education.institutionName || '-' }}</span>
+            </div>
+      
+            <div class="info-item">
+              <span class="info-label">Degree Name:</span>
+              <span class="info-value">{{ education.degreeName || '-' }}</span>
+            </div>
+      
+            <div class="info-item">
+              <span class="info-label">Country:</span>
+              <span class="info-value">{{ education.countryName || '-' }}</span>
+            </div>
+      
+            <div class="info-item">
+              <span class="info-label">Start Date:</span>
+              <span class="info-value">{{ education.startDate | date: 'dd-MM-yyyy' }}</span>
+            </div>
+      
+            <div class="info-item">
+              <span class="info-label">End Date:</span>
+              <span class="info-value">{{ education.endDate | date: 'dd-MM-yyyy' }}</span>
+            </div>
+      
+            <div class="info-item">
+              <span class="info-label">Issue Date:</span>
+              <span class="info-value">{{ education.issueDate | date: 'dd-MM-yyyy' }}</span>
+            </div>
+      
+            <div class="info-item">
+              <span class="info-label">Total Marks:</span>
+              <span class="info-value">{{ education.totalMarks || '-' }}</span>
+            </div>
+      
+            <div class="info-item">
+              <span class="info-label">Obtained Marks:</span>
+              <span class="info-value">{{ education.obtainMarks || '-' }}</span>
+            </div>
+      
+            <div class="info-item">
+              <span class="info-label">Certificate:</span>
+              <span class="info-value">
+                <a *ngIf="education.certificatePath" href="{{ education.certificatePath }}" target="_blank">
+                  View Certificate
+                </a>
+                <span *ngIf="!education.certificatePath">-</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      
+        <!-- If No Education Details -->
+        <ng-template #noEducation>
+          <div class="no-data">
+            No Education Details Available
+          </div>
+        </ng-template>
+      </p-tabPanel>
+      <p-tabPanel header="Department Details">
+        <div class="info-grid" *ngIf="selectedEmployee?.department?.length; else noDepartment">
+          <div *ngFor="let dept of selectedEmployee!.department" class="dept-card">
+            <div class="info-item">
+              <span class="info-label">Department:</span>
+              <span class="info-value">{{ dept.department || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Employee Department ID:</span>
+              <span class="info-value">{{ dept.empDid || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Department ID:</span>
+              <span class="info-value">{{ dept.did || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Employee ID:</span>
+              <span class="info-value">{{ dept.empId || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Created By:</span>
+              <span class="info-value">{{ dept.createdById || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Created On:</span>
+              <span class="info-value">{{ dept.createdOn ? (dept.createdOn | date:'dd-MM-yyyy') : '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Modified By:</span>
+              <span class="info-value">{{ dept.modifiedById || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Modified On:</span>
+              <span class="info-value">{{ dept.modifiedOn ? (dept.modifiedOn | date:'dd-MM-yyyy') : '-' }}</span>
+            </div>
+          </div>
+        </div>
+      
+        <!-- If No Department Details -->
+        <ng-template #noDepartment>
+          <div class="no-data">
+            No Department Details Available
+          </div>
+        </ng-template>
+      </p-tabPanel>
+      
       <p-tabPanel header="Other Details">
         <div class="info-grid">
           <div class="info-item">

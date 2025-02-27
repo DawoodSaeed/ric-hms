@@ -41,4 +41,9 @@ export interface Employee {
   modifiedById: number;
   modifiedOn: string; // Use Date if needed
   emp: string;
+  awardData?:any[];
+  bankDetails?:any[];
+  educationData?:any[];
+department?:any[]
+
 }

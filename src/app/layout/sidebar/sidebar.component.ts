@@ -328,7 +328,7 @@ export class SidebarComponent implements OnInit {
   title = 'ric';
   isDrawerOpen = true;
   toggleMenu(label: string) {
-    
+    console.log('yooy')
     this.sideBarTabs.forEach((tab) => {
       if (tab.label !== label) {
         tab.expanded = false;

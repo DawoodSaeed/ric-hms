@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Department, SubDepartment, Service } from '../interfaces/organisation';
 import { environment } from '../../../environments/environment.development';
 @Injectable({
@@ -13,8 +13,16 @@ export class OrganisationService {
 
   // Departments
   getAllDepartments(): Observable<Department[]> {
-    return this.http.get<Department[]>(`${this.baseUrl}/AllDepartments`);
+    return this.http.get<Department[]>(`${this.baseUrl}/AllDepartments`).pipe(
+      map((departments) =>
+        departments.map(dept => ({
+          ...dept,   // Spread existing properties
+          id: dept.did  // Add new property 'id'
+        }))
+      )
+    );
   }
+  
 
   createOrUpdateDepartment(department: Department): Observable<Department> {
     return this.http.post<Department>(
@@ -25,7 +33,14 @@ export class OrganisationService {
 
   // Sub-Departments
   getAllSubDepartments(): Observable<SubDepartment[]> {
-    return this.http.get<SubDepartment[]>(`${this.baseUrl}/AllSubDepartments`);
+    return this.http.get<SubDepartment[]>(`${this.baseUrl}/AllSubDepartments`).pipe(
+      map((departments) =>
+        departments.map(dept => ({
+          ...dept,   // Spread existing properties
+          id: dept.subDid  // Add new property 'id'
+        }))
+      )
+    );;
   }
 
   createOrUpdateSubDepartment(

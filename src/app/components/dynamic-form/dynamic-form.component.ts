@@ -83,6 +83,7 @@ export class DynamicFormComponent implements OnInit {
     const receivedEmployee = history.state.employee;
     console.log('Received Employee:', receivedEmployee);
     if (receivedEmployee) {
+      // Yahan pr apis call krani hein
       this.emplyeeService.setRegisteredEmpID(receivedEmployee.empId);
       this.receivedEmployee = receivedEmployee;
       this.form.patchValue(receivedEmployee);
@@ -108,6 +109,8 @@ export class DynamicFormComponent implements OnInit {
     } else {
       this.dataReceivedFromChild = data;
       this.isEdit = true;
+      this.isDelete=false
+
       if (this.form) {
         Object.keys(data).forEach((key: any) => {
           if (this.form.controls[key]) {

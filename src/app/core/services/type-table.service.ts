@@ -300,7 +300,15 @@ export class TypeTableService {
   // ###### DESIGNATIONS >>>>>>>>>>>>>
 
   getDesignations(): Observable<Designation[]> {
-    return this.getAll<Designation>('Designations');
+    return this.getAll<Designation>('Designations').pipe(
+      map((departments) =>
+        departments.map(desgn => ({
+          ...desgn,   // Spread existing properties
+          id: desgn.desgnId
+          // Add new property 'id'
+        }))
+      )
+    );;
   }
 
   addUpdateDesignations(designation: Designation): Observable<Designation> {
