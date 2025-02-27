@@ -123,7 +123,7 @@ export class SidebarComponent implements OnInit {
           {
             label: 'Roles',
             icon: 'pi pi-shield', // Changed to pi-shield, which is more relevant for roles/permissions
-            route: '/admin/user-management/users', // Consider changing this route to something more role-related
+            route: '/admin/user-management/roles', // Consider changing this route to something more role-related
           },
         ],
       },
@@ -385,7 +385,6 @@ export class SidebarComponent implements OnInit {
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/auth']);
   }
 
   checked: boolean = false;

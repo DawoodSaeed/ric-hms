@@ -19,3 +19,9 @@ export interface Role extends common {
   description: string;
   isActive: number; // or boolean if it represents an active/inactive state
 }
+
+export interface ChangePassword {
+  userId: number;
+  currentPassword: string;
+  newPassword: string;
+}
