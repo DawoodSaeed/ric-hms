@@ -30,6 +30,8 @@ import { NotificationService } from '../../core/services/notification.service';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { Message } from 'primeng/message';
+import { TypeTableService } from '../../core/services/type-table.service';
+import { OrganisationService } from '../../core/services/organisation.service';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -55,6 +57,9 @@ export class DynamicFormComponent implements OnInit {
   @Input() formStructure!: FormStructure;
   @Output() dataEmitter = new EventEmitter<any>();
   @Input() isLoading: boolean = false;
+  dropdownService=inject(TypeTableService)
+  organizationService=inject(OrganisationService)
+
   dataReceivedFromChild: any = null;
   entriesCount: number = 2;
   isEdit: boolean = false;
@@ -66,7 +71,7 @@ export class DynamicFormComponent implements OnInit {
   private emplyeeService = inject(EmployeeService);
   registeredEmpID = computed(() => this.emplyeeService.registeredEmpIDSignal());
   receivedEmployee: any;
-
+  uploadedFiles: {[key: string]: File} = {};
   constructor(
     private location: Location, // Inject Location Service
     private dynamicFormService: DynamicFormService,
@@ -76,6 +81,7 @@ export class DynamicFormComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('Form Structure:', this.formStructure);
+    
     this.form = this.dynamicFormService.createForm(this.formStructure);
     if (this.formStructure.tabs) {
       this.currentTab.set(this.formStructure.tabs[0].tabName);
@@ -98,6 +104,20 @@ export class DynamicFormComponent implements OnInit {
       }, 0);
     }
   }
+  onValueChange(value:number|string,field:string) {
+console.log('field ',field)
+console.log('value ',value)
+if(field==='country' && typeof(value)==='number'){
+  this.dropdownService.setCountryID(value)
+}
+if(field==='province' && typeof(value)==='number'){
+  this.dropdownService.setProvinceID(value)
+}
+if(field==='did' && typeof(value)==='number'){
+  this.organizationService.setDepartmentID(value)
+}
+  }
+  
   receivedDataFromOwnTable(data: any) {
     console.log('receivedDataFromOwnTable ', data);
     if (data.isDelete) {
@@ -211,5 +231,15 @@ export class DynamicFormComponent implements OnInit {
 
       this.notificationService.showError('Please fill all required fields');
     }
+  }
+
+  onFileUpload(event: any, fieldName: string) {
+    console.log('filed name', fieldName)
+    const file = event.files[0]; // Get the first file
+  
+    // You can now store the file or perform other actions
+    console.log('File uploaded:', file);
+    // Example: Store the file in a variable
+    this.uploadedFiles[fieldName] = file;
   }
 }

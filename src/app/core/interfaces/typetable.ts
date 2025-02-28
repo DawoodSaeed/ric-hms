@@ -150,6 +150,7 @@ export interface Province extends TypeTable {
   code: string;
   cid: number;
   status: number;
+  countryId?:number;
 }
 
 export interface District extends TypeTable {
@@ -157,6 +158,7 @@ export interface District extends TypeTable {
   pid: number;
   cid: number;
   status: number;
+  provinceId?:number
 }
 
 export interface City extends TypeTable {
@@ -183,3 +185,7 @@ export interface SubSpeciality extends TypeTable {
   keyWord: string;
   status: number;
 }
+
+export interface Grades extends TypeTable {
+  }
+  

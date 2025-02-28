@@ -43,7 +43,7 @@ import { EmployeeService } from '../../core/services/employee.service';
 export class SidebarComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
-
+private employeeService=inject(EmployeeService)
   sideBarTabs: any[] = [];
   menuExpanded: boolean = false;
   // Variable to track the clicked menu
@@ -335,7 +335,10 @@ export class SidebarComponent implements OnInit {
       }
     });
   }
-
+  onSubTabClick(){
+    console.log('subtab')
+    this.employeeService.setRegisteredEmpID(null)
+  }
   sideMenuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },
     {

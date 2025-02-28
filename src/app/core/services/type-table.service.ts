@@ -1,8 +1,8 @@
 // typetable.service.ts
 
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, switchMap } from 'rxjs';
 
 import {
   Bank,
@@ -17,6 +17,7 @@ import {
   EmploymentStatus,
   Facility,
   FieldOfStudy,
+  Grades,
   GuardianType,
   JobType,
   OrganizationType,
@@ -39,9 +40,19 @@ import { environment } from '../../../environments/environment.development';
 })
 export class TypeTableService {
   private apiUrl = `${environment.apiUrl}TypeTables`; // Base API URL
-
   constructor(private http: HttpClient) {}
+  private countryID$ = new BehaviorSubject<number | null>(1);
+  private provinceID$ = new BehaviorSubject<number | null>(1);
 
+
+  setCountryID(countryID: number) {
+    console.log('countryid coming', countryID);
+    this.countryID$.next(countryID);
+  }
+  setProvinceID(provinceID: number) {
+    console.log('provinceid coming', provinceID);
+    this.provinceID$.next(provinceID);
+  }
   // Generic GET All method
   getAll<T extends TypeTable>(endpoint: string): Observable<T[]> {
     return this.http.get<T[]>(`${this.apiUrl}/${endpoint}/GetAll`);
@@ -270,10 +281,19 @@ export class TypeTableService {
   }
 
   // ###### PROVINCES >>>>>>>>>>>>>
-
   getProvinces(): Observable<Province[]> {
-    return this.getAll<Province>('Provinces');
+    return this.countryID$.pipe(
+      switchMap((countryID) => {
+        if (!countryID) return of([]);
+        return this.getAll<Province>('Provinces').pipe(
+          map((response) =>
+            response.filter((province) => province.countryId === countryID)
+          )
+        );
+      })
+    );
   }
+  
 
   addUpdateProvince(province: Province): Observable<Province> {
     return this.addUpdate<Province>('Provinces', province);
@@ -282,7 +302,16 @@ export class TypeTableService {
   // ###### DISTRICTS >>>>>>>>>>>>>
 
   getDistricts(): Observable<District[]> {
-    return this.getAll<District>('Districts');
+    return this.provinceID$.pipe(
+      switchMap((provinceID) => {
+        if (!provinceID) return of([]); // Return empty array if no province selected
+        return this.getAll<District>('Districts').pipe(
+          map((response) =>
+            response.filter((district) => district.provinceId === provinceID)
+          )
+        );
+      })
+    );
   }
 
   addUpdateDistricts(district: District): Observable<District> {
@@ -342,14 +371,15 @@ getSpeciality(): Observable<Speciality[]> {
   }
 
 
-  getGrades(): Observable<SubSpeciality[]> {
-    return this.getAll<SubSpeciality>('SubSpecialities').pipe(
-      map((Specialities) =>
-        Specialities.map(spec => ({
-          ...spec,   // Spread existing properties
-          id: spec.subSpId  // Add new property 'id'
-        }))
-      )
-    );;
+  getGrades(): Observable<Grades[]> {
+    return this.getAll<Grades>('EducationGrades')
+  //   .pipe(
+  //     map((Grades) =>
+  //       Grades.map(grade => ({
+  //         ...grade,   // Spread existing properties
+  //         id: grade.subSpId  // Add new property 'id'
+  //       }))
+  //     )
+  //   );;
   }
 }
