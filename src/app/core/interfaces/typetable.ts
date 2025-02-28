@@ -169,3 +169,17 @@ export interface City extends TypeTable {
 export interface Designation extends TypeTable {
   desgnId?: number;
 }
+
+export interface Speciality extends TypeTable {
+  spId: number;
+  keyWord: string;
+  branchId: number;
+  status: number;
+
+}
+export interface SubSpeciality extends TypeTable {
+  subSpId: number;
+  spId: number;
+  keyWord: string;
+  status: number;
+}

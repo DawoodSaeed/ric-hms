@@ -27,6 +27,8 @@ import {
   Relation,
   Religion,
   Scale,
+  Speciality,
+  SubSpeciality,
   TypeTable,
   WorkingSession,
 } from '../interfaces/typetable';
@@ -297,6 +299,7 @@ export class TypeTableService {
     return this.addUpdate<City>('Cities', city);
   }
 
+ 
   // ###### DESIGNATIONS >>>>>>>>>>>>>
 
   getDesignations(): Observable<Designation[]> {
@@ -313,5 +316,40 @@ export class TypeTableService {
 
   addUpdateDesignations(designation: Designation): Observable<Designation> {
     return this.addUpdate<Designation>('Designations', designation);
+  }
+
+// Third Phase 
+getSpeciality(): Observable<Speciality[]> {
+  return this.getAll<Speciality>('Specialities').pipe(
+    map((Specialities) =>
+      Specialities.map(spec => ({
+        ...spec,   // Spread existing properties
+        id: spec.spId  // Add new property 'id'
+      }))
+    )
+  );
+}
+
+  getSubSpeciality(): Observable<SubSpeciality[]> {
+    return this.getAll<SubSpeciality>('SubSpecialities').pipe(
+      map((Specialities) =>
+        Specialities.map(spec => ({
+          ...spec,   // Spread existing properties
+          id: spec.subSpId  // Add new property 'id'
+        }))
+      )
+    );;
+  }
+
+
+  getGrades(): Observable<SubSpeciality[]> {
+    return this.getAll<SubSpeciality>('SubSpecialities').pipe(
+      map((Specialities) =>
+        Specialities.map(spec => ({
+          ...spec,   // Spread existing properties
+          id: spec.subSpId  // Add new property 'id'
+        }))
+      )
+    );;
   }
 }

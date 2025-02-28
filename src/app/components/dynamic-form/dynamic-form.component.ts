@@ -96,11 +96,10 @@ export class DynamicFormComponent implements OnInit {
       setTimeout(() => {
         this.location.replaceState('/admin/addEmployee'); // Replace state with an empty URL
       }, 0);
-
     }
   }
-  receivedData(data: any) {
-    console.log('data received ', data);
+  receivedDataFromOwnTable(data: any) {
+    console.log('receivedDataFromOwnTable ', data);
     if (data.isDelete) {
       this.dataReceivedFromChild = data.employee;
       this.isDelete = true;
@@ -110,7 +109,6 @@ export class DynamicFormComponent implements OnInit {
       this.dataReceivedFromChild = data;
       this.isEdit = true;
       this.isDelete=false
-
       if (this.form) {
         Object.keys(data).forEach((key: any) => {
           if (this.form.controls[key]) {
@@ -206,6 +204,8 @@ export class DynamicFormComponent implements OnInit {
         isEdit: this.isEdit,
         isDelete: this.isDelete,
       }); // Emit selected tab data
+      this.isEdit=false
+      this.isDelete=false
     } else {
       this.form.markAllAsTouched(); // Mark all fields as touched to show validation errors
 

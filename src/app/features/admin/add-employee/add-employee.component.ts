@@ -26,6 +26,8 @@ import {
   Relation,
   Religion,
   Scale,
+  Speciality,
+  SubSpeciality,
   TypeTable,
 } from '../../../core/interfaces/typetable';
 import { EmployeeService } from '../../../core/services/employee.service';
@@ -207,9 +209,17 @@ export class AddEmployeeComponent implements OnInit {
       });
       this.dropDownService.getFacilities().subscribe((facilities: Facility[]) => {
         console.log('facilities', facilities);
-        this.updateDropdownOptions('empFacilityId', facilities);
+        this.updateDropdownOptions('facilityId', facilities);
       });
 
+      this.dropDownService.getSpeciality().subscribe((specialities: Speciality[]) => {
+        console.log('spId', specialities);
+        this.updateDropdownOptions('spId', specialities);
+      });
+      this.dropDownService.getSubSpeciality().subscribe((subSpecialities: SubSpeciality[]) => {
+        console.log('subSpId', subSpecialities);
+        this.updateDropdownOptions('subSpId', subSpecialities);
+      });
   }
   // Generic method to update dropdown options
   private updateDropdownOptions(
@@ -535,7 +545,7 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Facility Info',
             fields: [
               {
-                name: 'empFacilityId',
+                name: 'facilityId',
                 label: 'Employee Facility',
                 type: 'select',
               },
@@ -557,7 +567,7 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Speciality Info',
             fields: [
               {
-                name: 'empSpId',
+                name: 'spId',
                 label: 'Employee Speciality',
                 type: 'select',
               },
@@ -580,7 +590,7 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Subspeciality Info',
             fields: [
               {
-                name: 'empSubSpId',
+                name: 'subSpId',
                 label: 'Employee Subspeciality',
                 type: 'select',
               },
