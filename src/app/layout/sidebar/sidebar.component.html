@@ -44,6 +44,7 @@
       <ng-template #item let-item>
         <ng-container *ngIf="item.route; else urlRef">
           <a
+          (click)="onSubTabClick()"
             [routerLink]="item.route"
             class="flex items-center text-white cursor-pointer hover:bg-gray-700 px-4 py-3 rounded-md transition-colors"
           >

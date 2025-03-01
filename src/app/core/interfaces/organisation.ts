@@ -28,6 +28,7 @@ export interface SubDepartment {
   createdOn: string;
   modifiedById: number;
   modifiedOn: string;
+  departmentId?:number
 }
 
 export interface Service {

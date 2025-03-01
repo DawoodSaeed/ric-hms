@@ -246,10 +246,6 @@ export class EmployeesComponent {
         );
     }
   }
-  
-  
-  
-
   closeDetails() {
     this.selectedEmployee = null;
     this.employeeSidebarVisible = false;

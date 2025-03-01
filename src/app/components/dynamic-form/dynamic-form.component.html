@@ -10,9 +10,11 @@
     scrollable
   >
     <p-tablist>
-
-      <p-tab *ngFor="let tab of formStructure.tabs; let i = index" [value]="i" [disabled]="i!==0 && !registeredEmpID()">
-
+      <p-tab
+        *ngFor="let tab of formStructure.tabs; let i = index"
+        [value]="i"
+        [disabled]="i !== 0 && !registeredEmpID()"
+      >
         {{ tab.tabName }}
       </p-tab>
     </p-tablist>
@@ -27,16 +29,20 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div *ngFor="let field of section.fields" class="flex flex-col">
-              <label class="text-sm font-medium mb-1" *ngIf="!field.hide">{{ field.label }}</label>
+              <label class="text-sm font-medium mb-1" *ngIf="!field.hide">{{
+                field.label
+              }}</label>
 
               <!-- Text Input -->
               <input
-              [ngClass]="{
-                'ng-invalid ng-dirty': form.controls[field.name].invalid && form.controls[field.name].touched
-              }"
+                [ngClass]="{
+                  'ng-invalid ng-dirty':
+                    form.controls[field.name].invalid &&
+                    form.controls[field.name].touched
+                }"
                 variant="filled"
                 pInputText
-                *ngIf="field.type === 'text' "
+                *ngIf="field.type === 'text'"
                 type="text"
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder || field.label"
@@ -54,15 +60,18 @@
                 [placeholder]="field.placeholder || 'Select ' + field.label"
                 class="w-full"
                 [ngClass]="{
-                  'ng-invalid ng-dirty': form.controls[field.name].invalid && form.controls[field.name].touched
+                  'ng-invalid ng-dirty':
+                    form.controls[field.name].invalid &&
+                    form.controls[field.name].touched
                 }"
+                (onChange)="onValueChange($event.value, field.name)"
               >
               </p-select>
 
               <!-- Date Input -->
               <p-calendar
                 variant="filled"
-                *ngIf="field && field.type === 'date'  && !field.hide"
+                *ngIf="field && field.type === 'date' && !field.hide"
                 type="date"
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder || field.label"
@@ -71,20 +80,22 @@
                 [style]="{ width: '100%' }"
                 [inputStyle]="{ width: '100%' }"
                 [ngClass]="{
-                  'ng-invalid ng-dirty': form.controls[field.name].invalid && form.controls[field.name].touched
+                  'ng-invalid ng-dirty':
+                    form.controls[field.name].invalid &&
+                    form.controls[field.name].touched
                 }"
               />
 
               <!-- Number Input -->
               <input
                 variant="filled"
-                *ngIf="field.type === 'number'  && !field.hide"
+                *ngIf="field.type === 'number' && !field.hide"
                 type="number"
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder || field.label"
                 class="p-inputtext p-component w-full py-2 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 [ngClass]="{
-                  'ng-invalid ng-dirty': form.controls[field.name].invalid 
+                  'ng-invalid ng-dirty': form.controls[field.name].invalid
                 }"
               />
 
@@ -110,7 +121,16 @@
                 />
                 <label for="{{ field.name }}No">No</label>
               </div>
-
+              <div *ngIf="field.type === 'file'" class="flex flex-col">
+                <p-fileUpload
+                  mode="basic"
+                  name="fileUpload"
+                  [auto]="true"
+                  chooseLabel="Upload File"
+                  (onSelect)="onFileUpload($event, field.name)"
+                  class="w-full"
+                ></p-fileUpload>
+              </div>
               <!-- Image Upload Input using PrimeNG -->
               <div
                 *ngIf="field.type === 'image'"
@@ -165,7 +185,7 @@
           *ngIf="tab.tableData"
           [tableTitle]="tab.tabName"
           [tableData]="tab.tableData"
-          (dataEmitter)="receivedData($event)"
+          (dataEmitter)="receivedDataFromOwnTable($event)"
         ></app-dynamic-table>
       </p-tabpanel>
     </p-tabpanels>

@@ -79,6 +79,12 @@ export class DynamicTableComponent implements OnInit {
               'desgnId',
               'empDesgnId',
               'empExpId',
+              'facilityId',
+              'empFacilityId',
+              'empSpId',
+              'spId',
+              'subSpId',
+              'empSubSpId',
             ].includes(key)
         )
       : [];

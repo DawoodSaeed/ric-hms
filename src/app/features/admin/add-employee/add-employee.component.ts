@@ -15,17 +15,21 @@ import {
   Bank,
   Country,
   Designation,
+  District,
   EducationDegree,
   EducationInstitution,
   EmploymentStatus,
   Facility,
   FieldOfStudy,
+  Grades,
   GuardianType,
   JobType,
   Province,
   Relation,
   Religion,
   Scale,
+  Speciality,
+  SubSpeciality,
   TypeTable,
 } from '../../../core/interfaces/typetable';
 import { EmployeeService } from '../../../core/services/employee.service';
@@ -169,6 +173,12 @@ export class AddEmployeeComponent implements OnInit {
       console.log('provinces ', provinces);
       this.updateDropdownOptions('province', provinces);
     });
+    this.dropDownService.getDistricts().subscribe((districts: District[]) => {
+      console.log('domicileDistrictId ', districts);
+      this.updateDropdownOptions('domicileDistrictId', districts);
+      this.updateDropdownOptions('cityDistrict', districts);
+
+    });
     this.dropDownService
       .getEducationInstitutions()
       .subscribe((eduInstitutes: EducationInstitution[]) => {
@@ -198,6 +208,7 @@ export class AddEmployeeComponent implements OnInit {
       });
 
       this.organizationService.getAllSubDepartments().subscribe((subDepartments: SubDepartment[]) => {
+        console.log('subDepartments',subDepartments)
         this.updateDropdownOptions('subDid', subDepartments);
       });
       this.dropDownService
@@ -207,9 +218,21 @@ export class AddEmployeeComponent implements OnInit {
       });
       this.dropDownService.getFacilities().subscribe((facilities: Facility[]) => {
         console.log('facilities', facilities);
-        this.updateDropdownOptions('empFacilityId', facilities);
+        this.updateDropdownOptions('facilityId', facilities);
       });
 
+      this.dropDownService.getSpeciality().subscribe((specialities: Speciality[]) => {
+        console.log('spId', specialities);
+        this.updateDropdownOptions('spId', specialities);
+      });
+      this.dropDownService.getSubSpeciality().subscribe((subSpecialities: SubSpeciality[]) => {
+        console.log('subSpId', subSpecialities);
+        this.updateDropdownOptions('subSpId', subSpecialities);
+      });
+      this.dropDownService.getGrades().subscribe((grades: Grades[]) => {
+        console.log('gradingId', grades);
+        this.updateDropdownOptions('gradingId', grades);
+      });
   }
   // Generic method to update dropdown options
   private updateDropdownOptions(
@@ -435,7 +458,7 @@ export class AddEmployeeComponent implements OnInit {
               {
                 name: 'certificatePath',
                 label: 'Certificate Path',
-                type: 'text',
+                type: 'file',
               },
               // { name: 'isCurrent', label: 'Is Current', type: 'text' },
             ],
@@ -451,12 +474,6 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Department Info',
             fields: [
               { name: 'did', label: 'Employee Department', type: 'select' },
-              // { name: 'did', label: 'Department ID', type: 'text' },
-              // { name: 'empId', label: 'Employee ID', type: 'text' },
-              // { name: 'createdById', label: 'Created By', type: 'text' },
-              // { name: 'createdOn', label: 'Created On', type: 'text' },
-              // { name: 'modifiedById', label: 'Modified By', type: 'text' },
-              // { name: 'modifiedOn', label: 'Modified On', type: 'text' },
             ],
           },
         ],
@@ -468,18 +485,11 @@ export class AddEmployeeComponent implements OnInit {
         sections: [
           {
             title: 'Sub Department Info',
+       
             fields: [
-              // {
-              //   name: 'empSubDid',
-              //   label: 'Employee Sub Department',
-              //   type: 'select',
-              // },
+              { name: 'did', label: 'Department', type: 'select' },
+             
               { name: 'subDid', label: 'Sub Department', type: 'select' },
-              // { name: 'empId', label: 'Employee ID', type: 'text' },
-              // { name: 'createdById', label: 'Created By', type: 'text' },
-              // { name: 'createdOn', label: 'Created On', type: 'text' },
-              // { name: 'modifiedById', label: 'Modified By', type: 'text' },
-              // { name: 'modifiedOn', label: 'Modified On', type: 'text' },
             ],
           },
         ],
@@ -519,7 +529,7 @@ export class AddEmployeeComponent implements OnInit {
               {
                 name: 'certificatePath',
                 label: 'Certificate Path',
-                type: 'text',
+                type: 'file',
               },
               // { name: 'status', label: 'Status', type: 'radio' },
             ],
@@ -535,7 +545,7 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Facility Info',
             fields: [
               {
-                name: 'empFacilityId',
+                name: 'facilityId',
                 label: 'Employee Facility',
                 type: 'select',
               },
@@ -557,7 +567,7 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Speciality Info',
             fields: [
               {
-                name: 'empSpId',
+                name: 'spId',
                 label: 'Employee Speciality',
                 type: 'select',
               },
@@ -580,7 +590,7 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Subspeciality Info',
             fields: [
               {
-                name: 'empSubSpId',
+                name: 'subSpId',
                 label: 'Employee Subspeciality',
                 type: 'select',
               },
