@@ -36,6 +36,8 @@ import { Dropdown, DropdownModule } from 'primeng/dropdown';
 import { AuthService } from '../../services/auth.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { PasswordModule } from 'primeng/password';
+import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
+
 @Component({
   selector: 'app-user-management',
   imports: [
@@ -53,6 +55,7 @@ import { PasswordModule } from 'primeng/password';
     DropdownModule,
     TooltipModule,
     PasswordModule,
+    BreadcrumbComponent,
   ],
   templateUrl: './user-management.component.html',
   styleUrl: './user-management.component.scss',
@@ -122,6 +125,7 @@ export class UserManagementComponent implements OnInit {
     this.accountService.deleteUser(rowData.userId).subscribe({
       next: (message) => {
         console.log(message);
+        this.refreshSub.next(!this.refreshSub.value);
       },
       error: (error) => {
         this.notify.showError('Failed to delete the user.');
@@ -291,8 +295,8 @@ export class UserManagementComponent implements OnInit {
         empId: rowData.empId,
         userName: rowData.userName,
         roleId: role?.id,
-        status: rowData.status,
-        password: '',
+        status: rowData.status ? true : false,
+        password: rowData.password,
       });
     });
   }

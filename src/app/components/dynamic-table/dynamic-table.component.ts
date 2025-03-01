@@ -24,7 +24,6 @@ import { SpeedDial } from 'primeng/speeddial';
     CommonModule,
     IconFieldModule,
     InputIconModule,
-    Tag,
     SpeedDial,
   ],
 
@@ -76,7 +75,10 @@ export class DynamicTableComponent implements OnInit {
               'did',
               'empDid',
               'subDid',
-              'empSubDid','desgnId','empDesgnId','empExpId'
+              'empSubDid',
+              'desgnId',
+              'empDesgnId',
+              'empExpId',
             ].includes(key)
         )
       : [];

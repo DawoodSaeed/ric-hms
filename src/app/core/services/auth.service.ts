@@ -15,7 +15,7 @@ export class AuthService {
   private router = inject(Router);
   private apiUrl = environment.apiUrl + 'auth';
 
-  private user = new BehaviorSubject<User | null>(null);
+  private user = new BehaviorSubject<User | null | CheckAuth>(null);
   user$ = this.user.asObservable();
   private loggedInUserId = new BehaviorSubject<string>('');
   loggedInUserId$ = this.loggedInUserId.asObservable();
@@ -47,6 +47,7 @@ export class AuthService {
         const { valid, role, username, userId } = auth;
         this.loggedInUserId.next(userId);
         this.setRole(role.toLocaleLowerCase());
+        this.user.next(auth);
         return auth;
       })
     );

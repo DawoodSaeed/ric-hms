@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   ChangeDetectorRef,
   Component,
   OnInit,
@@ -16,6 +17,7 @@ import {
   filter,
   map,
   Observable,
+  switchMap,
   take,
   tap,
 } from 'rxjs';
@@ -52,6 +54,19 @@ import { SelectModule } from 'primeng/select';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Slider } from 'primeng/slider';
 import { CheckboxModule } from 'primeng/checkbox';
+import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
+
+interface ChargesType {
+  id: number;
+  name: string;
+  description?: string;
+  createdById?: number | null;
+  createdOn?: string | null;
+  modifiedById?: number | null;
+  modifiedOn?: string | null;
+  isActive?: number;
+}
+
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
@@ -80,10 +95,13 @@ import { CheckboxModule } from 'primeng/checkbox';
     RadioButtonModule,
     RatingModule,
     InputNumberModule,
+    BreadcrumbComponent,
   ],
   providers: [MessageService, ConfirmationService],
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements OnInit, AfterViewInit {
+  charges = signal<TypeTable[]>([]);
+  pageTitle = signal('');
   isEdit = signal(false);
   // Signals...
   searchValue = signal('');
@@ -93,6 +111,7 @@ export class TableComponent implements OnInit {
   floors = signal<Floor[]>([]);
   branches = signal<Branch[]>([]);
   rooms = signal<Room[]>([]);
+  beds = signal<Bed[]>([]);
   dropdownFloors = combineLatest([
     toObservable(this.buildings),
     toObservable(this.floors),
@@ -125,7 +144,7 @@ export class TableComponent implements OnInit {
     name: '',
     description: '',
     bid: 0,
-    branchId: 0,
+    branchId: 1,
     status: 1,
     ...this.getCommonFields(),
   };
@@ -136,7 +155,7 @@ export class TableComponent implements OnInit {
     name: '',
     description: '',
     status: 1,
-    branchId: 0,
+    branchId: 1,
     ...this.getCommonFields(),
   };
 
@@ -147,7 +166,7 @@ export class TableComponent implements OnInit {
     description: '',
     bid: 0, //Building Id
     fid: 0, // Floor Id
-    branchId: 0,
+    branchId: 1,
     status: 1,
     ...this.getCommonFields(),
   };
@@ -160,13 +179,14 @@ export class TableComponent implements OnInit {
     bid: 0, //Building Id
     fid: 0, // Floor Id
     rid: 0, // Room Id
-    branchId: 0, // Branch id
+    branchId: 1, // Branch id
     priceId: 0,
     minValue: 0,
     maxValue: 0,
     isVacant: true,
     isFemale: true,
     status: 1,
+    chargesType: 'Once',
     ...this.getCommonFields(),
   };
 
@@ -217,78 +237,41 @@ export class TableComponent implements OnInit {
   chargesType$!: Observable<TypeTable[]>;
 
   ngOnInit(): void {
+    // First, get data from snapshot to handle direct page loads (refresh scenario)
+    const snapshotData = this.route.snapshot.data;
+    if (snapshotData) {
+      this.handleRouteData(snapshotData);
+    }
+
+    // Subscribe to route data for dynamic updates (when navigating within the app)
     this.route.data.subscribe((data) => {
-      const dataType = data['dataType']; // Get dataType from route data
-      if (dataType && this.isValidDataType(dataType)) {
-        this.currentDataType = dataType as
-          | 'floors'
-          | 'buildings'
-          | 'rooms'
-          | 'beds';
-
-        this.fetchData();
-      } else {
-        console.error('Invalid dataType:', dataType);
-      }
+      this.handleRouteData(data);
     });
-
-    this.fetchBuildings(undefined);
-    this.fetchFloors(undefined);
-    this.fetchBranches();
-    this.fetchRooms(undefined);
-
-    this.buildings$ = combineLatest([
-      this.selectedBranchSubj,
-      this.buildingsObs$,
-    ]).pipe(
-      map(([branchId, buildings]) => {
-        if (branchId) {
-          return buildings.filter((building) => building.branchId == branchId);
-        }
-        return buildings;
-      }),
-
-      tap((data) => {
-        console.log('Filtering of buildings based on Branch Id');
-        console.log(data);
-      })
-    );
-
-    this.floors$ = combineLatest([
-      this.selectedBuildingSubj,
-      this.floorObs$,
-    ]).pipe(
-      map(([buildingId, floors]) => {
-        if (buildingId) {
-          return floors.filter((floor) => floor.bid == buildingId);
-        }
-        return floors;
-      }),
-
-      tap((data) => {
-        console.log('Filtering of floors based on Building Id');
-        console.log(data);
-      })
-    );
-
-    this.rooms$ = combineLatest([this.selectedFloorSub, this.roomsObs$]).pipe(
-      map(([floorId, rooms]) => {
-        if (floorId) {
-          return rooms.filter((room) => room.fid == floorId);
-        }
-        return rooms;
-      }),
-
-      tap((data) => {
-        console.log('Filtering of floors based on Building Id');
-        console.log(data);
-      })
-    );
-
-    this.chargesType$ = this.typeTableService.getChargesTypes();
   }
 
-  fetchBuildings(params: undefined | 'set') {
+  // Function to handle route data
+  private handleRouteData(data: any): void {
+    const dataType = data['dataType'];
+    const title = data['title'];
+
+    if (title) {
+      this.pageTitle.set(title);
+    }
+
+    if (dataType && this.isValidDataType(dataType)) {
+      this.currentDataType = dataType as
+        | 'floors'
+        | 'buildings'
+        | 'rooms'
+        | 'beds';
+
+      this.fetchData();
+    } else {
+      console.error('Invalid dataType:', dataType);
+    }
+  }
+
+  fetchBuildings() {
     this.branchService.getAllBuildings().subscribe((data) => {
       this.tableColumns.set([
         { field: 'bid', header: 'Building ID' },
@@ -298,7 +281,7 @@ export class TableComponent implements OnInit {
       this.globalFilterFields.set(this.tableColumns().map((col) => col.field));
       this.buildings.set(data);
 
-      if (params) {
+      if (this.currentDataType === 'buildings') {
         this.data.set(data);
         this.loading.set(false);
       }
@@ -311,7 +294,7 @@ export class TableComponent implements OnInit {
     });
   }
 
-  fetchFloors(params: undefined | 'set') {
+  fetchFloors() {
     this.branchService.getAllFloors().subscribe((data) => {
       console.log('Data from the api: ', data);
       this.tableColumns.set([
@@ -323,14 +306,14 @@ export class TableComponent implements OnInit {
       this.globalFilterFields.set(this.tableColumns().map((col) => col.field));
       this.floors.set(data);
 
-      if (params) {
+      if (this.currentDataType === 'floors') {
         this.data.set(data);
         this.loading.set(false);
       }
     });
   }
 
-  fetchRooms(params: undefined | 'set') {
+  fetchRooms() {
     this.branchService.getAllRooms().subscribe((data) => {
       console.log('Data from the api: ', data);
       this.tableColumns.set([
@@ -342,44 +325,30 @@ export class TableComponent implements OnInit {
       this.globalFilterFields.set(this.tableColumns().map((col) => col.field));
       this.rooms.set(data);
 
-      if (params) {
+      if (this.currentDataType === 'rooms') {
         this.data.set(data);
         this.loading.set(false);
       }
     });
   }
 
-  fetchData() {
-    this.loading.set(true);
-    switch (this.currentDataType) {
-      case 'floors':
-        this.fetchFloors('set');
-        break;
-      case 'buildings':
-        this.fetchBuildings('set');
-        break;
-      case 'rooms':
-        this.fetchRooms('set');
-        break;
-      case 'beds':
-        this.branchService.getAllBeds().subscribe((data) => {
-          console.log('Data from the api: ', data);
-          this.tableColumns.set([
-            { field: 'name', header: 'Bed Name' },
-            { field: 'buildingName', header: 'Bulding Name' },
-            { field: 'floorName', header: 'Floor Name' },
-            { field: 'roomName', header: 'Room Name' },
-            { field: 'priceId', header: 'Charges Type' },
-          ]);
-          this.globalFilterFields.set(
-            this.tableColumns().map((col) => col.field)
-          );
-          this.data.set(data); // Set the data signal
-          this.loading.set(false);
-          this.cdr.markForCheck();
-        });
-        break;
-    }
+  fetchBeds() {
+    this.branchService.getAllBeds().subscribe((data) => {
+      console.log('Data from the api: ', data);
+      this.tableColumns.set([
+        { field: 'name', header: 'Bed Name' },
+        { field: 'buildingName', header: 'Bulding Name' },
+        { field: 'floorName', header: 'Floor Name' },
+        { field: 'roomName', header: 'Room Name' },
+        { field: 'chargesType', header: 'Charges Type' },
+      ]);
+      this.globalFilterFields.set(this.tableColumns().map((col) => col.field));
+      this.beds.set(data);
+      if (this.currentDataType === 'beds') {
+        this.data.set(data);
+        this.loading.set(false);
+      }
+    });
   }
 
   showDialog() {
@@ -543,7 +512,6 @@ export class TableComponent implements OnInit {
     event: Branch | Building | Floor | Room,
     type: 'branch' | 'building' | 'floor' | 'room'
   ) {
-    console.log(event, type);
     switch (type) {
       case 'branch':
         const branchEvent = event as Branch; // Type assertion
@@ -562,7 +530,7 @@ export class TableComponent implements OnInit {
 
       case 'room':
         const roomEvent = event as Room;
-        this.selectedRoomSub.next(roomEvent.fid);
+        this.selectedRoomSub.next(roomEvent.rid);
         break;
     }
   }
@@ -646,7 +614,7 @@ export class TableComponent implements OnInit {
     // this.form.patchValue(rowData);
 
     this.displayDialog.set(true);
-
+    rowData.status = rowData.status ? true : false;
     if (this.currentDataType == 'beds') {
       this.newBed = rowData;
     } else if (this.currentDataType == 'buildings') {
@@ -656,6 +624,10 @@ export class TableComponent implements OnInit {
     } else if (this.currentDataType === 'rooms') {
       this.newRoom = rowData;
     }
+
+    this.selectedCharges =
+      this.charges().find((charge) => charge.name == rowData.chargesType) || '';
+
     // Assign min-max range if values exist
     if (rowData?.maxValue !== undefined && rowData?.minValue !== undefined) {
       this.minMaxRange = [rowData.maxValue, rowData.minValue];
@@ -692,8 +664,17 @@ export class TableComponent implements OnInit {
 
     // Filter room if rid exists
     this.selectedRoom = rowData?.rid
-      ? this.rooms().find((room) => room.rid === rowData.rid) ?? ''
+      ? this.rooms().find((room) => {
+          console.log(room.rid, rowData.rid);
+          return room.rid == rowData.rid;
+        }) ?? ''
       : '';
+
+    console.log(
+      '##########################',
+      this.rooms().find((room) => room.rid == rowData.rid),
+      rowData.rid
+    );
 
     if (this.selectedRoom) {
       this.selectedRoomSub.next(rowData.rid);
@@ -709,7 +690,7 @@ export class TableComponent implements OnInit {
       name: '',
       description: '',
       bid: 0,
-      branchId: 0,
+      branchId: 1,
       status: 1,
       ...this.getCommonFields(),
     };
@@ -720,7 +701,7 @@ export class TableComponent implements OnInit {
       name: '',
       description: '',
       status: 1,
-      branchId: 0,
+      branchId: 1,
       ...this.getCommonFields(),
     };
 
@@ -731,7 +712,7 @@ export class TableComponent implements OnInit {
       description: '',
       bid: 0, //Building Id
       fid: 0, // Floor Id
-      branchId: 0,
+      branchId: 1,
       status: 1,
       ...this.getCommonFields(),
     };
@@ -744,13 +725,14 @@ export class TableComponent implements OnInit {
       bid: 0, //Building Id
       fid: 0, // Floor Id
       rid: 0, // Room Id
-      branchId: 0, // Branch id
+      branchId: 1, // Branch id
       priceId: 0,
       minValue: 0,
       maxValue: 0,
       isVacant: true,
       isFemale: true,
       status: 1,
+      chargesType: 'Once',
       ...this.getCommonFields(),
     };
 
@@ -767,5 +749,126 @@ export class TableComponent implements OnInit {
 
     this.minMaxRange = [20, 80];
     this.isEdit.set(false);
+  }
+
+  initializeStep() {
+    // // Filtering logic for Buildings, Floors, and Rooms
+    this.buildings$ = combineLatest([
+      this.selectedBranchSubj,
+      this.branchService
+        .getAllBuildings()
+        .pipe(tap((data) => this.buildings.set(data))),
+    ]).pipe(
+      map(([branchId, buildings]) =>
+        branchId
+          ? buildings.filter((building) => building.branchId == branchId)
+          : buildings
+      ),
+      tap((data) =>
+        console.log('Filtering of buildings based on Branch Id', data)
+      )
+    );
+
+    // this.buildings$ = this.selectedBranchSubj.pipe(
+    //   switchMap((branchId) =>
+    //     this.branchService
+    //       .getAllBuildings()
+    //       .pipe(
+    //         map((buildings) =>
+    //           branchId
+    //             ? buildings.filter((building) => building.branchId === branchId)
+    //             : buildings
+    //         )
+    //       )
+    //   ),
+    //   tap((filteredBuildings) => {
+    //     console.log(
+    //       'Filtered buildings based on Branch ID:',
+    //       filteredBuildings
+    //     );
+    //   })
+    // );
+
+    this.floors$ = combineLatest([
+      this.selectedBuildingSubj,
+      this.branchService
+        .getAllFloors()
+        .pipe(tap((data) => this.floors.set(data))),
+    ]).pipe(
+      map(([buildingId, floors]) =>
+        buildingId ? floors.filter((floor) => floor.bid == buildingId) : floors
+      ),
+      tap((data) =>
+        console.log('Filtering of floors based on Building Id', data)
+      )
+    );
+
+    this.rooms$ = combineLatest([
+      this.selectedFloorSub,
+      this.branchService
+        .getAllRooms()
+        .pipe(tap((data) => this.rooms.set(data))),
+    ]).pipe(
+      map(([floorId, rooms]) =>
+        floorId ? rooms.filter((room) => room.fid == floorId) : rooms
+      ),
+      tap((data) => console.log('Filtering of rooms based on Floor Id', data))
+    );
+
+    this.chargesType$ = this.typeTableService
+      .getChargesTypes()
+      .pipe(tap((data) => this.charges.set(data)));
+
+    // this.floors$ = this.selectedBuildingSubj.pipe(
+    //   switchMap((buildingId) =>
+    //     this.branchService
+    //       .getAllFloors()
+    //       .pipe(
+    //         map((floors) =>
+    //           buildingId
+    //             ? floors.filter((floor) => floor.bid === buildingId)
+    //             : floors
+    //         )
+    //       )
+    //   ),
+    //   tap((filteredFloors) =>
+    //     console.log('Filtered floors based on Building ID:', filteredFloors)
+    //   )
+    // );
+
+    // this.rooms$ = this.selectedFloorSub.pipe(
+    //   switchMap((floorId) =>
+    //     this.branchService
+    //       .getAllRooms()
+    //       .pipe(
+    //         map((rooms) =>
+    //           floorId ? rooms.filter((room) => room.fid === floorId) : rooms
+    //         )
+    //       )
+    //   ),
+    //   tap((filteredRooms) =>
+    //     console.log('Filtered rooms based on Floor ID:', filteredRooms)
+    //   )
+    // );
+  }
+
+  ngAfterViewInit(): void {
+    this.initializeStep();
+  }
+
+  fetchData() {
+    this.fetchBranches();
+    if (this.currentDataType === 'buildings') {
+      this.fetchBuildings();
+    }
+    if (this.currentDataType === 'floors') {
+      this.fetchFloors();
+    }
+    if (this.currentDataType === 'rooms') {
+      this.fetchRooms();
+    }
+    if (this.currentDataType === 'beds') {
+      this.fetchBeds();
+    }
   }
 }

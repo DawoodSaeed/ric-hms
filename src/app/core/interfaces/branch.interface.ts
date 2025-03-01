@@ -67,4 +67,5 @@ export interface Bed {
   createdOn: string;
   modifiedById: number;
   modifiedOn: string;
+  chargesType: 'Once' | 'Periodic';
 }

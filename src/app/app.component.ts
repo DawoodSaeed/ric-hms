@@ -1,5 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterOutlet,
+} from '@angular/router';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
 import { MenuItem } from 'primeng/api';
@@ -8,6 +13,7 @@ import { NavbarComponent } from './layout/navbar/navbar.component';
 import { filter, map, Observable, startWith } from 'rxjs';
 import { SidebarService } from './core/services/sidebar.service';
 import { EmployeeService } from './core/services/employee.service';
+import { Title } from '@angular/platform-browser';
 @Component({
   selector: 'app-root',
   imports: [
@@ -20,21 +26,28 @@ import { EmployeeService } from './core/services/employee.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'ric-hms';
   isLoginPage$: Observable<boolean>;
   private router = inject(Router);
   sidebarService = inject(SidebarService);
   isDrawerOpen = signal(false);
-    private emplyeeService=inject(EmployeeService)
-  
+  private emplyeeService = inject(EmployeeService);
+  private titleService = inject(Title);
+  private route = inject(ActivatedRoute);
   ngOnInit(): void {
     this.sidebarService.isDrawerOpen$.subscribe((state: boolean) =>
       this.isDrawerOpen.set(state)
     );
 
-    // this.emplyeeService.setRegisteredEmpID(null)
+    this.route.data.subscribe((data) => {
+      if (data['title']) {
+        this.titleService.setTitle(data['title']);
+        console.log('Page Title:', data['title']);
+      }
+    });
 
+    // this.emplyeeService.setRegisteredEmpID(null)
   }
 
   topMenuItems: MenuItem[] = [

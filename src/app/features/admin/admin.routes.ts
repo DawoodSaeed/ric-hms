@@ -28,27 +28,27 @@ export const adminRoutes: Routes = [
       {
         path: 'beds',
         component: TableComponent,
-        data: { dataType: 'beds' },
+        data: { dataType: 'beds', title: 'Beds' },
       },
       {
         path: 'floors',
         component: TableComponent,
-        data: { dataType: 'floors' },
+        data: { dataType: 'floors', title: 'Floors' },
       },
       {
         path: 'rooms',
         component: TableComponent,
-        data: { dataType: 'rooms' },
+        data: { dataType: 'rooms', title: 'Rooms' },
       },
       {
         path: 'buildings',
         component: TableComponent,
-        data: { dataType: 'buildings' },
+        data: { dataType: 'buildings', title: 'Buildings' },
       },
       {
         path: 'beds-summary', // Added beds-summary route
         component: TableComponent,
-        data: { dataType: 'beds-summary' },
+        data: { dataType: 'beds-summary', title: 'Beds Summary' },
       },
       {
         path: '', // Default route when organizational-building is accessed

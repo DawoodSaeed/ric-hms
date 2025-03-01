@@ -1,6 +1,13 @@
-<div class="card p-4">
+<h3
+  class="font-bold pl-4 color-gray text-2xl subpixel-antialiased text-gray-800 uppercase"
+>
+  {{ pageTitle() }}
+</h3>
+
+<app-breadcrumb />
+<div class="card p-4 pt-0">
   <p-contextmenu #cm [model]="contextItems" />
-  @if(data()){
+  @if(data() && !loading()){
   <p-table
     [scrollable]="true"
     scrollHeight="flex"
@@ -22,10 +29,8 @@
     [globalFilterFields]="globalFilterFields()"
     [(contextMenuSelection)]="selectedItem"
     [contextMenu]="cm"
-    stateStorage="session"
-    stateKey="statedemo-session"
   >
-    <ng-template #caption>
+    <ng-template #caption class="p-0">
       <div class="flex flex-wrap gap-2">
         <p-button
           label="Clear"
@@ -78,12 +83,12 @@
         <td>
           <span
             [ngClass]="{
-              'bg-green-100 text-green-800': rowData['status'] === 1,
-              'bg-red-100 text-red-800': rowData['status'] === 0
+              'bg-green-100 text-green-800': rowData['status'],
+              'bg-red-100 text-red-400-800': !rowData['status']
             }"
             class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
           >
-            {{ rowData["status"] === 1 ? "Active" : "Inactive" }}
+            {{ rowData["status"] ? "Active" : "Inactive" }}
           </span>
         </td>
         <td>
@@ -130,7 +135,10 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="abbreviation" class="font-medium">Select Branch</label>
+        <label for="abbreviation" class="font-medium"
+          >Select Branch
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <p-select
           filter="true"
           [checkmark]="true"
@@ -147,7 +155,10 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="abbreviation" class="font-medium">Select Building</label>
+        <label for="abbreviation" class="font-medium"
+          >Select Building
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         @if(buildings$ | async; as buildings){
         <p-select
           filter="true"
@@ -167,7 +178,11 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="name" class="font-medium">Floor Name</label>
+        <label for="name" class="font-medium"
+          >Floor Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <input
           pInputText
           [(ngModel)]="newFloor.name"
@@ -181,7 +196,11 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
       >
-        <label for="description" class="font-medium">Description</label>
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <textarea
           pInputTextarea
           [(ngModel)]="newFloor.description"
@@ -196,7 +215,11 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
       >
-        <label for="description" class="font-medium">Status</label>
+        <label for="description" class="font-medium"
+          >Status
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <p-checkbox [(ngModel)]="newFloor.status" [binary]="true" />
       </div>
     </ng-container>
@@ -206,7 +229,11 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="name" class="font-medium">Building Name</label>
+        <label for="name" class="font-medium"
+          >Building Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <input
           pInputText
           [(ngModel)]="newBuilding.name"
@@ -219,7 +246,11 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
       >
-        <label for="description" class="font-medium">Description</label>
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <textarea
           pInputTextarea
           [(ngModel)]="newBuilding.description"
@@ -234,7 +265,10 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
       >
-        <label for="description" class="font-medium">Status</label>
+        <label for="description" class="font-medium"
+          >Status
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <p-checkbox [(ngModel)]="newBuilding.status" [binary]="true" />
       </div>
     </ng-container>
@@ -244,7 +278,11 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="abbreviation" class="font-medium">Select Branch</label>
+        <label for="abbreviation" class="font-medium"
+          >Select Branch
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <p-select
           filter="true"
           [checkmark]="true"
@@ -261,7 +299,11 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="abbreviation" class="font-medium">Select Building</label>
+        <label for="abbreviation" class="font-medium"
+          >Select Building
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         @if(buildings$ | async; as buildings){
         <p-select
           filter="true"
@@ -281,7 +323,11 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="abbreviation" class="font-medium">Select Floor</label>
+        <label for="abbreviation" class="font-medium"
+          >Select Floor
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         @if(floors$ | async; as floors){
         <p-select
           filter="true"
@@ -305,7 +351,11 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="name" class="font-medium">Room Name</label>
+        <label for="name" class="font-medium"
+          >Room Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <input
           pInputText
           [(ngModel)]="newRoom.name"
@@ -319,7 +369,10 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
       >
-        <label for="description" class="font-medium">Description</label>
+        <label for="description" class="font-medium"
+          >Description
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <textarea
           pInputTextarea
           [(ngModel)]="newRoom.description"
@@ -334,7 +387,10 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
       >
-        <label for="description" class="font-medium">Status</label>
+        <label for="description" class="font-medium"
+          >Status
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <p-checkbox [(ngModel)]="newRoom.status" [binary]="true" />
       </div>
     </ng-container>
@@ -344,7 +400,11 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="abbreviation" class="font-medium">Select Branch</label>
+        <label for="abbreviation" class="font-medium"
+          >Select Branch
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <p-select
           filter="true"
           [checkmark]="true"
@@ -361,7 +421,10 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="abbreviation" class="font-medium">Select Building</label>
+        <label for="abbreviation" class="font-medium"
+          >Select Building
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         @if(buildings$ | async; as buildings){
         <p-select
           filter="true"
@@ -381,7 +444,10 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="abbreviation" class="font-medium">Select Floor</label>
+        <label for="abbreviation" class="font-medium"
+          >Select Floor
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         @if(floors$ | async; as floors){
         <p-select
           filter="true"
@@ -405,7 +471,10 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="abbreviation" class="font-medium">Select Room</label>
+        <label for="abbreviation" class="font-medium"
+          >Select Room
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         @if(rooms$ | async; as rooms){
         <p-select
           filter="true"
@@ -431,7 +500,10 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="abbreviation" class="font-medium">Charges Type</label>
+        <label for="abbreviation" class="font-medium"
+          >Charges Type
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         @if(chargesType$ | async; as charges){
         <p-select
           filter="true"
@@ -449,7 +521,10 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="abbreviation" class="font-medium">Min and Max</label>
+        <label for="abbreviation" class="font-medium"
+          >Min and Max
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <p-slider [(ngModel)]="minMaxRange" [range]="true" class="w-full" />
       </div>
 
@@ -458,7 +533,10 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="name" class="font-medium">Bed Name</label>
+        <label for="name" class="font-medium"
+          >Bed Name
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <input
           pInputText
           [(ngModel)]="newBed.name"
@@ -472,7 +550,10 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
       >
-        <label for="description" class="font-medium">Description</label>
+        <label for="description" class="font-medium"
+          >Description
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <textarea
           pInputTextarea
           [(ngModel)]="newBed.description"
@@ -487,7 +568,10 @@
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
       >
-        <label for="description" class="font-medium">Status</label>
+        <label for="description" class="font-medium"
+          >Status
+          <span class="text-red-400 font-bold">*</span>
+        </label>
         <p-checkbox [(ngModel)]="newBed.status" [binary]="true" />
       </div>
     </ng-container>

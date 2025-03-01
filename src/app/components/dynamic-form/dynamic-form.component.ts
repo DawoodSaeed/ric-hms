@@ -46,7 +46,6 @@ import { Message } from 'primeng/message';
     FileUploadModule,
     ProgressSpinner,
     DynamicTableComponent,
-    Message
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',
@@ -87,16 +86,15 @@ export class DynamicFormComponent implements OnInit {
       this.emplyeeService.setRegisteredEmpID(receivedEmployee.empId);
       this.receivedEmployee = receivedEmployee;
       this.form.patchValue(receivedEmployee);
-  this.dataReceivedFromChild = null;
+      this.dataReceivedFromChild = null;
 
-      this.isEdit=true
-      this.isDelete=false
+      this.isEdit = true;
+      this.isDelete = false;
 
       //  Clear `history.state` after processing
       setTimeout(() => {
         this.location.replaceState('/admin/addEmployee'); // Replace state with an empty URL
       }, 0);
-
     }
   }
   receivedData(data: any) {
@@ -109,7 +107,7 @@ export class DynamicFormComponent implements OnInit {
     } else {
       this.dataReceivedFromChild = data;
       this.isEdit = true;
-      this.isDelete=false
+      this.isDelete = false;
 
       if (this.form) {
         Object.keys(data).forEach((key: any) => {
@@ -186,7 +184,7 @@ export class DynamicFormComponent implements OnInit {
       console.log('dataReceivedFromChild ', this.dataReceivedFromChild);
       console.log('tabDataxx ', tabData, '');
       if (this.isEdit && this.dataReceivedFromChild) {
-        console.log('this.dataReceivedFromChild ',this.dataReceivedFromChild)
+        console.log('this.dataReceivedFromChild ', this.dataReceivedFromChild);
         // Putting missing key,values from tabData that are present in dataReceivedFromChild in tabData
         tabData = Object.assign(
           tabData,
