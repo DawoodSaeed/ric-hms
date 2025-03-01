@@ -63,7 +63,6 @@ export class DynamicTableComponent implements OnInit {
               'empId',
               'bankId',
               'isCurrent',
-              'status',
               'empAwrdId',
               'empBankId',
               'empEduId',
@@ -85,10 +84,13 @@ export class DynamicTableComponent implements OnInit {
               'spId',
               'subSpId',
               'empSubSpId',
-            ].includes(key)
+              'certificatePath',
+            ].includes(key) ||
+            (key === 'status' && this.tableTitle === 'Employee Sub Department')
         )
       : [];
   }
+
   editRow(employee: any) {
     console.log('Editing Employee:', employee);
     this.dataEmitter.emit(employee);

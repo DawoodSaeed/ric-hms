@@ -166,7 +166,8 @@
             class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
             *ngIf="!isLoading; else spinner"
           >
-            Submit
+          {{isEdit?'Update':'Submit'}}  
+
           </button>
         </div>
         <ng-template #spinner>
