@@ -41,6 +41,7 @@ import { Employee } from '../../../shared/models/employee';
 import { Select } from 'primeng/select';
 import { Dropdown, DropdownModule } from 'primeng/dropdown';
 import { AuthService } from '../../services/auth.service';
+import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-user-roles',
@@ -56,6 +57,7 @@ import { AuthService } from '../../services/auth.service';
     Message,
     InputText,
     DropdownModule,
+    BreadcrumbComponent,
   ],
   templateUrl: './user-roles.component.html',
   styleUrl: './user-roles.component.scss',

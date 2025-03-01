@@ -1,0 +1,13 @@
+@if(breadcrumbs$ | async; as breadcrumbs){
+<p-breadcrumb [model]="breadcrumbs">
+  <ng-template pTemplate="item" let-item>
+    <a *ngIf="item.url !== '/'; else homeBreadcrumb" [routerLink]="item.url">
+      {{ item.label }}
+    </a>
+    <ng-template #homeBreadcrumb>
+      <i class="pi pi-home"></i>
+    </ng-template>
+  </ng-template>
+</p-breadcrumb>
+
+}

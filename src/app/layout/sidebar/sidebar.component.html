@@ -1,4 +1,4 @@
-<!-- Sidebar (Drawer) -->
+@let user = user$ | async;<!-- Sidebar (Drawer) -->
 <div
   class="w-80 bg-gray-800 fixed text-white h-screen flex flex-col justify-between shadow-lg transition-all duration-300"
   [ngClass]="{ 'ml-0': isDrawerOpen, '-ml-80': !isDrawerOpen }"
@@ -8,11 +8,20 @@
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
         <p-avatar
-          image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+          image="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='7' r='5' stroke='black' stroke-width='2'/%3E%3Cpath d='M4 21C4 17.134 7.134 14 11 14H13C16.866 14 20 17.134 20 21' stroke='black' stroke-width='2'/%3E%3C/svg%3E"
           shape="circle"
           class="border-2 border-white shadow-sm"
-        />
-        <span class="font-semibold text-lg">Amy Elsner</span>
+        >
+        </p-avatar>
+
+        @if(user){
+        <span class="font-semibold text-lg">{{
+          user.username?.toLocaleUpperCase()
+        }}</span>
+        }@else {
+        <span class="font-semibold text-lg">ERROR</span>
+
+        }
       </div>
       <i
         (click)="toggleDrawer()"

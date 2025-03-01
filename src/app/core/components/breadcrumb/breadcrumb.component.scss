@@ -1,0 +1,25 @@
+::ng-deep .p-breadcrumb {
+  background: #f8f9fa;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+::ng-deep .p-breadcrumb ul {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+::ng-deep .p-breadcrumb .p-menuitem-text {
+  font-weight: bold;
+  color: #007bff;
+}
+
+::ng-deep .p-breadcrumb .p-menuitem-text:hover {
+  text-decoration: underline;
+}
+
+::ng-deep .p-breadcrumb .pi-home {
+  font-size: 1.2rem;
+  color: #007bff;
+}

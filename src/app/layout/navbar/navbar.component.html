@@ -1,16 +1,29 @@
 <div class="flex-1 p-0 text-white">
   <p-menubar [model]="topMenuItems" styleClass="bg-blue-500">
+    <!-- START SLOT (Left side of Navbar) -->
     <ng-template #start>
-      <i
-        *ngIf="!isDrawerOpen"
-        (click)="toggleSidebar()"
-        class="pi pi-align-justify"
-      ></i>
+      <div class="flex items-center gap-3">
+        <!-- Sidebar Toggle Icon -->
+        <i
+          *ngIf="!isDrawerOpen"
+          (click)="toggleSidebar()"
+          class="pi pi-align-justify text-xl cursor-pointer"
+        ></i>
+
+        <!-- Logo Image -->
+        <img src="assets/logo/rics.svg" alt="RIC Logo" class="h-15.5 w-auto" />
+
+        <!-- Website Name -->
+        <span class="text-gray-800 font-semibold text-xl tracking-wide">
+          Rawalpindi Institute of Cardiology
+        </span>
+      </div>
     </ng-template>
+
+    <!-- MENU ITEMS TEMPLATE -->
     <ng-template #item let-item let-root="root">
       <a pRipple class="flex items-center p-menubar-item-link text-white">
         <span>{{ item.label }}</span>
-        <!-- class="text-white" -->
         <p-badge
           *ngIf="item.badge"
           [ngClass]="{ 'ml-auto': !root, 'ml-2': root }"
@@ -18,22 +31,26 @@
         <span
           *ngIf="item.shortcut"
           class="ml-auto border border-surface rounded bg-emphasis text-muted-color text-xs p-1"
-          >{{ item.shortcut }}</span
         >
+          {{ item.shortcut }}
+        </span>
         <i
           *ngIf="item.items"
-          [ngClass]="['ml-auto pi', root ? 'pi-angle-down' : 'pi-angle-right']"
           [ngClass]="['ml-auto pi', root ? 'pi-angle-down' : 'pi-angle-right']"
         ></i>
       </a>
     </ng-template>
+
+    <!-- END SLOT (Right side of Navbar) -->
     <ng-template #end>
       <div class="flex items-center gap-2">
-        <input type="text" pInputText placeholder="Search" class="w-36" />
-        <p-avatar
-          image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+        <!-- <input type="text" pInputText placeholder="Search" class="w-36" /> -->
+        <!-- <p-avatar
+          image="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='7' r='5' stroke='black' stroke-width='2'/%3E%3Cpath d='M4 21C4 17.134 7.134 14 11 14H13C16.866 14 20 17.134 20 21' stroke='black' stroke-width='2'/%3E%3C/svg%3E"
           shape="circle"
-        />
+          class="border-2 border-white shadow-sm"
+        >
+        </p-avatar> -->
 
         <p-togglebutton
           class="toggleTheme"

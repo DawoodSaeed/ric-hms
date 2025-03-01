@@ -19,10 +19,11 @@ import { Router, RouterModule } from '@angular/router';
 import { ToggleButton } from 'primeng/togglebutton';
 import { FormsModule } from '@angular/forms';
 import { StyleClass } from 'primeng/styleclass';
-import { expand } from 'rxjs';
+import { expand, Observable } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { SidebarService } from '../../core/services/sidebar.service';
 import { EmployeeService } from '../../core/services/employee.service';
+import { CheckAuth, User } from '../../shared/models/auth';
 @Component({
   selector: 'app-sidebar',
 
@@ -49,6 +50,8 @@ private employeeService=inject(EmployeeService)
   // Variable to track the clicked menu
   clickedMenuIndex: number | null = null;
   sidebarService = inject(SidebarService);
+
+  user$!: Observable<CheckAuth | User | null>;
   constructor(private cdRef: ChangeDetectorRef) {}
   // Method to handle the click event
   onMenuClick(index: number) {
@@ -323,12 +326,14 @@ private employeeService=inject(EmployeeService)
         ],
       },
     ];
+
+    this.user$ = this.authService.user$;
   }
 
   title = 'ric';
   isDrawerOpen = true;
   toggleMenu(label: string) {
-    console.log('yooy')
+    console.log('yooy');
     this.sideBarTabs.forEach((tab) => {
       if (tab.label !== label) {
         tab.expanded = false;
