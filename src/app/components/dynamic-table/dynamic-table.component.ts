@@ -54,33 +54,41 @@ export class DynamicTableComponent implements OnInit {
   ngOnInit(): void {}
   getKeys(): any[] {
     return this.tableData.length > 0
-      ? Object.keys(this.tableData[0]).filter(
-          (key) =>
-            ![
-              'createdById',
-              'createdOn',
-              'modifiedById',
-              'modifiedOn',
-              'empId',
-              'bankId',
-              'isCurrent',
-              'status',
-              'empAwrdId',
-              'empBankId',
-              'empEduId',
-              'countryId',
-              'eduIntId',
-              'degId',
-              'fsid',
-              'gradingId',
-              'did',
-              'empDid',
-              'subDid',
-              'empSubDid','desgnId','empDesgnId','empExpId','facilityId','empFacilityId','empSpId','spId','subSpId','empSubSpId'
-            ].includes(key) 
+      ? Object.keys(this.tableData[0]).filter((key) =>
+          ![
+            'createdById',
+            'createdOn',
+            'modifiedById',
+            'modifiedOn',
+            'empId',
+            'bankId',
+            'isCurrent',
+            'empAwrdId',
+            'empBankId',
+            'empEduId',
+            'countryId',
+            'eduIntId',
+            'degId',
+            'fsid',
+            'gradingId',
+            'did',
+            'empDid',
+            'subDid',
+            'empSubDid',
+            'desgnId',
+            'empDesgnId',
+            'empExpId',
+            'facilityId',
+            'empFacilityId',
+            'empSpId',
+            'spId',
+            'subSpId',
+            'empSubSpId','certificatePath'
+          ].includes(key) || (key === 'status' && this.tableTitle === 'Employee Sub Department')
         )
       : [];
   }
+  
   editRow(employee: any) {
     console.log('Editing Employee:', employee);
     this.dataEmitter.emit(employee);
