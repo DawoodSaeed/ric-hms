@@ -240,7 +240,7 @@ export class DynamicFormComponent implements OnInit {
         this.isEdit = false;
         this.isDelete = false;
       } else {
-        this.notificationService.showError('Please fill all required fields of the current tab');
+        this.notificationService.showError('Please fill all required fields');
       }
     }
   }

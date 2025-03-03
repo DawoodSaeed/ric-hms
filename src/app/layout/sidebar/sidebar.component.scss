@@ -14,6 +14,14 @@
 ::ng-deep .p-panelmenu .p-panelmenu-content .p-menuitem-link .pi {
   transition: transform 0.3s ease;
 }
+::ng-deep .active-tab a {
+  background-color: #007bff !important; /* Your desired color */
+  color: white !important;
+  border-radius: 5px; /* Optional rounded corners */
+}
+::ng-deep .p-panelmenu .p-menuitem-link:hover {
+  background-color: #0056b3 !important; 
+}
 
 ::ng-deep
   .p-panelmenu
