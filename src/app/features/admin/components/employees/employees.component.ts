@@ -20,7 +20,7 @@ import { PanelModule } from 'primeng/panel';
 import { DividerModule } from 'primeng/divider';
 import { RippleModule } from 'primeng/ripple';
 import { CustomSidebarComponent } from '../../../../core/components/custom-sidebar/custom-sidebar.component';
-import { combineLatest, forkJoin, map, switchMap, take, timer } from 'rxjs';
+import { combineLatest, forkJoin, map, Subscription, switchMap, take, timer } from 'rxjs';
 import { TabViewModule } from 'primeng/tabview'; // For the tabs
 import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
@@ -93,7 +93,7 @@ export class EmployeesComponent {
   cols = signal<cols[]>([]);
   selectedEmployee: Employee | null = null;
   cachedEmployeeData: { [empId: string]: Employee } = {};
-
+subscriptions:Subscription=new Subscription()
   // employees$ =
   employeeSidebarVisible = false;
   // Options for SelectButton
@@ -123,8 +123,7 @@ export class EmployeesComponent {
     
     public confirmationService: ConfirmationService
   ) {
-    this.employeeService.employee$
-      // .pipe(map((employees) => employees.slice(0, 12)))
+  const employeeSub=  this.employeeService.employee$
       .subscribe({
         next: (data: Employee[]) => {
           console.log(data.length);
@@ -146,6 +145,7 @@ export class EmployeesComponent {
           this.loading.set(false);
         },
       });
+      this.subscriptions.add(employeeSub)
   }
 
   rowNumbers(rows: number): number[] {
@@ -181,7 +181,7 @@ export class EmployeesComponent {
       this.employeeService.getEmployeeSpecialityDetails();
       this.employeeService.getEmployeeSubSpecialityDetails();
       // Small delay to ensure API calls are made
-      timer(300)
+   const combineSub=   timer(300)
         .pipe(
           switchMap(() =>
             combineLatest([
@@ -229,7 +229,7 @@ export class EmployeesComponent {
               awardData: awards,
               bankDetails: bankDetails,
               educationData: education,
-              departmentData: department,
+              department: department,
               subDepartmentData: subDepartment,
               designationData: designation,
               experienceData: experience,
@@ -244,6 +244,7 @@ export class EmployeesComponent {
   this.cdr.detectChanges()
           }
         );
+        this.subscriptions.add(combineSub)
     }
   }
   closeDetails() {
@@ -325,7 +326,7 @@ export class EmployeesComponent {
         icon: 'pi pi-refresh',
         command: () => {
           console.log('Clicked');
-          this.showDetails(this.selectedEmployee);
+          // this.showDetails(this.selectedEmployee);
         },
 
         label: 'Refresh Employee',
@@ -366,7 +367,7 @@ export class EmployeesComponent {
   // }
 confirmDeletion(){
   this.employeeService.setRegisteredEmpID(this.employeeToDelete.empId);
-  this.employeeService.registerEmployee(this.employeeToDelete, false, true).subscribe({
+  const deleteSub=this.employeeService.registerEmployee(this.employeeToDelete, false, true).subscribe({
     next:(response)=>{
       if(response){
         this.notificationService.showSuccess('Employee Deleted Successfully!');
@@ -381,6 +382,7 @@ confirmDeletion(){
     }
   });
   this.confirmationService.close()
+  this.subscriptions.add(deleteSub)
 }
   // Default View
   toggleView(event: SelectButtonChangeEvent) {
@@ -418,5 +420,11 @@ confirmDeletion(){
 
     // Force table to refresh
     table.onLazyLoad.emit({});
+  }
+
+  ngOnDestroy(){
+    console.log('Destroying subs ')
+    console.log(this.subscriptions)
+    this.subscriptions.unsubscribe()
   }
 }

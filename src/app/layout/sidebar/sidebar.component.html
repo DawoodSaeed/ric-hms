@@ -40,6 +40,7 @@
       [ngClass]="{ 'cstm-panel': tab.expanded, border0: !tab.expanded }"
       [transitionOptions]="'300ms cubic-bezier(0.68, -0.55, 0.27, 1.55)'"
       styleClass="mt-3 "
+      
     >
       <ng-template #item let-item>
         <ng-container *ngIf="item.route; else urlRef">
@@ -47,7 +48,9 @@
           (click)="onSubTabClick()"
             [routerLink]="item.route"
             class="flex items-center text-white cursor-pointer hover:bg-gray-700 px-4 py-3 rounded-md transition-colors"
-          >
+            routerLinkActive="active-tab"
+
+            >
             <span [class]="item.icon" class="text-lg"></span>
             <span class="ml-3 text-sm font-medium">{{ item.label }}</span>
             <i

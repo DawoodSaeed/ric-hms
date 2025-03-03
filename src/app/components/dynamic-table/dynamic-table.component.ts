@@ -84,9 +84,11 @@ export class DynamicTableComponent implements OnInit {
               'spId',
               'subSpId',
               'empSubSpId',
-              'certificatePath',
-            ].includes(key) ||
-            (key === 'status' && this.tableTitle === 'Employee Sub Department')
+              // 'certificatePath',
+              'status'
+            ].includes(key) 
+            // ||
+            // (key === 'status' && this.tableTitle === 'Employee Sub Department')
         )
       : [];
   }
