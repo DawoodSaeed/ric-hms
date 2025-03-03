@@ -15,7 +15,6 @@ body {
 .p-panelmenu-panel {
   border: none !important;
   padding: 0 !important;
-
 }
 .cstm-panel .p-panelmenu-panel {
   border: 1px solid white !important;
@@ -48,4 +47,8 @@ body {
 
 .primary-text {
   color: #2467aa;
+}
+
+.p-datatable.p-datatable-lg .p-datatable-header {
+  padding: 0.5rem 0rem !important;
 }
