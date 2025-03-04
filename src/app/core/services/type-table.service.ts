@@ -43,8 +43,12 @@ export class TypeTableService {
   constructor(private http: HttpClient) {}
   private countryID$ = new BehaviorSubject<number | null>(1);
   private provinceID$ = new BehaviorSubject<number | null>(1);
-
-
+  private specialityID$ = new BehaviorSubject<number | null>(null);
+  private subSpecilaities$ = new BehaviorSubject<SubSpeciality[]>([]);
+ setSpecialityID(specialityID: number) {
+    console.log('Speciality ID coming:', specialityID);
+    this.specialityID$.next(specialityID); // Push new department ID
+  }
   setCountryID(countryID: number) {
     console.log('countryid coming', countryID);
     this.countryID$.next(countryID);
