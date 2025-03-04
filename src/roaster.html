@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Roster Module - HMS</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <img src="assets/logo.png" alt="Hospital Logo" class="logo" />
+      <div class="user-profile">
+        <span>Admin</span>
+        <button id="logout-btn">Logout</button>
+      </div>
+    </header>
+
+    <nav>
+      <ul>
+        <li><a href="#" id="dashboard-link">Dashboard</a></li>
+        <li><a href="#" id="roster-link">Roster</a></li>
+        <li><a href="#" id="staff-link">Staff</a></li>
+        <li><a href="#" id="reports-link">Reports</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <!-- Dashboard Section -->
+      <section id="dashboard" class="active">
+        <h2>Dashboard</h2>
+        <div class="calendar-view" id="calendar"></div>
+        <div class="quick-actions">
+          <button id="create-roster-btn">Create New Roster</button>
+          <button id="assign-shifts-btn">Assign Shifts</button>
+          <button id="view-availability-btn">View Staff Availability</button>
+        </div>
+        <div class="notifications">
+          <h3>Notifications</h3>
+          <ul id="notification-list"></ul>
+        </div>
+      </section>
+
+      <!-- Roster Section -->
+      <section id="roster">
+        <h2>Create/Edit Roster</h2>
+        <form id="roster-form">
+          <label for="roster-name">Roster Name:</label>
+          <input type="text" id="roster-name" required />
+
+          <label for="date-range">Date Range:</label>
+          <input type="date" id="start-date" required />
+          <input type="date" id="end-date" required />
+
+          <label for="department">Department:</label>
+          <select id="department" required>
+            <option value="ICU">ICU</option>
+            <option value="Emergency">Emergency</option>
+            <option value="Surgery">Surgery</option>
+          </select>
+
+          <button type="submit">Save Roster</button>
+        </form>
+      </section>
+
+      <!-- Staff Section -->
+      <section id="staff">
+        <h2>Staff Availability</h2>
+        <table id="staff-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Role</th>
+              <th>Availability</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- Reports Section -->
+      <section id="reports">
+        <h2>Reports</h2>
+        <div class="report-filters">
+          <label for="report-type">Report Type:</label>
+          <select id="report-type">
+            <option value="shift-coverage">Shift Coverage</option>
+            <option value="staff-workload">Staff Workload</option>
+            <option value="overtime">Overtime</option>
+          </select>
+          <button id="generate-report-btn">Generate Report</button>
+        </div>
+        <div id="report-output"></div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
