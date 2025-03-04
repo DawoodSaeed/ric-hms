@@ -125,7 +125,7 @@
       </ng-template>
 
       <ng-template pTemplate="body" let-employee>
-        <tr [pContextMenuRow]="employee" *ngIf="!loading()">
+        <tr [pContextMenuRow]="employee" *ngIf="!loading()" class="text-sm">
           <!-- <td>{{ employee.empId }}</td> -->
           <td>
             <div class="name-cell">
