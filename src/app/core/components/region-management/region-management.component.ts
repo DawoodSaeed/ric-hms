@@ -4,7 +4,6 @@
 //   selector: 'app-region-management',
 //   imports: [],
 //   
-
 // })
 // export class RegionManagementComponent {
 // }
@@ -48,6 +47,7 @@ import { AuthService } from '../../services/auth.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { PasswordModule } from 'primeng/password';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
+
 @Component({
   selector: 'app-user-management',
   imports: [
@@ -67,10 +67,10 @@ import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
     PasswordModule,
     BreadcrumbComponent,
   ],
-  templateUrl: './user-management.component.html',
-  styleUrl: './user-management.component.scss',
+  templateUrl: './region-management.component.html',
+    styleUrl: './region-management.component.scss'
 })
-export class UserManagementComponent implements OnInit {
+export class RegionManagementComponent implements OnInit {
   private accountService = inject(AccountService);
   private authService = inject(AuthService);
   private employeesService = inject(EmployeeService);
@@ -97,7 +97,6 @@ export class UserManagementComponent implements OnInit {
     modifiedById: 0,
     modifiedOn: new Date().toISOString(),
   };
-
   refreshSub = new BehaviorSubject<boolean>(false);
   constructor(private fb: FormBuilder) {
     this.users$ = this.refreshSub.asObservable().pipe(
