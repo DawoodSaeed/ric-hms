@@ -1,0 +1,293 @@
+<h3
+  class="font-bold pl-4 color-gray text-2xl subpixel-antialiased text-gray-800 uppercase"
+>
+  Roasters
+</h3>
+
+<app-breadcrumb></app-breadcrumb>
+
+<!-- <p-breadcrumb class="max-w-full" [model]="" /> -->
+@let roasters = roaster$ | async;
+<p-table
+  [scrollable]="true"
+  scrollHeight="flex"
+  #dt
+  [value]="roasters || []"
+  dataKey="id"
+  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+  [showCurrentPageReport]="true"
+  [size]="'large'"
+  [tableStyle]="{ 'min-width': '60rem' }"
+  [paginator]="true"
+  [rows]="10"
+  stripedRows
+  responsiveLayout="scroll"
+  class="custom-table w-full overflow-x-auto"
+  [rowsPerPageOptions]="[5, 10, 20]"
+  [globalFilterFields]="['name']"
+  stateStorage="session"
+  stateKey="statedemo-session"
+  [loading]="isLoading()"
+>
+  <ng-template #caption>
+    <div class="flex flex-wrap gap-2">
+      <p-button
+        label="Clear"
+        [outlined]="true"
+        icon="pi pi-filter-slash"
+        (click)="clear(dt)"
+      />
+      <p-button
+        p-button
+        icon="pi pi-plus"
+        label="Add Roaster"
+        styleClass="ml-2"
+        (click)="displayDialog.set(true)"
+      />
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon>
+          <i class="pi pi-search"></i>
+        </p-inputicon>
+        <input
+          pInputText
+          type="text"
+          (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+          placeholder="Keyboard Search"
+          class="w-full md:w-56"
+        />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th>name</th>
+      <th>Department</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </ng-template>
+  <ng-template
+    pTemplate="body"
+    let-rowData
+    let-columns="columns"
+    let-rowIndex="rowIndex"
+  >
+    <tr [pSelectableRow]="rowData">
+      <td>{{ rowData["name"] ?? " - " }}</td>
+      <td>{{ rowData["department"] ?? " - " }}</td>
+
+      <td>
+        <span
+          [ngClass]="{
+            'bg-green-100 text-green-800': rowData['isActive'] === 1,
+            'bg-red-100 text-red-800': rowData['isActive'] === 0
+          }"
+          class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
+        >
+          {{ rowData["isActive"] === 1 ? "Active" : "Inactive" }}
+        </span>
+      </td>
+      <td>
+        <!-- Assign Staff -->
+        <button
+          pButton
+          icon="pi pi-user-plus"
+          label="Assign Staff"
+          class="p-button-rounded p-button-text p-button-sm"
+          pTooltip="Assign Staff"
+          tooltipPosition="top"
+        ></button>
+
+        <!-- View Duties -->
+        <button
+          pButton
+          icon="pi pi-eye"
+          label="View Duties"
+          class="p-button-rounded p-button-text p-button-sm"
+          pTooltip="View Duties"
+          tooltipPosition="top"
+        ></button>
+
+        <!-- Edit -->
+        <button
+          pButton
+          icon="pi pi-pencil"
+          label="Edit"
+          class="p-button-rounded p-button-text p-button-sm"
+          pTooltip="Edit"
+          tooltipPosition="top"
+        ></button>
+
+        <!-- Copy to Next Month -->
+        <button
+          pButton
+          icon="pi pi-copy"
+          label="Copy to Next Month"
+          class="p-button-rounded p-button-text p-button-sm"
+          pTooltip="Copy to Next Month"
+          tooltipPosition="top"
+        ></button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- for adding the roaster ############## -->
+<p-dialog
+  [visible]="displayDialog()"
+  styleClass="w-full md:w-[40rem] h-full scrollbar"
+  [closable]="false"
+  [maximizable]="true"
+>
+  <ng-template #header>
+    <div class="flex items-center justify-between w-full">
+      <h3 class="font-semibold text-lg">Add Roaster</h3>
+      <button
+        pButton
+        icon="pi pi-times"
+        (click)="displayDialog.set(false)"
+        class="p-button-rounded p-button-text"
+      ></button>
+    </div>
+  </ng-template>
+
+  <form [formGroup]="roasterForm" (ngSubmit)="submitForm()">
+    <div class="p-fluid grid gap-3">
+      <!-- Roaster Tite -->
+      <div class="col-12 flex flex-col md:flex-row items-center gap-2">
+        <label for="title" class="w-full md:w-1/3 font-medium">Title</label>
+        <div class="w-full md:w-2/3">
+          <input
+            pInputText
+            type="text"
+            placeholder="Enter Title"
+            formControlName="title"
+            class="w-full"
+          />
+
+          <p-message
+            *ngIf="
+              roasterForm.get('title')?.invalid &&
+              (roasterForm.get('title')?.dirty ||
+                roasterForm.get('title')?.touched)
+            "
+            severity="error"
+            text="Roaster tilte is required."
+          ></p-message>
+        </div>
+      </div>
+
+      <!-- Departmet ########### -->
+      <div class="col-12 flex flex-col md:flex-row items-center gap-2">
+        <label for="department" class="w-full md:w-1/3 font-medium"
+          >Department</label
+        >
+        <div class="w-full md:w-2/3">
+          @if(departments$ | async; as departments){
+          <p-select
+            filter="true"
+            [options]="departments"
+            optionLabel="name"
+            optionValue="id"
+            formControlName="department"
+            placeholder="Select department"
+            class="w-full"
+          >
+          </p-select>
+
+          <p-message
+            *ngIf="
+              roasterForm.get('department')?.invalid &&
+              (roasterForm.get('department')?.dirty ||
+                roasterForm.get('department')?.touched)
+            "
+            severity="error"
+            text="Department is required."
+          ></p-message>
+
+          }
+        </div>
+      </div>
+
+      <!-- Description ############# -->
+      <div class="col-12 flex flex-col md:flex-row items-center gap-2">
+        <label for="description" class="w-full md:w-1/3 font-medium"
+          >Description</label
+        >
+        <div class="w-full md:w-2/3">
+          <input
+            pInputText
+            formControlName="description"
+            id="description"
+            placeholder="Enter description"
+            class="w-full"
+          />
+          <p-message
+            class="mt-2"
+            *ngIf="
+              roasterForm.get('description')?.invalid &&
+              (roasterForm.get('description')?.dirty ||
+                roasterForm.get('description')?.touched)
+            "
+            severity="error"
+            text="Description is required."
+          ></p-message>
+        </div>
+      </div>
+
+      <!-- Month ############# -->
+      <div class="col-12 flex flex-col md:flex-row items-center gap-2">
+        <label for="month" class="w-full md:w-1/3 font-medium"
+          >Month & Year</label
+        >
+        <div class="w-full md:w-2/3">
+          <p-datepicker
+            formControlName="month"
+            view="month"
+            styleClass="w-full"
+            placeholder="Select month and year"
+            [readonlyInput]="true"
+          >
+          </p-datepicker>
+
+          <p-message
+            class="mt-2"
+            *ngIf="
+              roasterForm.get('month')?.invalid &&
+              (roasterForm.get('month')?.dirty ||
+                roasterForm.get('month')?.touched)
+            "
+            severity="error"
+            text="Month & Year is required."
+          ></p-message>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="col-12 flex flex-col md:flex-row items-center gap-2">
+        <label for="status" class="w-full md:w-1/3 font-medium">Status</label>
+        <div class="w-full md:w-2/3">
+          <p-checkbox formControlName="status" [binary]="true"></p-checkbox>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="roasterForm.errors?.['allrequired']" class="mt-2">
+      <p
+        class="text-red-500 text-sm font-medium bg-red-100 p-2 rounded-md border border-red-400"
+      >
+        ⚠️ All fields are required.
+      </p>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex justify-end mt-4">
+      <button
+        pButton
+        label="Save"
+        type="submit"
+        class="p-button p-button-primary"
+      ></button>
+    </div>
+  </form>
+</p-dialog>

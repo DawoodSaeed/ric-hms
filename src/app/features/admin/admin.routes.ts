@@ -6,6 +6,7 @@ import { TableComponent } from '../../core/components/table/table.component';
 import { FloorsComponent } from '../../core/components/organization-building/floors/floors.component';
 import { UserManagementComponent } from '../../core/components/user-management/user-management.component';
 import { UserRolesComponent } from '../../core/components/user-roles/user-roles.component';
+import { RoasterComponent } from '../../core/components/roaster/roaster.component';
 export const adminRoutes: Routes = [
   {
     path: '',
@@ -19,6 +20,11 @@ export const adminRoutes: Routes = [
   {
     path: 'employees',
     component: EmployeesComponent,
+  },
+
+  {
+    path: 'roaster',
+    component: RoasterComponent,
   },
 
   {
