@@ -44,7 +44,7 @@ import { CheckAuth, User } from '../../shared/models/auth';
 export class SidebarComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
-private employeeService=inject(EmployeeService)
+  private employeeService = inject(EmployeeService);
   sideBarTabs: any[] = [];
   menuExpanded: boolean = false;
   // Variable to track the clicked menu
@@ -109,6 +109,12 @@ private employeeService=inject(EmployeeService)
             label: 'Add Employee',
             icon: 'pi pi-circle-on',
             route: '/admin/addEmployee',
+          },
+
+          {
+            label: 'Roaster',
+            icon: 'pi pi-calendar',
+            route: '/admin/roaster',
           },
         ],
       },
@@ -321,9 +327,9 @@ private employeeService=inject(EmployeeService)
       }
     });
   }
-  onSubTabClick(){
-    console.log('subtab')
-    this.employeeService.setRegisteredEmpID(null)
+  onSubTabClick() {
+    console.log('subtab');
+    this.employeeService.setRegisteredEmpID(null);
   }
   sideMenuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },
