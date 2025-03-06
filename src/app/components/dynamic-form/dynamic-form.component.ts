@@ -115,6 +115,9 @@ export class DynamicFormComponent implements OnInit {
     if (field === 'did' && typeof value === 'number') {
       this.organizationService.setDepartmentID(value);
     }
+    if (field === 'spId' && typeof value === 'number') {
+      this.dropdownService.setSpecialityID(value);
+    }
   }
 
   receivedDataFromOwnTable(data: any) {
@@ -193,22 +196,22 @@ export class DynamicFormComponent implements OnInit {
   
       let tabData: any = {};
       let isValid = true;
-  
-      // Validate only the fields of the selected tab
-      selectedTab.sections.forEach((section) => {
-        section.fields.forEach((field) => {
-          const control = this.form.get(field.name);
-          if (control) {
-            control.markAsTouched(); // Mark only current tab fields as touched
-            tabData[field.name] = control.value;
-  
-            if (control.invalid) {
-              isValid = false; // Set validation flag if invalid
-            }
+  if(!this.isDelete){
+    // Validate only the fields of the selected tab
+    selectedTab.sections.forEach((section) => {
+      section.fields.forEach((field) => {
+        const control = this.form.get(field.name);
+        if (control) {
+          control.markAsTouched(); // Mark only current tab fields as touched
+          tabData[field.name] = control.value;
+          
+          if (control.invalid) {
+            isValid = false; // Set validation flag if invalid
           }
-        });
+        }
       });
-  
+    });
+  }
       if (isValid) {
         const apiToCall = selectedTab.apiToCall;
   
@@ -225,18 +228,31 @@ export class DynamicFormComponent implements OnInit {
             )
           );
         }
-  
         if (this.isDelete) {
           tabData = this.dataReceivedFromChild;
         }
-  
         this.dataEmitter.emit({
           apiToCall,
           data: tabData,
           isEdit: this.isEdit,
           isDelete: this.isDelete,
         });
-  
+  if(!this.isEdit && !this.isDelete && selectedTab.tabName!=='Basic Info'){
+    console.log('selected Tab ',selectedTab);
+     // Validate only the fields of the selected tab
+     selectedTab.sections.forEach((section) => {
+      section.fields.forEach((field) => {
+        const control = this.form.get(field.name);
+        if (control) {
+          control.setValue('')
+          control.markAsPristine(); // Reset validation state
+          control.markAsUntouched();
+         
+        }
+      });
+    });
+
+  }
         this.isEdit = false;
         this.isDelete = false;
       } else {

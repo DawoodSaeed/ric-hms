@@ -559,7 +559,7 @@ export class AddEmployeeComponent implements OnInit {
       },
       {
         tabName: 'Employee Speciality',
-        apiToCall: this.employeeService.addEmployeeSpecialityDetails,
+        apiToCall: this.employeeService.addEmployeeSpecialityDetails,  
         sections: [
           {
             title: 'Speciality Info',
@@ -587,6 +587,11 @@ export class AddEmployeeComponent implements OnInit {
           {
             title: 'Subspeciality Info',
             fields: [
+              {
+                name: 'spId',
+                label: 'Employee Speciality',
+                type: 'select' ,required:true
+              },
               {
                 name: 'subSpId',
                 label: 'Employee Subspeciality',

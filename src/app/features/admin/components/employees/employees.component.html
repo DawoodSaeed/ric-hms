@@ -162,7 +162,14 @@
         shape="circle"
         size="xlarge"
         (onImageError)="setDefaultImage($event)"
+        *ngIf="!selectedEmployee?.picture"
       ></p-avatar>
+      <img
+        *ngIf="selectedEmployee?.picture"
+        src="{{ selectedEmployee?.picture }}"
+        alt=""
+        style="height: 64px; width: 64px; border-radius: 32px;"
+      />
       <h2>
         {{ selectedEmployee?.firstName }} {{ selectedEmployee?.lastName }}
       </h2>
@@ -444,110 +451,128 @@
           <div class="no-data">No Department Details Available</div>
         </ng-template>
       </p-tabPanel>
-<!-- Sub department -->
-<p-tabPanel header="Sub Department Details">
-  <div
-    class="info-grid"
-    *ngIf="selectedEmployee?.subDepartmentData?.length; else noSubDepartment"
-  >
-    <div
-      *ngFor="let dept of selectedEmployee!.subDepartmentData"
-      class="dept-card"
-    >
-      <div class="info-item">
-        <span class="info-label">Sub Department:</span>
-        <span class="info-value">{{ dept.subDepartment || "-" }}</span>
-      </div>
-    </div>
-  </div>
-  <!-- If No Department Details -->
-  <ng-template #noSubDepartment>
-    <div class="no-data">No Department Details Available</div>
-  </ng-template>
-</p-tabPanel>
-<!-- Facility -->
-<p-tabPanel header="Facility Details">
-  <div
-    class="info-grid"
-    *ngIf="selectedEmployee?.facilityData?.length; else noFacility"
-  >
-    <div *ngFor="let facility of selectedEmployee!.facilityData" class="dept-card">
-      <div class="info-item">
-        <span class="info-label">Facility:</span>
-        <span class="info-value">{{ facility.facility || "-" }}</span>
-      </div>
-    </div>
-  </div>
+      <!-- Sub department -->
+      <p-tabPanel header="Sub Department Details">
+        <div
+          class="info-grid"
+          *ngIf="
+            selectedEmployee?.subDepartmentData?.length;
+            else noSubDepartment
+          "
+        >
+          <div
+            *ngFor="let dept of selectedEmployee!.subDepartmentData"
+            class="dept-card"
+          >
+            <div class="info-item">
+              <span class="info-label">Sub Department:</span>
+              <span class="info-value">{{ dept.subDepartment || "-" }}</span>
+            </div>
+          </div>
+        </div>
+        <!-- If No Department Details -->
+        <ng-template #noSubDepartment>
+          <div class="no-data">No Department Details Available</div>
+        </ng-template>
+      </p-tabPanel>
+      <!-- Facility -->
+      <p-tabPanel header="Facility Details">
+        <div
+          class="info-grid"
+          *ngIf="selectedEmployee?.facilityData?.length; else noFacility"
+        >
+          <div
+            *ngFor="let facility of selectedEmployee!.facilityData"
+            class="dept-card"
+          >
+            <div class="info-item">
+              <span class="info-label">Facility:</span>
+              <span class="info-value">{{ facility.facility || "-" }}</span>
+            </div>
+          </div>
+        </div>
 
-  <!-- If No Facility Details -->
-  <ng-template #noFacility>
-    <div class="no-data">No Facility Details Available</div>
-  </ng-template>
-</p-tabPanel>
-<!-- Speciality -->
-<p-tabPanel header="Speciality Details">
-  <div
-    class="info-grid"
-    *ngIf="selectedEmployee?.specialityData?.length; else noSpeciality"
-  >
-    <div *ngFor="let spec of selectedEmployee!.specialityData" class="dept-card">
-      <div class="info-item">
-        <span class="info-label">Speciality:</span>
-        <span class="info-value">{{ spec.speciality || "-" }}</span>
-      </div>
-    </div>
-  </div>
+        <!-- If No Facility Details -->
+        <ng-template #noFacility>
+          <div class="no-data">No Facility Details Available</div>
+        </ng-template>
+      </p-tabPanel>
+      <!-- Speciality -->
+      <p-tabPanel header="Speciality Details">
+        <div
+          class="info-grid"
+          *ngIf="selectedEmployee?.specialityData?.length; else noSpeciality"
+        >
+          <div
+            *ngFor="let spec of selectedEmployee!.specialityData"
+            class="dept-card"
+          >
+            <div class="info-item">
+              <span class="info-label">Speciality:</span>
+              <span class="info-value">{{ spec.speciality || "-" }}</span>
+            </div>
+          </div>
+        </div>
 
-  <!-- If No Speciality Details -->
-  <ng-template #noSpeciality>
-    <div class="no-data">No Speciality Details Available</div>
-  </ng-template>
-</p-tabPanel>
-<!-- Sub Speciality -->
-<p-tabPanel header="Sub Speciality Details">
-  <div
-    class="info-grid"
-    *ngIf="selectedEmployee?.subSpecialityData?.length; else noSubSpeciality"
-  >
-    <div
-      *ngFor="let subSpec of selectedEmployee!.subSpecialityData"
-      class="dept-card"
-    >
-    <div class="info-item">
-      <span class="info-label">Speciality:</span>
-      <span class="info-value">{{ subSpec.speciality || "-" }}</span>
-    </div>
-      <div class="info-item">
-        <span class="info-label">Sub Speciality:</span>
-        <span class="info-value">{{ subSpec.subspeciality || "-" }}</span>
-      </div>
-    </div>
-  </div>
-<!-- Designation -->
-<p-tabPanel header="Designation Details">
-  <div
-    class="info-grid"
-    *ngIf="selectedEmployee?.designationData?.length; else noDesignation"
-  >
-    <div *ngFor="let desgn of selectedEmployee!.designationData" class="dept-card">
-      <div class="info-item">
-        <span class="info-label">Designation:</span>
-        <span class="info-value">{{ desgn.designation || "-" }}</span>
-      </div>
-    </div>
-  </div>
+        <!-- If No Speciality Details -->
+        <ng-template #noSpeciality>
+          <div class="no-data">No Speciality Details Available</div>
+        </ng-template>
+      </p-tabPanel>
+      <!-- Sub Speciality -->
+      <p-tabPanel header="Sub Speciality Details">
+        <div
+          class="info-grid"
+          *ngIf="
+            selectedEmployee?.subSpecialityData?.length;
+            else noSubSpeciality
+          "
+        >
+          <div
+            *ngFor="let subSpec of selectedEmployee!.subSpecialityData"
+            class="dept-card"
+          >
+            <div class="info-item">
+              <span class="info-label">Speciality:</span>
+              <span class="info-value">{{ subSpec.speciality || "-" }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Sub Speciality:</span>
+              <span class="info-value">{{ subSpec.subspeciality || "-" }}</span>
+            </div>
+          </div>
+        </div>
+        <!-- Designation -->
+        <p-tabPanel header="Designation Details">
+          <div
+            class="info-grid"
+            *ngIf="
+              selectedEmployee?.designationData?.length;
+              else noDesignation
+            "
+          >
+            <div
+              *ngFor="let desgn of selectedEmployee!.designationData"
+              class="dept-card"
+            >
+              <div class="info-item">
+                <span class="info-label">Designation:</span>
+                <span class="info-value">{{ desgn.designation || "-" }}</span>
+              </div>
+            </div>
+          </div>
 
-  <!-- If No Designation Details -->
-  <ng-template #noDesignation>
-    <div class="no-data">No Designation Details Available</div>
-  </ng-template>
-</p-tabPanel>
+          <!-- If No Designation Details -->
+          <ng-template #noDesignation>
+            <div class="no-data">No Designation Details Available</div>
+          </ng-template>
+        </p-tabPanel>
 
-  <!-- If No Sub Speciality Details -->
-  <ng-template #noSubSpeciality>
-    <div class="no-data">No Sub Speciality Details Available</div>
-  </ng-template>
-</p-tabPanel>
+        <!-- If No Sub Speciality Details -->
+        <ng-template #noSubSpeciality>
+          <div class="no-data">No Sub Speciality Details Available</div>
+        </ng-template>
+      </p-tabPanel>
 
       <p-tabPanel header="Other Details">
         <div class="info-grid">

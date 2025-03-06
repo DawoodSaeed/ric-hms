@@ -142,49 +142,7 @@ export class SidebarComponent implements OnInit {
         icon: 'fas fa-sitemap blue',
         expanded: false,
         items: [
-          {
-            label: 'Location Management',
-            icon: 'fas fa-map-marked-alt',
-            items: [
-              {
-                label: 'Branches',
-                icon: 'fas fa-building',
-                route: '/admin/branches',
-              },
-              {
-                label: 'Buildings',
-                icon: 'fas fa-building',
-                route: '/admin/buildings',
-              },
-              {
-                label: 'Floors',
-                icon: 'fas fa-layer-group',
-                route: '/admin/floors',
-              },
-              {
-                label: 'Rooms',
-                icon: 'fas fa-door-open',
-                route: '/admin/rooms',
-              },
-              { label: 'Beds', icon: 'fas fa-bed', route: '/admin/beds' },
-              {
-                label: 'Countries',
-                icon: 'fas fa-globe',
-                route: '/admin/countries',
-              },
-              {
-                label: 'Provinces',
-                icon: 'fas fa-map-marked-alt',
-                route: '/admin/provinces',
-              },
-              {
-                label: 'Districts',
-                icon: 'fas fa-map-marked-alt',
-                route: '/admin/districts',
-              },
-              { label: 'Cities', icon: 'fas fa-city', route: '/admin/cities' },
-            ],
-          },
+      
           {
             label: 'Organizational Structure',
             icon: 'fas fa-network-wired',
@@ -329,6 +287,29 @@ export class SidebarComponent implements OnInit {
             icon: 'fas fa-clock',
             route: '/admin/working-sessions',
           },
+        ],
+      },
+      {
+        label: 'Region Management',
+        icon: 'fas fa-map-marked-alt',
+        items: [
+       
+          {
+            label: 'Countries',
+            icon: 'fas fa-globe',
+            route: '/admin/countries',
+          },
+          {
+            label: 'Provinces',
+            icon: 'fas fa-map-marked-alt',
+            route: '/admin/provinces',
+          },
+          {
+            label: 'Districts',
+            icon: 'fas fa-map-marked-alt',
+            route: '/admin/districts',
+          },
+          { label: 'Cities', icon: 'fas fa-city', route: '/admin/cities' },
         ],
       },
     ];

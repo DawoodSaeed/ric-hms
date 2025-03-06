@@ -43,8 +43,12 @@ export class TypeTableService {
   constructor(private http: HttpClient) {}
   private countryID$ = new BehaviorSubject<number | null>(1);
   private provinceID$ = new BehaviorSubject<number | null>(1);
-
-
+  private specialityID$ = new BehaviorSubject<number | null>(null);
+  private subSpecialities$ = new BehaviorSubject<SubSpeciality[]>([]);
+ setSpecialityID(specialityID: number) {
+    console.log('Speciality ID coming:', specialityID);
+    this.specialityID$.next(specialityID); // Push new department ID
+  }
   setCountryID(countryID: number) {
     console.log('countryid coming', countryID);
     this.countryID$.next(countryID);
@@ -358,19 +362,30 @@ getSpeciality(): Observable<Speciality[]> {
     )
   );
 }
+getSubSpeciality(): Observable<SubSpeciality[]> {
+  this.getAll<SubSpeciality>('SubSpecialities').pipe(
+    map((specialities) =>
+      specialities.map(spec => ({
+        ...spec,
+        id: spec.subSpId // Add 'id' property
+      }))
+    )
+  ).subscribe((specialities) => {
+    this.subSpecialities$.next(specialities); // Push all subSpecialities into BehaviorSubject
+  });
 
-  getSubSpeciality(): Observable<SubSpeciality[]> {
-    return this.getAll<SubSpeciality>('SubSpecialities').pipe(
-      map((Specialities) =>
-        Specialities.map(spec => ({
-          ...spec,   // Spread existing properties
-          id: spec.subSpId  // Add new property 'id'
-        }))
-      )
-    );;
-  }
-
-
+  return this.specialityID$.pipe(
+    switchMap((specialityID) => {
+      if (!specialityID) return of([]);
+      return this.subSpecialities$.pipe(
+        map((specialities) => {
+          console.log('specialities: ', specialities);
+          return specialities.filter(spec => spec.spId === specialityID);
+        })
+      );
+    })
+  );
+}
   getGrades(): Observable<Grades[]> {
     return this.getAll<Grades>('EducationGrades')
   //   .pipe(
