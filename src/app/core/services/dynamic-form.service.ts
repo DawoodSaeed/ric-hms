@@ -6,10 +6,9 @@ import { FormStructure } from '../interfaces/dynamicforminterface';
 })
 export class DynamicFormService {
   constructor(private fb: FormBuilder) {}
-
   createForm(formStructure: FormStructure): FormGroup {
     const formGroup = this.fb.group({});
-
+  
     if (formStructure.tabs) {
       // Handle form with tabs and sections
       formStructure.tabs.forEach((tab) => {
@@ -18,15 +17,22 @@ export class DynamicFormService {
             formGroup.addControl(
               field.name,
               this.fb.control(
-                // field.type === 'select' ? 0 : field.type === 'date' ? null:'',
                 null,
                 field.required ? Validators.required : null
               )
             );
+  
+            // ✅ Automatically add certificatePath field if it's a file upload type
+            if (field.type === 'file') {
+              formGroup.addControl(
+                field.name + 'Path', // Append 'Path' to the field name dynamically
+                this.fb.control(null)
+              );
+            }
           });
         });
       });
-    } else if (formStructure.sections) {
+    }else if (formStructure.sections) {
       // Handle flat form with sections
       formStructure.sections.forEach((section) => {
         section.fields.forEach((field) => {

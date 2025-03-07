@@ -392,11 +392,11 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Awards Information',
             fields: [
               // { name: 'empAwrdId', label: 'Award ID', type: 'number' },
-              { name: 'name', label: 'Award Name', type: 'text' },
-              { name: 'code', label: 'Award Code', type: 'text' },
+              { name: 'name', label: 'Award Name', type: 'text' ,required:true},
+              { name: 'code', label: 'Award Code', type: 'text' ,required:true},
               { name: 'awardedBy', label: 'Awarded By', type: 'text' },
               { name: 'description', label: 'Description', type: 'text' },
-              { name: 'awardDate', label: 'Award Date', type: 'date' },
+              { name: 'awardDate', label: 'Award Date', type: 'date',required:true },
               // { name: 'status', label: 'Status', type: 'radio' },
               { name: 'createdById', label: 'Created By', type: 'number',hide:true  },
               { name: 'createdOn', label: 'Created On', type: 'date',hide:true },
@@ -414,9 +414,9 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Bank Information',
 
             fields: [
-              { name: 'accountTitle', label: 'Account Title', type: 'text' },
-              { name: 'accountNo', label: 'Account Number', type: 'text' },
-              { name: 'bankId', label: 'Bank Name', type: 'select' },
+              { name: 'accountTitle', label: 'Account Title', type: 'text',required:true },
+              { name: 'accountNo', label: 'Account Number', type: 'text',required:true },
+              { name: 'bankId', label: 'Bank Name', type: 'select' ,required:true},
               { name: 'branchName', label: 'Branch Name', type: 'text' },
               { name: 'branchCode', label: 'Branch Code', type: 'text' },
               { name: 'iban', label: 'IBAN', type: 'text' },
@@ -438,22 +438,20 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Basic Details',
 
             fields: [
-              // { name: 'empEduId', label: 'Education ID', type: 'text' },
-              // { name: 'empId', label: 'Employee ID', type: 'text' },
-              { name: 'countryId', label: 'Country', type: 'select' },
+              { name: 'countryId', label: 'Country', type: 'select' ,required:true},
               {
                 name: 'eduIntId',
                 label: 'Education Institute',
-                type: 'select',
+                type: 'select',required:true
               },
-              { name: 'degId', label: 'Degree', type: 'select' },
-              { name: 'fsid', label: 'Field of Study', type: 'select' },
-              { name: 'startDate', label: 'Start Date', type: 'date' },
-              { name: 'endDate', label: 'End Date', type: 'date' },
-              { name: 'issueDate', label: 'Issue Date', type: 'date' },
+              { name: 'degId', label: 'Degree', type: 'select' ,required:true},
+              { name: 'fsid', label: 'Field of Study', type: 'select',required:true },
+              { name: 'startDate', label: 'Start Date', type: 'date' ,required:true},
+              { name: 'endDate', label: 'End Date', type: 'date'  ,required:true},
+              { name: 'issueDate', label: 'Issue Date', type: 'date' ,required:true },
               { name: 'gradingId', label: 'Grading', type: 'select' },
-              { name: 'totalMarks', label: 'Total Marks', type: 'text' },
-              { name: 'obtainMarks', label: 'Obtain Marks', type: 'text' },
+              { name: 'totalMarks', label: 'Total Marks', type: 'number' },
+              { name: 'obtainMarks', label: 'Obtain Marks', type: 'number' },
               // { name: 'status', label: 'Status', type: 'radio' },
               {
                 name: 'certificatePath',
@@ -473,7 +471,7 @@ export class AddEmployeeComponent implements OnInit {
           {
             title: 'Department Info',
             fields: [
-              { name: 'did', label: 'Employee Department', type: 'select' },
+              { name: 'did', label: 'Employee Department', type: 'select'  ,required:true},
             ],
           },
         ],
@@ -487,9 +485,9 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Sub Department Info',
        
             fields: [
-              { name: 'did', label: 'Department', type: 'select' },
+              { name: 'did', label: 'Department', type: 'select'  ,required:true},
              
-              { name: 'subDid', label: 'Sub Department', type: 'select' },
+              { name: 'subDid', label: 'Sub Department', type: 'select' ,required:true },
             ],
           },
         ],
@@ -504,7 +502,7 @@ export class AddEmployeeComponent implements OnInit {
             fields: [
             
               // { name: 'empId', label: 'Employee ID', type: 'text' },
-              { name: 'desgnId', label: 'Employee Designation', type: 'select' },
+              { name: 'desgnId', label: 'Employee Designation', type: 'select' ,required:true },
               // { name: 'createdById', label: 'Created By', type: 'text' },
               // { name: 'createdOn', label: 'Created On', type: 'text' },
               // { name: 'modifiedById', label: 'Modified By', type: 'text' },
@@ -521,11 +519,11 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Experience Info',
             fields: [
            
-              { name: 'title', label: 'Job Title', type: 'text' },
-              { name: 'company', label: 'Company Name', type: 'text' },
+              { name: 'title', label: 'Job Title', type: 'text'  ,required:true},
+              { name: 'company', label: 'Company Name', type: 'text'  ,required:true},
               { name: 'description', label: 'Description', type: 'text' },
-              { name: 'fromDate', label: 'From Date', type: 'date' },
-              { name: 'toDate', label: 'To Date', type: 'date' },
+              { name: 'fromDate', label: 'From Date', type: 'date'  ,required:true},
+              { name: 'toDate', label: 'To Date', type: 'date'  ,required:true},
               {
                 name: 'certificatePath',
                 label: 'Certificate Path',
@@ -547,7 +545,7 @@ export class AddEmployeeComponent implements OnInit {
               {
                 name: 'facilityId',
                 label: 'Employee Facility',
-                type: 'select',
+                type: 'select' ,required:true
               },
               // { name: 'empId', label: 'Employee ID', type: 'text' },
               // { name: 'facilityId', label: 'Facility ID', type: 'text' },
@@ -561,7 +559,7 @@ export class AddEmployeeComponent implements OnInit {
       },
       {
         tabName: 'Employee Speciality',
-        apiToCall: this.employeeService.addEmployeeSpecialityDetails,
+        apiToCall: this.employeeService.addEmployeeSpecialityDetails,  
         sections: [
           {
             title: 'Speciality Info',
@@ -569,7 +567,7 @@ export class AddEmployeeComponent implements OnInit {
               {
                 name: 'spId',
                 label: 'Employee Speciality',
-                type: 'select',
+                type: 'select' ,required:true
               },
               // { name: 'empId', label: 'Employee ID', type: 'text' },
               // { name: 'spId', label: 'Speciality ID', type: 'text' },
@@ -590,9 +588,14 @@ export class AddEmployeeComponent implements OnInit {
             title: 'Subspeciality Info',
             fields: [
               {
+                name: 'spId',
+                label: 'Employee Speciality',
+                type: 'select' ,required:true
+              },
+              {
                 name: 'subSpId',
                 label: 'Employee Subspeciality',
-                type: 'select',
+                type: 'select' ,required:true
               },
               // { name: 'empId', label: 'Employee ID', type: 'text' },
               // { name: 'subSpId', label: 'Subspeciality ID', type: 'text' },

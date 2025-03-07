@@ -115,6 +115,9 @@ export class DynamicFormComponent implements OnInit {
     if (field === 'did' && typeof value === 'number') {
       this.organizationService.setDepartmentID(value);
     }
+    if (field === 'spId' && typeof value === 'number') {
+      this.dropdownService.setSpecialityID(value);
+    }
   }
 
   receivedDataFromOwnTable(data: any) {
@@ -187,58 +190,91 @@ export class DynamicFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.valid && this.formStructure?.tabs) {
-      // Ensure formStructure and tabs exist before accessing
+    if (this.formStructure?.tabs) {
       const selectedTab = this.formStructure.tabs[this.selectedTabIndex];
       if (!selectedTab) return; // Safety check
-      // Extract only the form data from the selected tab
-      const apiToCall = selectedTab.apiToCall;
+  
       let tabData: any = {};
-      console.log('selectedTab ', selectedTab);
-      selectedTab.sections.forEach((section) => {
-        section.fields.forEach((field) => {
-          tabData[field.name] = this.form.value[field.name];
-        });
+      let isValid = true;
+  if(!this.isDelete){
+    // Validate only the fields of the selected tab
+    selectedTab.sections.forEach((section) => {
+      section.fields.forEach((field) => {
+        const control = this.form.get(field.name);
+        if (control) {
+          control.markAsTouched(); // Mark only current tab fields as touched
+          tabData[field.name] = control.value;
+          
+          if (control.invalid) {
+            isValid = false; // Set validation flag if invalid
+          }
+        }
       });
-      console.log('dataReceivedFromChild ', this.dataReceivedFromChild);
-      console.log('tabDataxx ', tabData, '');
-      if (this.isEdit && this.dataReceivedFromChild) {
-        console.log('this.dataReceivedFromChild ', this.dataReceivedFromChild);
-        // Putting missing key,values from tabData that are present in dataReceivedFromChild in tabData
-        tabData = Object.assign(
-          tabData,
-          Object.fromEntries(
-            Object.entries(this.dataReceivedFromChild).filter(
-              ([key]) => !(key in tabData)
+    });
+  }
+      if (isValid) {
+        const apiToCall = selectedTab.apiToCall;
+  
+        console.log('Selected Tab:', selectedTab);
+        console.log('Tab Data:', tabData);
+  
+        if (this.isEdit && this.dataReceivedFromChild) {
+          tabData = Object.assign(
+            tabData,
+            Object.fromEntries(
+              Object.entries(this.dataReceivedFromChild).filter(
+                ([key]) => !(key in tabData)
+              )
             )
-          )
-        );
-      }
-      if (this.isDelete) {
-        tabData = this.dataReceivedFromChild;
-      }
-      this.dataEmitter.emit({
-        apiToCall,
-        data: tabData,
-        isEdit: this.isEdit,
-        isDelete: this.isDelete,
-      }); // Emit selected tab data
-      this.isEdit = false;
-      this.isDelete = false;
-    } else {
-      this.form.markAllAsTouched(); // Mark all fields as touched to show validation errors
+          );
+        }
+        if (this.isDelete) {
+          tabData = this.dataReceivedFromChild;
+        }
+        this.dataEmitter.emit({
+          apiToCall,
+          data: tabData,
+          isEdit: this.isEdit,
+          isDelete: this.isDelete,
+        });
+  if(!this.isEdit && !this.isDelete && selectedTab.tabName!=='Basic Info'){
+    console.log('selected Tab ',selectedTab);
+     // Validate only the fields of the selected tab
+     selectedTab.sections.forEach((section) => {
+      section.fields.forEach((field) => {
+        const control = this.form.get(field.name);
+        if (control) {
+          control.setValue('')
+          control.markAsPristine(); // Reset validation state
+          control.markAsUntouched();
+         
+        }
+      });
+    });
 
-      this.notificationService.showError('Please fill all required fields');
+  }
+        this.isEdit = false;
+        this.isDelete = false;
+      } else {
+        this.notificationService.showError('Please fill all required fields');
+      }
     }
   }
-
+  
   onFileUpload(event: any, fieldName: string) {
-    console.log('filed name', fieldName);
-    const file = event.files[0]; // Get the first file
-
-    // You can now store the file or perform other actions
-    console.log('File uploaded:', file);
-    // Example: Store the file in a variable
-    this.uploadedFiles[fieldName] = file;
+    console.log('Field name:', fieldName);
+    const file = event.files?.[0];
+  
+    if (file) {
+      console.log('File uploaded:', file);
+      this.uploadedFiles[fieldName] = file;
+  
+      // ✅ Now dynamically set the file path to the correct form field
+      this.form.get(fieldName)?.setValue(this.uploadedFiles);
+    } else {
+      console.warn('No file uploaded');
+    }
   }
+  
+  
 }
