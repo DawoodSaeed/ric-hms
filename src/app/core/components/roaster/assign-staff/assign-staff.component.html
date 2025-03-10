@@ -1,1 +1,26 @@
-<p>assign-staff works!</p>
+@if(employees().length){
+<p-table [value]="employees()" showGridlines>
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th pSortableColumn="name">Name</th>
+      <th pSortableColumn="cnic">CNIC</th>
+      <th *ngFor="let date of getUniqueScheduleDates(employees())">
+        {{ formatDate(date) }}
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-employee>
+    <tr>
+      <td>{{ employee.empName }}</td>
+      <td>{{ employee.cnic }}</td>
+      <td *ngFor="let schedule of employee.schedules">
+        <p-select
+          [options]="employee.schedules"
+          [style]="{ width: '100%' }"
+          (onChange)="shiftChange()"
+        ></p-select>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+}

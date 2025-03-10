@@ -28,7 +28,7 @@ export const adminRoutes: Routes = [
   },
 
   {
-    path: 'roaster/assign-staff',
+    path: 'roaster/assign-staff/:roasterId',
     component: AssignStaffComponent,
   },
 
