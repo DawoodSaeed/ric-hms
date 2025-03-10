@@ -313,5 +313,7 @@ export class UserManagementComponent implements OnInit {
       modifiedById: 0,
       modifiedOn: new Date().toISOString(),
     };
+
+    this.userForm.reset();
   }
 }

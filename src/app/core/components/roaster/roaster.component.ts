@@ -34,6 +34,7 @@ import { Table, TableModule } from 'primeng/table';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TooltipModule } from 'primeng/tooltip';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-roaster',
   imports: [
@@ -61,6 +62,7 @@ export class RoasterComponent implements OnInit {
   private authService = inject(AuthService);
   private notify = inject(NotificationService);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
   displayDialog = signal(false);
   roasterForm!: FormGroup;
   userId = signal(0);
@@ -162,5 +164,12 @@ export class RoasterComponent implements OnInit {
 
     // If you want the year in UTC:
     // return date.getUTCFullYear();
+  }
+
+  assignStaff(rowData: Roaster) {
+    console.log(rowData);
+    const { id: roasterId } = rowData;
+    const role = this.router.url.split('/')[1];
+    this.router.navigate([`${role}/roaster/assign-staff`, roasterId]);
   }
 }
