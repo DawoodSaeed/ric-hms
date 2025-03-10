@@ -42,6 +42,7 @@ import { TypeTableService } from '../../services/type-table.service';
 import { Tag } from 'primeng/tag';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { ConfirmationService } from 'primeng/api';
 @Component({
   selector: 'app-region-management',
   imports: [
@@ -65,6 +66,7 @@ import { FormsModule } from '@angular/forms';
   ],
   templateUrl: './region-management.component.html',
   styleUrl: './region-management.component.scss',
+  providers: [ConfirmationService],
 })
 export class RegionManagementComponent implements OnInit {
   private typeTableService = inject(TypeTableService);
@@ -85,6 +87,7 @@ export class RegionManagementComponent implements OnInit {
   };
 
   constructor(
+    public confirmationService: ConfirmationService,
     private route: ActivatedRoute,
     private notificationService: NotificationService
   ) {}
@@ -133,25 +136,56 @@ export class RegionManagementComponent implements OnInit {
 
   editItem(rowData: any) {
     console.log(rowData);
+    this.formState.set('editItem');
     this.displayDialogBox.set(true);
+    this.newCountry = rowData;
   }
 
   addOrUpdateItem() {
     console.log(this.newCountry);
+
     this.typeTableService.addUpdateCountry(this.newCountry).subscribe({
       next: (data: any) => {
         console.log(data);
         if (data) {
-          this.loadData()
+          this.loadData();
           this.notificationService.showSuccess('Operation successful!');
-          this.displayDialogBox.set(false)
+          this.displayDialogBox.set(false);
         }
       },
-      error:(err)=>{
-        console.log(err)
-          this.notificationService.showError(err.error.message);
-
-      }
+      error: (err) => {
+        console.log(err);
+        this.notificationService.showError(err.error.message);
+      },
     });
+  }
+  deleteItemConfirmation(rowData: any) {
+    console.log('deleting ',rowData)
+    if (rowData) {
+      this.confirmationService.confirm({
+        message: 'Are you sure you want to delete this item?',
+        header: 'Confirm Deletion',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          this.deleteItem(rowData);
+        },
+        reject: () => {
+          this.confirmationService.close();
+          console.log('Action canceled.');
+          return;
+        },
+      });
+    }
+  }
+  deleteItem(rowData: any) {
+    if (this.dataType === 'Country') {
+      let newCountry = {
+        ...rowData,
+        status: 0,
+      };
+      this.typeTableService
+        .addUpdateCountry(newCountry)
+        .pipe(tap((response) => console.log(response)));
+    }
   }
 }
