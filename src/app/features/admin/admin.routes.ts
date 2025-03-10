@@ -86,18 +86,12 @@ export const adminRoutes: Routes = [
       {
         path: 'countries',
         component: RegionManagementComponent,
-        data: { dataType: 'beds' },
+        data: { dataType: 'Country' },
       },
       {
-        path: 'users',
-        component: UserManagementComponent,
-        data: { dataType: 'floors' },
-      },
-
-      {
-        path: '', // Default route when organizational-building is accessed
-        redirectTo: 'users', // Redirect to buildings as a default
-        pathMatch: 'full',
+        path: 'countries',
+        component: RegionManagementComponent,
+        data: { dataType: 'Province' },
       },
     ],
   },

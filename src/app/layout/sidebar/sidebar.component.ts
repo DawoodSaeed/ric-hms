@@ -136,7 +136,6 @@ private employeeService=inject(EmployeeService)
         icon: 'fas fa-sitemap blue',
         expanded: false,
         items: [
-      
           {
             label: 'Organizational Structure',
             icon: 'fas fa-network-wired',
@@ -287,16 +286,15 @@ private employeeService=inject(EmployeeService)
         label: 'Region Management',
         icon: 'fas fa-map-marked-alt',
         items: [
-       
           {
             label: 'Countries',
             icon: 'fas fa-globe',
-            route: '/admin/countries',
+            route: '/admin/region-management/countries',
           },
           {
             label: 'Provinces',
             icon: 'fas fa-map-marked-alt',
-            route: '/admin/provinces',
+            route: '/admin/region-management/provinces',
           },
           {
             label: 'Districts',

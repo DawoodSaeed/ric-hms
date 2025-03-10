@@ -1,12 +1,12 @@
 export interface TypeTable {
   id?: number;
   name: string;
-  description: string;
+  description?: string;
   createdById?: number | string;
   createdOn?: string;
   modifiedById?: number | string;
   modifiedOn?: string;
-  isActive: number | boolean;
+  isActive?: number | boolean;
 }
 
 export interface Bank extends TypeTable {

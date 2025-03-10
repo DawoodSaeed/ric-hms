@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, Signal, signal } from '@angular/core';
 import { AccountService } from '../../services/account.service';
 import {
   BehaviorSubject,
@@ -39,10 +39,13 @@ import { PasswordModule } from 'primeng/password';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { Country } from '../../interfaces/typetable';
 import { TypeTableService } from '../../services/type-table.service';
-
+import { Tag } from 'primeng/tag';
+import { ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-region-management',
   imports: [
+    FormsModule,
     TableModule,
     ButtonModule,
     IconFieldModule,
@@ -58,24 +61,97 @@ import { TypeTableService } from '../../services/type-table.service';
     TooltipModule,
     PasswordModule,
     BreadcrumbComponent,
+    Tag,
   ],
   templateUrl: './region-management.component.html',
   styleUrl: './region-management.component.scss',
 })
-export class RegionManagementComponent {
-private typeTableService=inject(TypeTableService)
-  countries$:Observable<Country[]>;
-  tableHeadings$:Observable<any[]|null>;
-  constructor(){
-    this.countries$=this.typeTableService.getCountries()
-    this.tableHeadings$=this.countries$.pipe(map((countries)=>this.getTableHeadings(countries)))
+export class RegionManagementComponent implements OnInit {
+  private typeTableService = inject(TypeTableService);
+  dataType: string | undefined;
+  formState = signal<'editItem' | 'addItem'>('addItem');
+  displayDialogBox = signal(false);
+  countries$!: Observable<Country[]>;
+  tableHeadings$!: Observable<any[] | null>;
+
+  newCountry: Country = {
+    id: 0,
+    name: '',
+    code: '',
+    phoneCode: '',
+    currencyCode: '',
+    status: 1,
+    ...this.getCommonFields(),
+  };
+
+  constructor(
+    private route: ActivatedRoute,
+    private notificationService: NotificationService
+  ) {}
+  ngOnInit(): void {
+    this.dataType = this.route.snapshot.data['dataType'];
+    this.loadData();
   }
-getTableHeadings(tableData:Country[]|null):any[]{
-  if(!tableData|| tableData.length===0) return []
-  return Object.keys(tableData[0]).filter((heading:any)=>!['currencyCode','id','modifiedById','modifiedOn','createdById','createdOn'].includes(heading))
-}
-  trackByID(index:number, item:Country){
-    console.log('index ',index,' item ',item)
-    return item.id
+  loadData() {
+    this.countries$ = this.typeTableService.getCountries();
+    this.tableHeadings$ = this.countries$.pipe(
+      map((countries) => this.getTableHeadings(countries))
+    );
+  }
+  getTableHeadings(tableData: Country[] | null): any[] {
+    if (!tableData || tableData.length === 0) return [];
+    return Object.keys(tableData[0]).filter(
+      (heading: any) =>
+        ![
+          'id',
+          'modifiedById',
+          'modifiedOn',
+          'createdById',
+          'createdOn',
+        ].includes(heading)
+    );
+  }
+  trackByID(index: number, item: Country) {
+    return item.id;
+  }
+  getCommonFields() {
+    const timestamp = new Date().toISOString();
+    return {
+      createdById: 0,
+      createdOn: timestamp,
+      modifiedById: 0,
+      modifiedOn: timestamp,
+    };
+  }
+  getTagValue(status: number): string | undefined {
+    if (status === 1) {
+      return 'Active';
+    } else {
+      return 'In-Active';
+    }
+  }
+
+  editItem(rowData: any) {
+    console.log(rowData);
+    this.displayDialogBox.set(true);
+  }
+
+  addOrUpdateItem() {
+    console.log(this.newCountry);
+    this.typeTableService.addUpdateCountry(this.newCountry).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        if (data) {
+          this.loadData()
+          this.notificationService.showSuccess('Operation successful!');
+          this.displayDialogBox.set(false)
+        }
+      },
+      error:(err)=>{
+        console.log(err)
+          this.notificationService.showError(err.error.message);
+
+      }
+    });
   }
 }
