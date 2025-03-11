@@ -169,16 +169,19 @@ export class AddEmployeeComponent implements OnInit {
       this.updateDropdownOptions('countryId', countries);
     });
 
-    this.dropDownService.getProvinces().subscribe((provinces: Province[]) => {
-      console.log('provinces ', provinces);
-      this.updateDropdownOptions('province', provinces);
-    });
-    this.dropDownService.getDistricts().subscribe((districts: District[]) => {
-      console.log('domicileDistrictId ', districts);
-      this.updateDropdownOptions('domicileDistrictId', districts);
-      this.updateDropdownOptions('cityDistrict', districts);
-
-    });
+    this.dropDownService
+      .getProvincesCountryWise()
+      .subscribe((provinces: Province[]) => {
+        console.log('provinces ', provinces);
+        this.updateDropdownOptions('province', provinces);
+      });
+    this.dropDownService
+      .getDistrictsProvinceWise()
+      .subscribe((districts: District[]) => {
+        console.log('domicileDistrictId ', districts);
+        this.updateDropdownOptions('domicileDistrictId', districts);
+        this.updateDropdownOptions('cityDistrict', districts);
+      });
     this.dropDownService
       .getEducationInstitutions()
       .subscribe((eduInstitutes: EducationInstitution[]) => {

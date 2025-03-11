@@ -1,8 +1,9 @@
+import { PanelMenuModule } from 'primeng/panelmenu';
 // typetable.service.ts
 
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, map, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, switchMap } from 'rxjs';
 
 import {
   Bank,
@@ -45,7 +46,7 @@ export class TypeTableService {
   private provinceID$ = new BehaviorSubject<number | null>(1);
   private specialityID$ = new BehaviorSubject<number | null>(null);
   private subSpecialities$ = new BehaviorSubject<SubSpeciality[]>([]);
- setSpecialityID(specialityID: number) {
+  setSpecialityID(specialityID: number) {
     console.log('Speciality ID coming:', specialityID);
     this.specialityID$.next(specialityID); // Push new department ID
   }
@@ -252,10 +253,10 @@ export class TypeTableService {
 
   getReligions(): Observable<Religion[]> {
     return this.getAll<Religion>('Religions').pipe(
-      map(religions =>
-        religions.map(religion => ({
+      map((religions) =>
+        religions.map((religion) => ({
           ...religion,
-          id: religion.name as unknown as number 
+          id: religion.name as unknown as number,
         }))
       )
     );
@@ -277,7 +278,15 @@ export class TypeTableService {
 
   // ###### COUNTRIES >>>>>>>>>>>>>
   getCountries(): Observable<Country[]> {
-    return this.getAll<Country>('Countries');
+    return this.getAll<Country>('Countries').pipe(
+      map((response: Country[]) =>
+        response.filter((country: Country) => country.status === 1)
+      ),
+      catchError((error) => {
+        console.log('error fetching countries');
+        return of([]);
+      })
+    );
   }
 
   addUpdateCountry(country: Country): Observable<Country> {
@@ -285,7 +294,7 @@ export class TypeTableService {
   }
 
   // ###### PROVINCES >>>>>>>>>>>>>
-  getProvinces(): Observable<Province[]> {
+  getProvincesCountryWise(): Observable<Province[]> {
     return this.countryID$.pipe(
       switchMap((countryID) => {
         if (!countryID) return of([]);
@@ -297,7 +306,14 @@ export class TypeTableService {
       })
     );
   }
-  
+
+  getAllProvinces(): Observable<Province[]> {
+    return this.getAll<Province>('Provinces').pipe(
+      map((response: Province[]) =>
+        response.filter((province: Province) => province.status === 1)
+      )
+    );
+  }
 
   addUpdateProvince(province: Province): Observable<Province> {
     return this.addUpdate<Province>('Provinces', province);
@@ -305,7 +321,7 @@ export class TypeTableService {
 
   // ###### DISTRICTS >>>>>>>>>>>>>
 
-  getDistricts(): Observable<District[]> {
+  getDistrictsProvinceWise(): Observable<District[]> {
     return this.provinceID$.pipe(
       switchMap((provinceID) => {
         if (!provinceID) return of([]); // Return empty array if no province selected
@@ -315,6 +331,13 @@ export class TypeTableService {
           )
         );
       })
+    );
+  }
+  getAllDistricts(): Observable<District[]> {
+    return this.getAll<District>('Districts').pipe(
+      map((response: District[]) =>
+        response.filter((district: District) => district.status === 1)
+      )
     );
   }
 
@@ -332,69 +355,70 @@ export class TypeTableService {
     return this.addUpdate<City>('Cities', city);
   }
 
- 
   // ###### DESIGNATIONS >>>>>>>>>>>>>
 
   getDesignations(): Observable<Designation[]> {
     return this.getAll<Designation>('Designations').pipe(
       map((departments) =>
-        departments.map(desgn => ({
-          ...desgn,   // Spread existing properties
-          id: desgn.desgnId
+        departments.map((desgn) => ({
+          ...desgn, // Spread existing properties
+          id: desgn.desgnId,
           // Add new property 'id'
         }))
       )
-    );;
+    );
   }
 
   addUpdateDesignations(designation: Designation): Observable<Designation> {
     return this.addUpdate<Designation>('Designations', designation);
   }
 
-// Third Phase 
-getSpeciality(): Observable<Speciality[]> {
-  return this.getAll<Speciality>('Specialities').pipe(
-    map((Specialities) =>
-      Specialities.map(spec => ({
-        ...spec,   // Spread existing properties
-        id: spec.spId  // Add new property 'id'
-      }))
-    )
-  );
-}
-getSubSpeciality(): Observable<SubSpeciality[]> {
-  this.getAll<SubSpeciality>('SubSpecialities').pipe(
-    map((specialities) =>
-      specialities.map(spec => ({
-        ...spec,
-        id: spec.subSpId // Add 'id' property
-      }))
-    )
-  ).subscribe((specialities) => {
-    this.subSpecialities$.next(specialities); // Push all subSpecialities into BehaviorSubject
-  });
+  // Third Phase
+  getSpeciality(): Observable<Speciality[]> {
+    return this.getAll<Speciality>('Specialities').pipe(
+      map((Specialities) =>
+        Specialities.map((spec) => ({
+          ...spec, // Spread existing properties
+          id: spec.spId, // Add new property 'id'
+        }))
+      )
+    );
+  }
+  getSubSpeciality(): Observable<SubSpeciality[]> {
+    this.getAll<SubSpeciality>('SubSpecialities')
+      .pipe(
+        map((specialities) =>
+          specialities.map((spec) => ({
+            ...spec,
+            id: spec.subSpId, // Add 'id' property
+          }))
+        )
+      )
+      .subscribe((specialities) => {
+        this.subSpecialities$.next(specialities); // Push all subSpecialities into BehaviorSubject
+      });
 
-  return this.specialityID$.pipe(
-    switchMap((specialityID) => {
-      if (!specialityID) return of([]);
-      return this.subSpecialities$.pipe(
-        map((specialities) => {
-          console.log('specialities: ', specialities);
-          return specialities.filter(spec => spec.spId === specialityID);
-        })
-      );
-    })
-  );
-}
+    return this.specialityID$.pipe(
+      switchMap((specialityID) => {
+        if (!specialityID) return of([]);
+        return this.subSpecialities$.pipe(
+          map((specialities) => {
+            console.log('specialities: ', specialities);
+            return specialities.filter((spec) => spec.spId === specialityID);
+          })
+        );
+      })
+    );
+  }
   getGrades(): Observable<Grades[]> {
-    return this.getAll<Grades>('EducationGrades')
-  //   .pipe(
-  //     map((Grades) =>
-  //       Grades.map(grade => ({
-  //         ...grade,   // Spread existing properties
-  //         id: grade.subSpId  // Add new property 'id'
-  //       }))
-  //     )
-  //   );;
+    return this.getAll<Grades>('EducationGrades');
+    //   .pipe(
+    //     map((Grades) =>
+    //       Grades.map(grade => ({
+    //         ...grade,   // Spread existing properties
+    //         id: grade.subSpId  // Add new property 'id'
+    //       }))
+    //     )
+    //   );;
   }
 }

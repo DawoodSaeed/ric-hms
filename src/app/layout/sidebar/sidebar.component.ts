@@ -305,9 +305,13 @@ export class SidebarComponent implements OnInit {
           {
             label: 'Districts',
             icon: 'fas fa-map-marked-alt',
-            route: '/admin/districts',
+            route: '/admin/region-management/districts',
           },
-          { label: 'Cities', icon: 'fas fa-city', route: '/admin/cities' },
+          {
+            label: 'Cities',
+            icon: 'fas fa-city',
+            route: '/admin/region-management/cities',
+          },
         ],
       },
     ];

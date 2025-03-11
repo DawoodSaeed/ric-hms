@@ -1,19 +1,19 @@
 <h3
   class="font-bold pl-4 color-gray text-2xl subpixel-antialiased text-gray-800 uppercase"
 >
-  Countries
+  {{getRegionTitle()}}
 </h3>
 
 <app-breadcrumb></app-breadcrumb>
 
 <!-- <p-breadcrumb class="max-w-full" [model]="" /> -->
 <!-- @let users = users$ | async; -->
-@let countries=countries$ | async;
+@let data=data$ | async;
 <p-table
   [scrollable]="true"
   scrollHeight="flex"
   #dt
-  [value]="countries || []"
+  [value]="data || []"
   dataKey="id"
   currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
   [showCurrentPageReport]="true"
@@ -39,7 +39,7 @@
         icon="pi pi-plus"
         label="Add {{ this.dataType }}"
         styleClass="ml-2"
-        (click)="formState.set('addItem'); displayDialogBox.set(true)"
+        (click)="formState.set('addItem'); displayDialogBox.set(true); form.reset()"
       />
       <p-iconfield iconPosition="left" class="ml-auto">
         <p-inputicon>
@@ -72,7 +72,7 @@
     <tr [pSelectableRow]="rowData">
       <td
         *ngFor="
-          let heading of getTableHeadings(countries ?? []);
+          let heading of getTableHeadings(data ?? []);
           trackBy: trackByID
         "
         class="text-center text-justify"
@@ -132,7 +132,7 @@
       ></button>
     </div>
   </ng-template>
-
+<form #form="ngForm" (ngSubmit)="form.valid && addOrUpdateItem()" >
   <!-- To add the building ############## -->
   <ng-container *ngIf="dataType === 'Country'">
     <div
@@ -149,6 +149,7 @@
         placeholder="Country Name"
         required
         [(ngModel)]="newCountry.name"
+        name="name"
         class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
       />
     </div>
@@ -166,6 +167,7 @@
         placeholder="Code"
         required
         [(ngModel)]="newCountry.code"
+        name="code"
         class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
       />
     </div>
@@ -182,6 +184,7 @@
         id="pCode"
         placeholder="Phone Code"
         required
+        name="phoneCode"
         [(ngModel)]="newCountry.phoneCode"
         class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
       />
@@ -199,6 +202,7 @@
         id="pCode"
         placeholder="Currency Code"
         required
+        name="currencyCode"
         [(ngModel)]="newCountry.currencyCode"
 
         class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
@@ -215,12 +219,281 @@
       <p-checkbox [binary]="true" />
     </div> -->
   </ng-container>
-     <div class="flex justify-end mt-4">
+<!-- Province -->
+   <ng-container *ngIf="dataType === 'Province'">
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Country
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      @if(countries$ |async; as countries){
+
+      <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="countries"
+          [(ngModel)]="selectedCountry"
+          optionLabel="name"
+          placeholder="Select Country"
+          class="w-full"
+          name="countryName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'country')"
+        />
+      }
+
+    </div>
+       <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Province Name
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <input
+        pInputText
+        id="pname"
+        placeholder="Province Name"
+        required
+        [(ngModel)]="newProvince.name"
+        name="pname"
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Code
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <input
+        pInputText
+        id="name"
+        placeholder="Code"
+        required
+        [(ngModel)]="newProvince.code"
+        name="code"
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
+    </div>
+
+  
+
+    <!-- <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+    >
+      <label for="description" class="font-medium"
+        >Status
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <p-checkbox [binary]="true" />
+    </div> -->
+  </ng-container>
+
+  <!-- Districts -->
+    <ng-container *ngIf="dataType === 'District'">
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Country
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      @if(countries$ |async; as countries){
+
+      <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="countries"
+          [(ngModel)]="selectedCountry"
+          optionLabel="name"
+          placeholder="Select Country"
+          class="w-full"
+          name="countryName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'country')"
+        />
+      }
+
+    </div>
+       <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Province Name
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+       @if(provinces$ |async; as provinces){
+
+      <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="provinces"
+          [(ngModel)]="selectedProvince"
+          optionLabel="name"
+          placeholder="Select Province"
+          class="w-full"
+          name="provinceName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'province')"
+        />
+      }
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >District
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <input
+        pInputText
+        id="dname"
+        placeholder="District Name"
+        required
+        [(ngModel)]="newDistrict.name"
+        name="name"
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
+    </div>
+
+  
+
+    <!-- <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+    >
+      <label for="description" class="font-medium"
+        >Status
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <p-checkbox [binary]="true" />
+    </div> -->
+  </ng-container>
+
+  <!-- Cities -->
+   <ng-container *ngIf="dataType === 'City'">
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Country
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      @if(countries$ |async; as countries){
+
+      <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="countries"
+          [(ngModel)]="selectedCountry"
+          optionLabel="name"
+          placeholder="Select Country"
+          class="w-full"
+          name="countryName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'country')"
+        />
+      }
+
+    </div>
+       <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Province 
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+       @if(provinces$ |async; as provinces){
+
+      <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="provinces"
+          [(ngModel)]="selectedProvince"
+          optionLabel="name"
+          placeholder="Select Province"
+          class="w-full"
+          name="provinceName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'province')"
+        />
+      }
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >City
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <input
+        pInputText
+        id="cname"
+        placeholder="City Name"
+        required
+        [(ngModel)]="newCity.name"
+        name="cname"
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
+    </div>
+
+  
+
+    <!-- <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+    >
+      <label for="description" class="font-medium"
+        >Status
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <p-checkbox [binary]="true" />
+    </div> -->
+  </ng-container>
+  <div class="flex justify-end mt-4">
+    <button
+    pButton
+    label="{{formState()==='editItem'?'Update':'Save'}}"
+    class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+    [disabled]="form.invalid"
+    ></button>
+  </div>
+</form>
+</p-dialog>
+ <p-confirmDialog>
+    <ng-template pTemplate="footer" let-confirmation>
       <button
         pButton
-        label="{{formState()==='editItem'?'Update':'Save'}}"
-        (click)="addOrUpdateItem()"
-        class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+        type="button"
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-secondary"
+        (click)="this.confirmationService.close()"
       ></button>
-    </div>
-</p-dialog>
+
+      <button
+        pButton
+        type="button"
+        label="Proceed"
+        icon="pi pi-check"
+        class="p-button-danger"
+        (click)="deleteItem()"
+      ></button>
+    </ng-template>
+  </p-confirmDialog>

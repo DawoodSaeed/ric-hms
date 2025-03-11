@@ -92,12 +92,22 @@ export const adminRoutes: Routes = [
       {
         path: 'countries',
         component: RegionManagementComponent,
-        data: { dataType: 'Country' },
+        data: { dataType: 'Country', title: 'Countries' },
       },
       {
-        path: 'countries',
+        path: 'provinces',
         component: RegionManagementComponent,
-        data: { dataType: 'Province' },
+        data: { dataType: 'Province', title: 'Provinces' },
+      },
+      {
+        path: 'districts',
+        component: RegionManagementComponent,
+        data: { dataType: 'District', title: 'Districts' },
+      },
+      {
+        path: 'cities',
+        component: RegionManagementComponent,
+        data: { dataType: 'City', title: 'Cities' },
       },
     ],
   },
