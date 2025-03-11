@@ -348,7 +348,11 @@ export class TypeTableService {
   // ###### CITIES >>>>>>>>>>>>>
 
   getCities(): Observable<City[]> {
-    return this.getAll<City>('Cities');
+    return this.getAll<City>('Cities').pipe(
+      map((response: City[]) =>
+        response.filter((city: City) => city.status === 1)
+      )
+    );;
   }
 
   addUpdateCities(city: City): Observable<City> {

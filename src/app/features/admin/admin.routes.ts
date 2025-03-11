@@ -109,6 +109,11 @@ export const adminRoutes: Routes = [
         component: RegionManagementComponent,
         data: { dataType: 'City', title: 'Cities' },
       },
+      {
+        path: 'religions',
+        component: RegionManagementComponent,
+        data: { dataType: 'Religion', title: 'Religions' },
+      },
     ],
   },
 ];

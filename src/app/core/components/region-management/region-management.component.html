@@ -466,6 +466,59 @@
       <p-checkbox [binary]="true" />
     </div> -->
   </ng-container>
+
+  <!-- Religion -->
+    <ng-container *ngIf="dataType === 'Religion'">
+     <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newReligion.name"
+          id="name"
+          placeholder="Religion Name"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newReligion.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+  
+
+    <!-- <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+    >
+      <label for="description" class="font-medium"
+        >Status
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <p-checkbox [binary]="true" />
+    </div> -->
+  </ng-container>
   <div class="flex justify-end mt-4">
     <button
     pButton

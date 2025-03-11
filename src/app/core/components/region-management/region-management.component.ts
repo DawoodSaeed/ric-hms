@@ -38,7 +38,7 @@ import { AuthService } from '../../services/auth.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { PasswordModule } from 'primeng/password';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
-import { City, Country, District, Province } from '../../interfaces/typetable';
+import { City, Country, District, Province, Religion } from '../../interfaces/typetable';
 import { TypeTableService } from '../../services/type-table.service';
 import { Tag } from 'primeng/tag';
 import { ActivatedRoute } from '@angular/router';
@@ -77,7 +77,7 @@ export class RegionManagementComponent implements OnInit {
   dataType: string | undefined;
   formState = signal<'editItem' | 'addItem'>('addItem');
   displayDialogBox = signal(false);
-  data$!: Observable<Country[] | Province[] | City[] | District[]>;
+  data$!: Observable<Country[] | Province[] | City[] | District[]| Religion[]>;
   countries$!: Observable<Country[]>;
   provinces$!: Observable<Province[]>;
   selectedCountry!: Country | undefined;
@@ -119,6 +119,14 @@ export class RegionManagementComponent implements OnInit {
     status: 1,
     ...this.getCommonFields(),
   };
+
+  newReligion: Religion = {
+    id: 0,
+    name: '',
+    description: '',
+    isActive: 1,
+    ...this.getCommonFields(),
+  };
   selectedItem: any;
 
   constructor(
@@ -147,6 +155,9 @@ export class RegionManagementComponent implements OnInit {
         this.data$ = this.typeTableService.getCities();
         this.getCountryData();
         break;
+      case 'Religion':
+        this.data$ = this.typeTableService.getReligions();
+        break;
       default:
         this.data$ = of([]);
     }
@@ -158,8 +169,7 @@ export class RegionManagementComponent implements OnInit {
   getCountryData() {
     this.countries$ = this.typeTableService.getCountries();
   }
- 
- 
+
   getRegionTitle() {
     return this.route.snapshot.data['title'];
   }
@@ -185,7 +195,7 @@ export class RegionManagementComponent implements OnInit {
       console.log(event);
       this.newProvince.countryId = event.id;
       this.newDistrict.countryId = event.id;
-      this.newCity.countryId=event.id
+      this.newCity.countryId = event.id;
       if (this.dataType === 'District' || this.dataType === 'City') {
         this.typeTableService.setCountryID(event.id);
         this.provinces$ = this.typeTableService.getProvincesCountryWise();
@@ -193,7 +203,7 @@ export class RegionManagementComponent implements OnInit {
     } else if (name === 'province' && event) {
       console.log(event);
       this.newDistrict.provinceId = event.id;
-      this.newCity.provinceId=event.id
+      this.newCity.provinceId = event.id;
     }
   }
   getCommonFields() {
@@ -201,7 +211,7 @@ export class RegionManagementComponent implements OnInit {
     return {
       createdById: 0,
       createdOn: timestamp,
-      modifiedById: 0,
+      modifiedById: 16,
       modifiedOn: timestamp,
     };
   }
@@ -237,12 +247,10 @@ export class RegionManagementComponent implements OnInit {
         });
     } else if (this.dataType === 'District' || this.dataType === 'City') {
       this.newDistrict = rowData;
-      this.newCity=rowData
+      this.newCity = rowData;
       this.countries$
         .pipe(
           map((response) => {
-            console.log('xx ', response);
-            console.log('rowData.id ', rowData.id);
             return response.find((country) => country.id === rowData.countryId);
           })
         )
@@ -269,6 +277,8 @@ export class RegionManagementComponent implements OnInit {
             this.selectedProvince = data;
           },
         });
+    }else if(this.dataType==='Religion'){
+       this.newReligion=rowData
     }
   }
 
@@ -334,6 +344,22 @@ export class RegionManagementComponent implements OnInit {
           this.notificationService.showError(err.error.message);
         },
       });
+    } else if (this.dataType === 'Religion') {
+      console.log('yuuu ',this.newReligion)
+      this.typeTableService.addUpdateReligion(this.newReligion).subscribe({
+        next: (data: any) => {
+          console.log(data);
+          if (data) {
+            this.loadData();
+            this.notificationService.showSuccess('Operation successful!');
+            this.displayDialogBox.set(false);
+          }
+        },
+        error: (err) => {
+          console.log(err);
+          this.notificationService.showError(err.error.message);
+        },
+      });
     }
   }
   deleteItemConfirmation(rowData: any) {
@@ -368,6 +394,10 @@ export class RegionManagementComponent implements OnInit {
           this.confirmationService.close();
           this.notificationService.showSuccess('Operation successful!');
         },
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
       });
     } else if (this.dataType === 'Province') {
       let newProvince = {
@@ -380,6 +410,10 @@ export class RegionManagementComponent implements OnInit {
           this.loadData();
           this.confirmationService.close();
           this.notificationService.showSuccess('Operation successful!');
+        },
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
         },
       });
     } else if (this.dataType === 'District') {
@@ -394,18 +428,47 @@ export class RegionManagementComponent implements OnInit {
           this.confirmationService.close();
           this.notificationService.showSuccess('Operation successful!');
         },
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
       });
     } else if (this.dataType === 'City') {
       let newCity = {
         ...this.selectedItem,
         status: 0,
       };
-      this.typeTableService.addUpdateDistricts(newCity).subscribe({
+      console.log('payload ', newCity);
+      this.typeTableService.addUpdateCities(newCity).subscribe({
         next: (response: any) => {
           console.log(response);
           this.loadData();
           this.confirmationService.close();
           this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'Religion') {
+      let newReligion = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      console.log('payload ', newReligion);
+      this.typeTableService.addUpdateReligion(newReligion).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
         },
       });
     }

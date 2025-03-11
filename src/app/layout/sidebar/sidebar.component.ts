@@ -312,6 +312,11 @@ export class SidebarComponent implements OnInit {
             icon: 'fas fa-city',
             route: '/admin/region-management/cities',
           },
+          {
+            label: 'Religion',
+            icon: 'fas fa-place-of-worship',
+            route: '/admin/region-management/religions',
+          },
         ],
       },
     ];
