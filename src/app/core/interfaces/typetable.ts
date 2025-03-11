@@ -163,8 +163,9 @@ export interface District extends TypeTable {
 
 export interface City extends TypeTable {
   id?: number;
-  pid: number;
-  cid: number;
+  pid?: number;
+  countryId: number;
+  provinceId:number;
   status: number;
 }
 
