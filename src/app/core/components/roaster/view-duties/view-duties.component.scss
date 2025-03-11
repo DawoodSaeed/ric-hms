@@ -15,14 +15,3 @@ p-table ::ng-deep .p-datatable .p-datatable-thead > tr > th.p-frozen-column {
   background-color: red;
   color: white;
 }
-
-.weekend-select .p-dropdown {
-  background-color: red;
-  border-color: red;
-  color: white;
-  cursor: not-allowed;
-}
-
-.weekend-select .p-dropdown-trigger-icon {
-  color: white;
-}

@@ -30,6 +30,7 @@ import {
   Scale,
   Speciality,
   SubSpeciality,
+  TimeShift,
   TypeTable,
   WorkingSession,
 } from '../interfaces/typetable';
@@ -45,7 +46,7 @@ export class TypeTableService {
   private provinceID$ = new BehaviorSubject<number | null>(1);
   private specialityID$ = new BehaviorSubject<number | null>(null);
   private subSpecialities$ = new BehaviorSubject<SubSpeciality[]>([]);
- setSpecialityID(specialityID: number) {
+  setSpecialityID(specialityID: number) {
     console.log('Speciality ID coming:', specialityID);
     this.specialityID$.next(specialityID); // Push new department ID
   }
@@ -252,10 +253,10 @@ export class TypeTableService {
 
   getReligions(): Observable<Religion[]> {
     return this.getAll<Religion>('Religions').pipe(
-      map(religions =>
-        religions.map(religion => ({
+      map((religions) =>
+        religions.map((religion) => ({
           ...religion,
-          id: religion.name as unknown as number 
+          id: religion.name as unknown as number,
         }))
       )
     );
@@ -297,7 +298,6 @@ export class TypeTableService {
       })
     );
   }
-  
 
   addUpdateProvince(province: Province): Observable<Province> {
     return this.addUpdate<Province>('Provinces', province);
@@ -332,69 +332,71 @@ export class TypeTableService {
     return this.addUpdate<City>('Cities', city);
   }
 
- 
-  // ###### DESIGNATIONS >>>>>>>>>>>>>
+  // ###### DESIGNATIONS >>>>>>>>>>>>> #################################
 
   getDesignations(): Observable<Designation[]> {
     return this.getAll<Designation>('Designations').pipe(
       map((departments) =>
-        departments.map(desgn => ({
-          ...desgn,   // Spread existing properties
-          id: desgn.desgnId
+        departments.map((desgn) => ({
+          ...desgn, // Spread existing properties
+          id: desgn.desgnId,
           // Add new property 'id'
         }))
       )
-    );;
+    );
   }
 
   addUpdateDesignations(designation: Designation): Observable<Designation> {
     return this.addUpdate<Designation>('Designations', designation);
   }
 
-// Third Phase 
-getSpeciality(): Observable<Speciality[]> {
-  return this.getAll<Speciality>('Specialities').pipe(
-    map((Specialities) =>
-      Specialities.map(spec => ({
-        ...spec,   // Spread existing properties
-        id: spec.spId  // Add new property 'id'
-      }))
-    )
-  );
-}
-getSubSpeciality(): Observable<SubSpeciality[]> {
-  this.getAll<SubSpeciality>('SubSpecialities').pipe(
-    map((specialities) =>
-      specialities.map(spec => ({
-        ...spec,
-        id: spec.subSpId // Add 'id' property
-      }))
-    )
-  ).subscribe((specialities) => {
-    this.subSpecialities$.next(specialities); // Push all subSpecialities into BehaviorSubject
-  });
+  // Third Phase #######################################
+  getSpeciality(): Observable<Speciality[]> {
+    return this.getAll<Speciality>('Specialities').pipe(
+      map((Specialities) =>
+        Specialities.map((spec) => ({
+          ...spec, // Spread existing properties
+          id: spec.spId, // Add new property 'id'
+        }))
+      )
+    );
+  }
+  getSubSpeciality(): Observable<SubSpeciality[]> {
+    this.getAll<SubSpeciality>('SubSpecialities')
+      .pipe(
+        map((specialities) =>
+          specialities.map((spec) => ({
+            ...spec,
+            id: spec.subSpId, // Add 'id' property
+          }))
+        )
+      )
+      .subscribe((specialities) => {
+        this.subSpecialities$.next(specialities); // Push all subSpecialities into BehaviorSubject
+      });
 
-  return this.specialityID$.pipe(
-    switchMap((specialityID) => {
-      if (!specialityID) return of([]);
-      return this.subSpecialities$.pipe(
-        map((specialities) => {
-          console.log('specialities: ', specialities);
-          return specialities.filter(spec => spec.spId === specialityID);
-        })
-      );
-    })
-  );
-}
+    return this.specialityID$.pipe(
+      switchMap((specialityID) => {
+        if (!specialityID) return of([]);
+        return this.subSpecialities$.pipe(
+          map((specialities) => {
+            console.log('specialities: ', specialities);
+            return specialities.filter((spec) => spec.spId === specialityID);
+          })
+        );
+      })
+    );
+  }
   getGrades(): Observable<Grades[]> {
-    return this.getAll<Grades>('EducationGrades')
-  //   .pipe(
-  //     map((Grades) =>
-  //       Grades.map(grade => ({
-  //         ...grade,   // Spread existing properties
-  //         id: grade.subSpId  // Add new property 'id'
-  //       }))
-  //     )
-  //   );;
+    return this.getAll<Grades>('EducationGrades');
+  }
+
+  // Fourth Phase after usama's work #############################
+  getTimeShifts(): Observable<TimeShift[]> {
+    return this.getAll<TimeShift>('TimeShifts');
+  }
+
+  addUpdateTimeShits(timeshift: TimeShift): Observable<TimeShift> {
+    return this.addUpdate<TimeShift>('TimeShifts', timeshift);
   }
 }

@@ -44,18 +44,28 @@
         styleClass="ml-2"
         (click)="displayDialog.set(true)"
       />
-      <p-iconfield iconPosition="left" class="ml-auto">
-        <p-inputicon>
-          <i class="pi pi-search"></i>
-        </p-inputicon>
-        <input
-          pInputText
-          type="text"
-          (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-          placeholder="Keyboard Search"
-          class="w-full md:w-56"
-        />
-      </p-iconfield>
+
+      <div class="ml-auto flex flex-wrap gap-2">
+        <p-datePicker
+          [style]="{ width: '100%' }"
+          showIcon
+          view="month"
+          dateFormat="mm/yy"
+          (onSelect)="onMonthChange($event)"
+        ></p-datePicker>
+        <p-iconfield iconPosition="left">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Keyboard Search"
+            class="w-full md:w-56"
+          />
+        </p-iconfield>
+      </div>
     </div>
   </ng-template>
   <ng-template pTemplate="header" let-columns>
@@ -107,16 +117,7 @@
           class="p-button-rounded p-button-text p-button-sm"
           pTooltip="View Duties"
           tooltipPosition="top"
-        ></button>
-
-        <!-- Edit -->
-        <button
-          pButton
-          icon="pi pi-pencil"
-          label="Edit"
-          class="p-button-rounded p-button-text p-button-sm"
-          pTooltip="Edit"
-          tooltipPosition="top"
+          (click)="viewDuties(rowData)"
         ></button>
 
         <!-- Copy to Next Month -->
@@ -248,6 +249,7 @@
             styleClass="w-full"
             placeholder="Select month and year"
             [readonlyInput]="true"
+            dateFormat="mm/yy"
           >
           </p-datepicker>
 

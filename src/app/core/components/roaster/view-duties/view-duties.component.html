@@ -1,4 +1,5 @@
 <app-breadcrumb />
+
 @if(employees().length){
 <div class="table-container">
   <p-table
@@ -32,11 +33,11 @@
             optionLabel="name"
             optionValue="id"
             [style]="{ width: '100%' }"
-            [disabled]="isWeekend(schedule.date)"
+            [disabled]="true"
             [ngClass]="{ 'weekend-select': isWeekend(schedule.date) }"
-            placeholder="Select"
+            placeholder=" - "
             [(ngModel)]="schedule.timeShiftId"
-            (onChange)="shiftChange($event.value, schedule)"
+            dropdownIcon="false"
           ></p-select>
         </td>
       </tr>

@@ -12,15 +12,7 @@ import { SidebarService } from '../../core/services/sidebar.service';
 
 @Component({
   selector: 'app-navbar',
-  imports: [
-    Menubar,
-    InputText,
-    ToggleButton,
-    Badge,
-    CommonModule,
-    Avatar,
-    FormsModule,
-  ],
+  imports: [Menubar, ToggleButton, Badge, CommonModule, FormsModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })

@@ -9,6 +9,7 @@ import { UserRolesComponent } from '../../core/components/user-roles/user-roles.
 import { RegionManagementComponent } from '../../core/components/region-management/region-management.component';
 import { RoasterComponent } from '../../core/components/roaster/roaster.component';
 import { AssignStaffComponent } from '../../core/components/roaster/assign-staff/assign-staff.component';
+import { ViewDutiesComponent } from '../../core/components/roaster/view-duties/view-duties.component';
 export const adminRoutes: Routes = [
   {
     path: '',
@@ -30,6 +31,11 @@ export const adminRoutes: Routes = [
   {
     path: 'roaster/assign-staff/:roasterId',
     component: AssignStaffComponent,
+  },
+
+  {
+    path: 'roaster/view-duties/:roasterId',
+    component: ViewDutiesComponent,
   },
 
   {

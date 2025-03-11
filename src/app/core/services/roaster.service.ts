@@ -13,9 +13,9 @@ export class RoasterService {
   constructor(private http: HttpClient) {}
 
   // Get all roasters
-  getAllRoasters(): Observable<Roaster[]> {
+  getAllRoasters(month: number, year: number): Observable<Roaster[]> {
     return this.http
-      .get<Roaster[]>(`${this.apiUrl}/allRoasters?month=3&year=2025`)
+      .get<Roaster[]>(`${this.apiUrl}/allRoasters?month=${month}&year=${year}`)
       .pipe(catchError(this.handleError));
   }
 

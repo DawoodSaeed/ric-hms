@@ -28,6 +28,7 @@ import { TypeTableService } from '../../../services/type-table.service';
 import { NotificationService } from '../../../services/notification.service';
 import { TimeShift } from '../../../interfaces/typetable';
 import { FormsModule } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
 import { BreadcrumbComponent } from '../../breadcrumb/breadcrumb.component';
 
 interface Employee {
@@ -37,18 +38,19 @@ interface Employee {
   schedules: RoasterSchedule[];
 }
 @Component({
-  selector: 'app-assign-staff',
+  selector: 'app-view-duties',
   imports: [
     TableModule,
     CommonModule,
-    Select,
     FormsModule,
+    InputTextModule,
     BreadcrumbComponent,
+    Select,
   ],
-  templateUrl: './assign-staff.component.html',
-  styleUrl: './assign-staff.component.scss',
+  templateUrl: './view-duties.component.html',
+  styleUrl: './view-duties.component.scss',
 })
-export class AssignStaffComponent {
+export class ViewDutiesComponent {
   private roasterService = inject(RoasterService);
   private typeTableService = inject(TypeTableService);
   private notifyService = inject(NotificationService);
@@ -92,7 +94,9 @@ export class AssignStaffComponent {
       )
       .subscribe({
         next: (value) => {
-          this.employees.set(value);
+          if (this.countIteration() >= 14) {
+            this.employees.set(value);
+          }
           this.countIteration.update((prev) => prev + 1);
         },
         error: (err) => console.error('Error:', err),
@@ -183,5 +187,14 @@ export class AssignStaffComponent {
   isWeekend(date: string): boolean {
     const dayOfWeek = new Date(date).getDay();
     return dayOfWeek === 6 || dayOfWeek === 0; // 6 = Saturday, 0 = Sunday
+  }
+
+  getShiftTime(timeShiftId: number): string {
+    if (!timeShiftId || timeShiftId === 0) {
+      return '-';
+    }
+
+    const shift = this.timeShifts().find((ts) => ts.id === timeShiftId);
+    return shift ? shift.name : '-';
   }
 }

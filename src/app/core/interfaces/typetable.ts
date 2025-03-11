@@ -150,7 +150,7 @@ export interface Province extends TypeTable {
   code: string;
   cid: number;
   status: number;
-  countryId?:number;
+  countryId?: number;
 }
 
 export interface District extends TypeTable {
@@ -158,7 +158,7 @@ export interface District extends TypeTable {
   pid: number;
   cid: number;
   status: number;
-  provinceId?:number
+  provinceId?: number;
 }
 
 export interface City extends TypeTable {
@@ -177,7 +177,6 @@ export interface Speciality extends TypeTable {
   keyWord: string;
   branchId: number;
   status: number;
-
 }
 export interface SubSpeciality extends TypeTable {
   subSpId: number;
@@ -186,6 +185,21 @@ export interface SubSpeciality extends TypeTable {
   status: number;
 }
 
-export interface Grades extends TypeTable {
-  }
-  
+export interface Grades extends TypeTable {}
+
+export interface TimeShift extends TypeTable {
+  timeIn: string;
+  timeOut: string;
+  graceTimeStart: string;
+  graceTimeEnd: string;
+  expectedHours: string;
+  isMonday: boolean;
+  isTuesday: boolean;
+  isWednesday: boolean;
+  isThursday: boolean;
+  isFriday: boolean;
+  isSaturday: boolean;
+  isSunday: boolean;
+  isNightShift: boolean;
+  branchId: number;
+}
