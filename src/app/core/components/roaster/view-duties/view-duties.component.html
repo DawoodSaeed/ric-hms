@@ -1,0 +1,47 @@
+<app-breadcrumb />
+
+@if(employees().length){
+<div class="table-container">
+  <p-table
+    [value]="employees()"
+    showGridlines
+    [scrollable]="true"
+    scrollHeight="flex"
+  >
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th pSortableColumn="name" pFrozenColumn>Name</th>
+        <th pSortableColumn="cnic" pFrozenColumn>CNIC</th>
+        <th
+          *ngFor="let date of getUniqueScheduleDates(employees())"
+          [ngClass]="{ 'weekend-column': isWeekend(date) }"
+        >
+          {{ formatDate(date) }}
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-employee>
+      <tr>
+        <td pFrozenColumn>{{ employee.empName }}</td>
+        <td pFrozenColumn>{{ employee.cnic }}</td>
+        <td
+          *ngFor="let schedule of employee.schedules"
+          [ngClass]="{ 'weekend-column': isWeekend(schedule.date) }"
+        >
+          <p-select
+            [options]="timeShifts()"
+            optionLabel="name"
+            optionValue="id"
+            [style]="{ width: '100%' }"
+            [disabled]="true"
+            [ngClass]="{ 'weekend-select': isWeekend(schedule.date) }"
+            placeholder=" - "
+            [(ngModel)]="schedule.timeShiftId"
+            dropdownIcon="false"
+          ></p-select>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+}

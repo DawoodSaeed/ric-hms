@@ -31,6 +31,7 @@ import {
   Scale,
   Speciality,
   SubSpeciality,
+  TimeShift,
   TypeTable,
   WorkingSession,
 } from '../interfaces/typetable';
@@ -46,6 +47,7 @@ export class TypeTableService {
   private provinceID$ = new BehaviorSubject<number | null>(1);
   private specialityID$ = new BehaviorSubject<number | null>(null);
   private subSpecialities$ = new BehaviorSubject<SubSpeciality[]>([]);
+  setSpecialityID(specialityID: number) {
   setSpecialityID(specialityID: number) {
     console.log('Speciality ID coming:', specialityID);
     this.specialityID$.next(specialityID); // Push new department ID
@@ -402,6 +404,18 @@ export class TypeTableService {
         this.subSpecialities$.next(specialities); // Push all subSpecialities into BehaviorSubject
       });
 
+    return this.specialityID$.pipe(
+      switchMap((specialityID) => {
+        if (!specialityID) return of([]);
+        return this.subSpecialities$.pipe(
+          map((specialities) => {
+            console.log('specialities: ', specialities);
+            return specialities.filter((spec) => spec.spId === specialityID);
+          })
+        );
+      })
+    );
+  }
     return this.specialityID$.pipe(
       switchMap((specialityID) => {
         if (!specialityID) return of([]);

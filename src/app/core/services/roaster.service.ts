@@ -13,9 +13,9 @@ export class RoasterService {
   constructor(private http: HttpClient) {}
 
   // Get all roasters
-  getAllRoasters(): Observable<Roaster[]> {
+  getAllRoasters(month: number, year: number): Observable<Roaster[]> {
     return this.http
-      .get<Roaster[]>(`${this.apiUrl}/allRoasters`)
+      .get<Roaster[]>(`${this.apiUrl}/allRoasters?month=${month}&year=${year}`)
       .pipe(catchError(this.handleError));
   }
 
@@ -27,9 +27,11 @@ export class RoasterService {
   }
 
   // Get all roaster schedules
-  getAllRoasterSchedules(): Observable<RoasterSchedule[]> {
+  getAllRoasterSchedules(roasterId: number): Observable<RoasterSchedule[]> {
     return this.http
-      .get<RoasterSchedule[]>(`${this.apiUrl}/allRoasterSchedules`)
+      .get<RoasterSchedule[]>(
+        `${this.apiUrl}/allRoasterSchedules?rosterid=${roasterId}`
+      )
       .pipe(catchError(this.handleError));
   }
 

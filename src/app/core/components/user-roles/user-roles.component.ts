@@ -192,5 +192,7 @@ export class UserRolesComponent implements OnInit {
       modifiedById: 0,
       isActive: 0,
     };
+
+    this.userForm.reset();
   }
 }

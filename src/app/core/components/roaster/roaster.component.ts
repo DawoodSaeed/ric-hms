@@ -34,6 +34,8 @@ import { Table, TableModule } from 'primeng/table';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TooltipModule } from 'primeng/tooltip';
+import { Router } from '@angular/router';
+import { CalendarModule } from 'primeng/calendar';
 @Component({
   selector: 'app-roaster',
   imports: [
@@ -51,6 +53,7 @@ import { TooltipModule } from 'primeng/tooltip';
     IconFieldModule,
     InputIconModule,
     TooltipModule,
+    DatePickerModule,
   ],
   templateUrl: './roaster.component.html',
   styleUrl: './roaster.component.scss',
@@ -61,6 +64,7 @@ export class RoasterComponent implements OnInit {
   private authService = inject(AuthService);
   private notify = inject(NotificationService);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
   displayDialog = signal(false);
   roasterForm!: FormGroup;
   userId = signal(0);
@@ -71,10 +75,20 @@ export class RoasterComponent implements OnInit {
   refreshRoaster = new BehaviorSubject<Boolean>(false);
   filterDepartmentId = new Subject<number>();
 
+  month = signal(0);
+  year = signal(0);
   ngOnInit(): void {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1;
+    const currentYear = currentDate.getFullYear();
+
+    this.month.set(currentMonth);
+    this.year.set(currentYear);
     this.roaster$ = this.refreshRoaster.pipe(
       tap(() => this.isLoading.set(true)),
-      switchMap(() => this.roasterService.getAllRoasters()),
+      switchMap(() =>
+        this.roasterService.getAllRoasters(this.month(), this.year())
+      ),
       tap(() => this.isLoading.set(false))
     );
 
@@ -128,6 +142,7 @@ export class RoasterComponent implements OnInit {
         console.log(message);
         this.notify.showSuccess('Roaster is added.');
         this.displayDialog.set(false);
+        this.roasterForm.reset();
         this.refreshRoaster.next(!this.refreshRoaster.value);
       },
 
@@ -162,5 +177,30 @@ export class RoasterComponent implements OnInit {
 
     // If you want the year in UTC:
     // return date.getUTCFullYear();
+  }
+
+  assignStaff(rowData: Roaster) {
+    console.log(rowData);
+    const { id: roasterId } = rowData;
+    const role = this.router.url.split('/')[1];
+    this.router.navigate([`${role}/roaster/assign-staff`, roasterId]);
+  }
+
+  viewDuties(rowData: Roaster) {
+    console.log(rowData);
+    const { id: roasterId } = rowData;
+    const role = this.router.url.split('/')[1];
+    this.router.navigate([`${role}/roaster/view-duties`, roasterId]);
+  }
+
+  onMonthChange(event: any): void {
+    const date = new Date(event);
+    this.month.set(date.getMonth() + 1);
+    this.year.set(date.getFullYear());
+    console.log(
+      `Month is ${date.getMonth() + 1} and Year is ${date.getFullYear()}`
+    );
+
+    this.refreshRoaster.next(!this.refreshRoaster.value);
   }
 }
