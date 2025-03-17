@@ -66,7 +66,7 @@ export class SidebarComponent implements OnInit {
       {
         label: 'Organization Building',
         icon: 'fas fa-building',
-        expanded: true,
+        expanded: false,
         items: [
           {
             label: 'Building',
@@ -142,7 +142,6 @@ export class SidebarComponent implements OnInit {
         icon: 'fas fa-sitemap blue',
         expanded: false,
         items: [
-      
           {
             label: 'Organizational Structure',
             icon: 'fas fa-network-wired',
@@ -293,7 +292,6 @@ export class SidebarComponent implements OnInit {
         label: 'Region Management',
         icon: 'fas fa-map-marked-alt',
         items: [
-       
           {
             label: 'Countries',
             icon: 'fas fa-globe',
@@ -310,6 +308,18 @@ export class SidebarComponent implements OnInit {
             route: '/admin/districts',
           },
           { label: 'Cities', icon: 'fas fa-city', route: '/admin/cities' },
+        ],
+      },
+
+      {
+        label: 'Doctor Management',
+        icon: 'fas fa-map-marked-alt',
+        items: [
+          {
+            label: 'Doctors',
+            icon: 'fas fa-user-plus',
+            route: '/admin/doctor-management/doctors',
+          },
         ],
       },
     ];

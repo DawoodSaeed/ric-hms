@@ -10,6 +10,7 @@ import { RegionManagementComponent } from '../../core/components/region-manageme
 import { RoasterComponent } from '../../core/components/roaster/roaster.component';
 import { AssignStaffComponent } from '../../core/components/roaster/assign-staff/assign-staff.component';
 import { ViewDutiesComponent } from '../../core/components/roaster/view-duties/view-duties.component';
+import { DoctorDashboardComponent } from '../doctor/doctor-dashboard.component';
 export const adminRoutes: Routes = [
   {
     path: '',
@@ -115,6 +116,24 @@ export const adminRoutes: Routes = [
       {
         path: '', // Default route when organizational-building is accessed
         redirectTo: 'users', // Redirect to buildings as a default
+        pathMatch: 'full',
+      },
+    ],
+  },
+
+  {
+    path: 'doctor-management', // Corrected spelling and used kebab-case
+    children: [
+      // Added children for nested routes
+      {
+        path: 'doctors',
+        component: DoctorDashboardComponent,
+        data: { dataType: 'beds' },
+      },
+
+      {
+        path: '', // Default route when organizational-building is accessed
+        redirectTo: 'doctors', // Redirect to buildings as a default
         pathMatch: 'full',
       },
     ],
