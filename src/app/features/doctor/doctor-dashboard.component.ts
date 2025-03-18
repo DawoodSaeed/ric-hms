@@ -7,12 +7,4 @@ import { DoctormanagementService } from '../../core/services/doctormanagement.se
   standalone: true,
   template: `<h1>Doctor Dashboard</h1>`,
 })
-export class DoctorDashboardComponent {
-  constructor(private doctorService: DoctormanagementService) {}
-
-  ngOnInit() {
-    this.doctorService.getDoctors().subscribe((doctors) => {
-      console.log(doctors);
-    });
-  }
-}
+export class DoctorDashboardComponent {}

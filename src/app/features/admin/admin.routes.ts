@@ -11,6 +11,7 @@ import { RoasterComponent } from '../../core/components/roaster/roaster.componen
 import { AssignStaffComponent } from '../../core/components/roaster/assign-staff/assign-staff.component';
 import { ViewDutiesComponent } from '../../core/components/roaster/view-duties/view-duties.component';
 import { DoctorDashboardComponent } from '../doctor/doctor-dashboard.component';
+import { DoctorsComponent } from '../../core/components/doctor-management/doctors/doctors.component';
 export const adminRoutes: Routes = [
   {
     path: '',
@@ -127,7 +128,7 @@ export const adminRoutes: Routes = [
       // Added children for nested routes
       {
         path: 'doctors',
-        component: DoctorDashboardComponent,
+        component: DoctorsComponent,
         data: { dataType: 'beds' },
       },
 
