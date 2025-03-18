@@ -48,7 +48,6 @@ export class TypeTableService {
   private specialityID$ = new BehaviorSubject<number | null>(null);
   private subSpecialities$ = new BehaviorSubject<SubSpeciality[]>([]);
   setSpecialityID(specialityID: number) {
-  setSpecialityID(specialityID: number) {
     console.log('Speciality ID coming:', specialityID);
     this.specialityID$.next(specialityID); // Push new department ID
   }
@@ -416,18 +415,7 @@ export class TypeTableService {
       })
     );
   }
-    return this.specialityID$.pipe(
-      switchMap((specialityID) => {
-        if (!specialityID) return of([]);
-        return this.subSpecialities$.pipe(
-          map((specialities) => {
-            console.log('specialities: ', specialities);
-            return specialities.filter((spec) => spec.spId === specialityID);
-          })
-        );
-      })
-    );
-  }
+    
   getGrades(): Observable<Grades[]> {
     return this.getAll<Grades>('EducationGrades');
     //   .pipe(

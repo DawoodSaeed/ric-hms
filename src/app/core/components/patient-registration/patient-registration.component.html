@@ -1,0 +1,196 @@
+<div class="p-6 max-w-4xl mx-auto ">
+    <h2 class="text-3xl font-bold mb-6 text-center">Patient Registration</h2>
+
+    <!-- Patient Type Selection -->
+    <div class="flex justify-center mb-6 gap-4">
+        <p-radioButton name="patientType" value="Regular" [(ngModel)]="patientType" (onClick)="onTypeChange('Regular')" label="Regular"></p-radioButton>
+        <p-radioButton name="patientType" value="Entitle" [(ngModel)]="patientType" (onClick)="onTypeChange('Entitle')" label="Entitle"></p-radioButton>
+        <p-radioButton name="patientType" value="Panel" [(ngModel)]="patientType" (onClick)="onTypeChange('Panel')" label="Panel"></p-radioButton>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+
+            <div>
+                <label>MR No</label>
+                <input pInputText formControlName="mrno" class="w-full" placeholder="Enter MR No" />
+            </div>
+
+            <div>
+                <label>Patient Name</label>
+                <input pInputText formControlName="name" class="w-full" placeholder="Enter Patient Name" />
+            </div>
+
+            <div>
+                <label>Gender</label>
+                <p-dropdown [options]="['Male','Female','Other']" formControlName="gender" placeholder="Select gender" class="w-full"></p-dropdown>
+            </div>
+
+            <div>
+                <label>Marital Status</label>
+                <p-dropdown [options]="['Single','Married','Divorced']" formControlName="maritalStatus" placeholder="Select marital status" class="w-full"></p-dropdown>
+            </div>
+
+            <div>
+                <label>CNIC</label>
+                <p-inputMask formControlName="cnic" mask="99999-9999999-9" class="w-full" placeholder="Enter CNIC" />
+            </div>
+
+            <div>
+                <label>Passport</label>
+                <input pInputText formControlName="passport" class="w-full" placeholder="Enter Passport Number" />
+            </div>
+
+            <div>
+                <label>Date of Birth</label>
+                <p-calendar formControlName="dob" showIcon class="w-full" placeholder="Select Date of Birth"></p-calendar>
+            </div>
+
+            <div>
+                <label>Religion ID</label>
+                <input pInputText formControlName="religionId" type="number" class="w-full" placeholder="Enter Religion ID" />
+            </div>
+
+            <div>
+                <label>Country ID</label>
+                <input pInputText formControlName="countryId" type="number" class="w-full" placeholder="Enter Country ID" />
+            </div>
+
+            <div>
+                <label>Province ID</label>
+                <input pInputText formControlName="provinceId" type="number" class="w-full" placeholder="Enter Province ID" />
+            </div>
+
+            <div>
+                <label>City ID</label>
+                <input pInputText formControlName="cityId" type="number" class="w-full" placeholder="Enter City ID" />
+            </div>
+
+            <div>
+                <label>Address</label>
+                <input pInputText formControlName="address" class="w-full" placeholder="Enter Address" />
+            </div>
+
+            <div>
+                <label>Mobile No</label>
+                <input pInputText formControlName="mobileNo" class="w-full" placeholder="Enter Mobile Number" />
+            </div>
+
+            <div>
+                <label>Phone No</label>
+                <input pInputText formControlName="phone" class="w-full" placeholder="Enter Phone Number" />
+            </div>
+
+            <div>
+                <label>Email</label>
+                <input pInputText formControlName="email" class="w-full" placeholder="Enter Email Address" />
+            </div>
+
+            <div>
+                <label>Guardian Type ID</label>
+                <input pInputText formControlName="guadianTypeId" type="number" class="w-full" placeholder="Enter Guardian Type ID" />
+            </div>
+
+            <div>
+                <label>Guardian Name</label>
+                <input pInputText formControlName="guadianName" class="w-full" placeholder="Enter Guardian Name" />
+            </div>
+
+            <div>
+                <label>Guardian NIC</label>
+                <input pInputText formControlName="guadianNic" class="w-full" placeholder="Enter Guardian NIC" />
+            </div>
+
+            <div>
+                <label>NOK Type ID</label>
+                <input pInputText formControlName="noktypeId" type="number" class="w-full" placeholder="Enter NOK Type ID" />
+            </div>
+
+            <div>
+                <label>NOK Relation ID</label>
+                <input pInputText formControlName="nokrelationId" type="number" class="w-full" placeholder="Enter NOK Relation ID" />
+            </div>
+
+            <div>
+                <label>NOK Name</label>
+                <input pInputText formControlName="nokname" class="w-full" placeholder="Enter NOK Name" />
+            </div>
+
+            <div>
+                <label>NOK NIC</label>
+                <input pInputText formControlName="noknic" class="w-full" placeholder="Enter NOK NIC" />
+            </div>
+
+            <div>
+                <label>NOK Mobile</label>
+                <input pInputText formControlName="nokmobile" class="w-full" placeholder="Enter NOK Mobile" />
+            </div>
+
+            <div>
+                <label>Patient Type ID</label>
+                <input pInputText formControlName="patientTypeId" type="number" class="w-full" placeholder="Enter Patient Type ID" />
+            </div>
+
+            <div>
+                <label>Organization (porgId)</label>
+                <input pInputText formControlName="porgId" type="number" class="w-full" placeholder="Enter Organization ID" />
+            </div>
+
+            <div>
+                <label>Package (packId)</label>
+                <input pInputText formControlName="packId" type="number" class="w-full" placeholder="Enter Package ID" />
+            </div>
+        </div>
+
+        <!-- Additional Fields for Entitle & Panel -->
+        <ng-container *ngIf="patientType !== 'Regular'">
+            <h3 class="text-xl font-semibold mt-4 mb-2">Employment Details</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label>Employee Card No</label>
+                    <input pInputText formControlName="pnlEmpCardNo" class="w-full" placeholder="Enter Employee Card No" />
+                </div>
+                <div>
+                    <label>Card Expiry Date</label>
+                    <p-calendar formControlName="pnlEmpCardExpiry" showIcon class="w-full" placeholder="Select Card Expiry Date"></p-calendar>
+                </div>
+                <div>
+                    <label>Department</label>
+                    <input pInputText formControlName="pnlDepartment" class="w-full" placeholder="Enter Department" />
+                </div>
+                <div>
+                    <label>Designation</label>
+                    <input pInputText formControlName="designation" class="w-full" placeholder="Enter Designation" />
+                </div>
+                <div>
+                    <label>Upload Document 1</label>
+                    <input type="file" class="w-full" />
+                </div>
+                <div>
+                    <label>Upload Document 2</label>
+                    <input type="file" class="w-full" />
+                </div>
+            </div>
+
+            <h3 class="text-xl font-semibold mt-4 mb-2">Dependent Details</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label>Is Self?</label>
+                    <p-checkbox binary="true" formControlName="isSelf"></p-checkbox>
+                </div>
+                <div>
+                    <label>Dependent NIC</label>
+                    <input pInputText formControlName="dependentNic" class="w-full" placeholder="Enter Dependent NIC" />
+                </div>
+                <div>
+                    <label>Dependent Relation ID</label>
+                    <input pInputText formControlName="dependentRelationId" class="w-full" placeholder="Enter Dependent Relation ID" />
+                </div>
+            </div>
+        </ng-container>
+
+        <div class="text-center mt-6">
+            <p-button label="Submit" type="submit" icon="pi pi-check" class="w-full md:w-1/3"></p-button>
+        </div>
+    </form>
+</div>

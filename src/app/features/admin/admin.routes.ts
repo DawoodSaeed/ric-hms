@@ -10,6 +10,7 @@ import { RegionManagementComponent } from '../../core/components/region-manageme
 import { RoasterComponent } from '../../core/components/roaster/roaster.component';
 import { AssignStaffComponent } from '../../core/components/roaster/assign-staff/assign-staff.component';
 import { ViewDutiesComponent } from '../../core/components/roaster/view-duties/view-duties.component';
+import { PatientRegistrationComponent } from '../../core/components/patient-registration/patient-registration.component';
 export const adminRoutes: Routes = [
   {
     path: '',
@@ -128,4 +129,16 @@ export const adminRoutes: Routes = [
       },
     ],
   },
+    {
+    path: 'patient-management', // Corrected spelling and used kebab-case
+    children: [
+      // Added children for nested routes
+      {
+        path: 'registration',
+        component: PatientRegistrationComponent,
+        // data: { dataType: 'Country', title: 'Countries' },
+      },
+     
+    ]
+    }
 ];

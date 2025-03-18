@@ -319,6 +319,17 @@ export class SidebarComponent implements OnInit {
           },
         ],
       },
+      {
+        label: 'Patient Management',
+        icon: 'fas fa-users-medical',
+        items: [
+          {
+            label: 'Add Patient',
+            icon: 'fas fa-user-md',
+            route: '/admin/patient-management/registration',
+          },
+        ],
+      },
     ];
 
     this.user$ = this.authService.user$;
