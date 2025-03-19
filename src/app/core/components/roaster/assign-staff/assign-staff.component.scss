@@ -1,0 +1,28 @@
+.table-container {
+  height: 80vh;
+  overflow: auto;
+}
+
+p-table ::ng-deep .p-datatable .p-datatable-tbody > tr > td.p-frozen-column,
+p-table ::ng-deep .p-datatable .p-datatable-thead > tr > th.p-frozen-column {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background-color: white;
+}
+
+.weekend-column {
+  background-color: red;
+  color: white;
+}
+
+.weekend-select .p-dropdown {
+  background-color: red;
+  border-color: red;
+  color: white;
+  cursor: not-allowed;
+}
+
+.weekend-select .p-dropdown-trigger-icon {
+  color: white;
+}

@@ -26,4 +26,6 @@ export interface RoasterSchedule {
   modifiedById: number;
   modifiedOn: string;
   isActive: number;
+  empName?: string;
+  cnic?: string;
 }

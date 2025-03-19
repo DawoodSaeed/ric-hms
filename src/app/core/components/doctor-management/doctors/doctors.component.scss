@@ -1,0 +1,26 @@
+/* Ensure table headers and cells align properly */
+.custom-table .p-datatable-thead > tr > th,
+.custom-table .p-datatable-tbody > tr > td {
+  white-space: nowrap;
+}
+
+/* Make dialog scrollable on smaller screens */
+.p-dialog .p-dialog-content {
+  overflow-y: auto;
+}
+
+/* Stack form fields vertically on small screens */
+@media (max-width: 768px) {
+  .p-fluid .col-12 {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .p-fluid .col-12 label {
+    width: 100% !important;
+  }
+
+  .p-fluid .col-12 > div {
+    width: 100% !important;
+  }
+}

@@ -1,5 +1,6 @@
 // src/app/features/doctor/doctor-dashboard.component.ts
 import { Component } from '@angular/core';
+import { DoctormanagementService } from '../../core/services/doctormanagement.service';
 
 @Component({
   selector: 'app-doctor-dashboard',

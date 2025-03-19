@@ -6,7 +6,12 @@ import { TableComponent } from '../../core/components/table/table.component';
 import { FloorsComponent } from '../../core/components/organization-building/floors/floors.component';
 import { UserManagementComponent } from '../../core/components/user-management/user-management.component';
 import { UserRolesComponent } from '../../core/components/user-roles/user-roles.component';
+import { RegionManagementComponent } from '../../core/components/region-management/region-management.component';
 import { RoasterComponent } from '../../core/components/roaster/roaster.component';
+import { AssignStaffComponent } from '../../core/components/roaster/assign-staff/assign-staff.component';
+import { ViewDutiesComponent } from '../../core/components/roaster/view-duties/view-duties.component';
+import { DoctorDashboardComponent } from '../doctor/doctor-dashboard.component';
+import { DoctorsComponent } from '../../core/components/doctor-management/doctors/doctors.component';
 export const adminRoutes: Routes = [
   {
     path: '',
@@ -24,6 +29,21 @@ export const adminRoutes: Routes = [
   {
     path: 'roaster',
     component: RoasterComponent,
+  },
+
+  {
+    path: 'roaster',
+    component: RoasterComponent,
+  },
+
+  {
+    path: 'roaster/assign-staff/:roasterId',
+    component: AssignStaffComponent,
+  },
+
+  {
+    path: 'roaster/view-duties/:roasterId',
+    component: ViewDutiesComponent,
   },
 
   {
@@ -116,6 +136,23 @@ export const adminRoutes: Routes = [
       },
 
     
+    ],
+  },
+
+  {
+    path: 'doctor-management', // Corrected spelling and used kebab-case
+    children: [
+      // Added children for nested routes
+      {
+        path: 'doctors',
+        component: DoctorsComponent,
+      },
+
+      {
+        path: '', // Default route when organizational-building is accessed
+        redirectTo: 'doctors', // Redirect to buildings as a default
+        pathMatch: 'full',
+      },
     ],
   },
 ];
