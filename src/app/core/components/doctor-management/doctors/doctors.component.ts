@@ -24,6 +24,8 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { SelectModule } from 'primeng/select';
 import { TypeTableService } from '../../../services/type-table.service';
 import { Designation, EducationDegree } from '../../../interfaces/typetable';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-doctors',
@@ -41,6 +43,8 @@ import { Designation, EducationDegree } from '../../../interfaces/typetable';
     CheckboxModule,
     SelectModule,
     FormsModule,
+    IconFieldModule,
+    InputIconModule,
   ],
   templateUrl: './doctors.component.html',
   styleUrl: './doctors.component.scss',
@@ -64,6 +68,7 @@ export class DoctorsComponent {
   electronicSignatureFile: File | null = null;
   pmccertificateFile: File | null = null;
 
+  rowData: Doctor | null = null;
   constructor() {}
 
   ngOnInit() {
@@ -184,7 +189,7 @@ export class DoctorsComponent {
     console.log('status: ', this.doctorForm.get('status')?.value);
     const formData: Doctor = {
       ...this.doctorForm.value,
-      docId: 0,
+      docId: this.rowData?.docId ? this.rowData.docId : 0,
       status: this.doctorForm.get('status')?.value ? 1 : 0,
     };
 
@@ -223,7 +228,9 @@ export class DoctorsComponent {
   }
 
   edit(rowData: Doctor) {
-    console.log(rowData);
+    this.rowData = rowData;
+
+    console.log('rowData: ', rowData);
 
     // Populate the form with rowData
     this.doctorForm.patchValue({
@@ -250,5 +257,11 @@ export class DoctorsComponent {
       reader.onerror = (error) => reject(error);
       reader.readAsDataURL(file);
     });
+  }
+
+  addDoctor() {
+    this.displayDialog.set(true);
+    this.rowData = null;
+    this.doctorForm.reset();
   }
 }

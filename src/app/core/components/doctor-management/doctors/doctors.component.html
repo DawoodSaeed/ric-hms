@@ -24,22 +24,40 @@
   [loading]="isLoading()"
 >
   <ng-template #caption>
-    <div class="flex flex-wrap gap-2">
-      <p-button
-        label="Clear"
-        [outlined]="true"
-        icon="pi pi-filter-slash"
-        (click)="clear(dt)"
-      />
-      <p-button
-        p-button
-        icon="pi pi-plus"
-        label="Add Doctor"
-        styleClass="ml-2"
-        (click)="displayDialog.set(true)"
-      />
+    <div class="flex flex-wrap gap-2 justify-between items-center">
+      <div class="flex flex-wrap gap-2">
+        <p-button
+          label="Clear"
+          [outlined]="true"
+          icon="pi pi-filter-slash"
+          (click)="clear(dt)"
+        />
+        <p-button
+          p-button
+          icon="pi pi-plus"
+          label="Add Doctor"
+          styleClass="ml-2"
+          (click)="addDoctor()"
+        />
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <p-iconfield iconPosition="left">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Keyboard Search"
+            class="w-full md:w-56"
+          />
+        </p-iconfield>
+      </div>
     </div>
   </ng-template>
+
   <ng-template pTemplate="header" let-columns>
     <tr>
       <th>Employee Name</th>
@@ -55,12 +73,8 @@
       <th>Actions</th>
     </tr>
   </ng-template>
-  <ng-template
-    pTemplate="body"
-    let-rowData
-    let-columns="columns"
-    let-rowIndex="rowIndex"
-  >
+
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
     <tr [pSelectableRow]="rowData">
       <td>{{ rowData["employeeName"] ?? " - " }}</td>
       <td>{{ rowData["cnic"] ?? " - " }}</td>
@@ -83,7 +97,6 @@
         </span>
       </td>
       <td>
-        <!-- Assign Staff -->
         <button
           pButton
           icon="pi pi-pencil"
@@ -99,7 +112,7 @@
 
 <p-dialog
   [visible]="displayDialog()"
-  styleClass="w-full md:w-[40rem] h-full scrollbar"
+  styleClass="w-full md:w-[60rem] h-full scrollbar"
   [closable]="false"
   [maximizable]="true"
 >
@@ -131,16 +144,6 @@
             optionValue="empId"
             class="w-full"
           ></p-select>
-
-          <p-message
-            *ngIf="
-              doctorForm.get('employeeName')?.invalid &&
-              (doctorForm.get('employeeName')?.dirty ||
-                doctorForm.get('employeeName')?.touched)
-            "
-            severity="error"
-            text="Employee Name is required."
-          ></p-message>
         </div>
       </div>
 
@@ -156,59 +159,42 @@
             formControlName="pmcnumber"
             class="w-full"
           />
-          <p-message
-            *ngIf="
-              doctorForm.get('pmcnumber')?.invalid &&
-              (doctorForm.get('pmcnumber')?.dirty ||
-                doctorForm.get('pmcnumber')?.touched)
-            "
-            severity="error"
-            text="PMC Number must be a valid number."
-          ></p-message>
         </div>
       </div>
 
-      <!-- PMC Certificate (File Upload) -->
+      <!-- PMC Certificate -->
       <div class="col-12 flex flex-col md:flex-row items-center gap-2">
         <label for="pmccertificate" class="w-full md:w-1/3 font-medium"
           >PMC Certificate</label
         >
-        <p-fileUpload
-          mode="basic"
-          chooseLabel="Choose"
-          (onSelect)="onFileSelect($event, 'pmccertificate')"
-        ></p-fileUpload>
-        <p-message
-          *ngIf="
-            doctorForm.get('pmccertificate')?.invalid &&
-            (doctorForm.get('pmccertificate')?.dirty ||
-              doctorForm.get('pmccertificate')?.touched)
-          "
-          severity="error"
-          text="PMC Certificate is required."
-        ></p-message>
+        <div class="w-full]">
+          <p-fileUpload
+            mode="basic"
+            chooseLabel="Choose"
+            (onSelect)="onFileSelect($event, 'pmccertificate')"
+          ></p-fileUpload>
+          <p *ngIf="pmccertificateFile" class="text-sm text-gray-600 mt-2">
+            Uploaded File: {{ pmccertificateFile.name }}
+          </p>
+        </div>
       </div>
 
-      <!-- Electronic Signature (File Upload) -->
+      <!-- Electronic Signature -->
       <div class="col-12 flex flex-col md:flex-row items-center gap-2">
         <label for="electronicSignature" class="w-full md:w-1/3 font-medium"
           >Electronic Signature</label
         >
-        <p-fileUpload
-          mode="basic"
-          chooseLabel="Choose"
-          (onSelect)="onFileSelect($event, 'electronicSignature')"
-          accept=".png,.jpg,.jpeg"
-        ></p-fileUpload>
-        <p-message
-          *ngIf="
-            doctorForm.get('electronicSignature')?.invalid &&
-            (doctorForm.get('electronicSignature')?.dirty ||
-              doctorForm.get('electronicSignature')?.touched)
-          "
-          severity="error"
-          text="Electronic Signature is required."
-        ></p-message>
+        <div class="w-full]">
+          <p-fileUpload
+            mode="basic"
+            chooseLabel="Choose"
+            (onSelect)="onFileSelect($event, 'electronicSignature')"
+            accept=".png,.jpg,.jpeg"
+          ></p-fileUpload>
+          <p *ngIf="electronicSignatureFile" class="text-sm text-gray-600 mt-2">
+            Uploaded File: {{ electronicSignatureFile.name }}
+          </p>
+        </div>
       </div>
 
       <!-- Designation -->
@@ -217,14 +203,6 @@
           >Designation</label
         >
         <div class="w-full md:w-2/3">
-          <!-- <input
-            pInputText
-            type="text"
-            placeholder="Enter Designation"
-            formControlName="displayDesignation"
-            class="w-full"
-          /> -->
-
           <p-select
             [options]="designationDropdown"
             formControlName="displayDesignation"
@@ -233,16 +211,6 @@
             optionValue="name"
             class="w-full"
           ></p-select>
-
-          <p-message
-            *ngIf="
-              doctorForm.get('displayDesignation')?.invalid &&
-              (doctorForm.get('displayDesignation')?.dirty ||
-                doctorForm.get('displayDesignation')?.touched)
-            "
-            severity="error"
-            text="Designation is required."
-          ></p-message>
         </div>
       </div>
 
@@ -252,14 +220,6 @@
           >Qualification</label
         >
         <div class="w-full md:w-2/3">
-          <!-- <input
-            pInputText
-            type="text"
-            placeholder="Enter Qualification"
-            formControlName="displayQualification"
-            class="w-full"
-          /> -->
-
           <p-select
             [options]="educationDegrees"
             formControlName="displayQualification"
@@ -268,15 +228,6 @@
             optionValue="name"
             class="w-full"
           ></p-select>
-          <p-message
-            *ngIf="
-              doctorForm.get('displayQualification')?.invalid &&
-              (doctorForm.get('displayQualification')?.dirty ||
-                doctorForm.get('displayQualification')?.touched)
-            "
-            severity="error"
-            text="Qualification is required."
-          ></p-message>
         </div>
       </div>
 
@@ -293,15 +244,6 @@
             formControlName="consultationFee"
             class="w-full"
           />
-          <p-message
-            *ngIf="
-              doctorForm.get('consultationFee')?.invalid &&
-              (doctorForm.get('consultationFee')?.dirty ||
-                doctorForm.get('consultationFee')?.touched)
-            "
-            severity="error"
-            text="Consultation Fee is required."
-          ></p-message>
         </div>
       </div>
 
@@ -318,15 +260,6 @@
             formControlName="followUpFee"
             class="w-full"
           />
-          <p-message
-            *ngIf="
-              doctorForm.get('followUpFee')?.invalid &&
-              (doctorForm.get('followUpFee')?.dirty ||
-                doctorForm.get('followUpFee')?.touched)
-            "
-            severity="error"
-            text="Follow-Up Fee is required."
-          ></p-message>
         </div>
       </div>
 
@@ -337,25 +270,8 @@
           <p-checkbox [binary]="true" formControlName="status" class="w-full"
             >Active</p-checkbox
           >
-          <p-message
-            *ngIf="
-              doctorForm.get('status')?.invalid &&
-              (doctorForm.get('status')?.dirty ||
-                doctorForm.get('status')?.touched)
-            "
-            severity="error"
-            text="Status is required."
-          ></p-message>
         </div>
       </div>
-    </div>
-
-    <div *ngIf="doctorForm.errors?.['allrequired']" class="mt-2">
-      <p
-        class="text-red-500 text-sm font-medium bg-red-100 p-2 rounded-md border border-red-400"
-      >
-        ⚠️ All fields are required.
-      </p>
     </div>
 
     <!-- Buttons -->

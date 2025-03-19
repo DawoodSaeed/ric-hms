@@ -129,7 +129,6 @@ export const adminRoutes: Routes = [
       {
         path: 'doctors',
         component: DoctorsComponent,
-        data: { dataType: 'beds' },
       },
 
       {
