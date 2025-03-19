@@ -136,15 +136,15 @@
       </div>
 
       <div>
-        <label>Religion ID</label>
-        <input
-          pInputText
+        <label>Religion</label>
+        
+        <p-dropdown
+          [options]="(religionDropDown$ | async) ?? []"
           formControlName="religionId"
-          type="number"
+          placeholder="Select Religion"
           class="w-full"
-          placeholder="Enter Religion ID"
           variant="filled"
-        />
+        ></p-dropdown>
       </div>
 
       <div>

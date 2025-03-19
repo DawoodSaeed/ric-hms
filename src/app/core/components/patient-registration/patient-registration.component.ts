@@ -9,7 +9,8 @@ import { CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { TypeTableService } from '../../services/type-table.service';
-import { Religion } from '../../interfaces/typetable';
+import { dropDown, Religion } from '../../interfaces/typetable';
+import { map, Observable, startWith } from 'rxjs';
 @Component({
   selector: 'app-patient-registration',
   templateUrl: './patient-registration.component.html',
@@ -28,6 +29,7 @@ import { Religion } from '../../interfaces/typetable';
 export class PatientRegistrationComponent implements OnInit {
   form!: FormGroup;
   patientType: string = 'Regular';
+  religionDropDown$!:Observable<any[] >;
 dropDownService=inject(TypeTableService)
   constructor(private fb: FormBuilder) {}
 
@@ -36,9 +38,15 @@ dropDownService=inject(TypeTableService)
     this.fetchDropdowns()
   }
 fetchDropdowns(){
-   this.dropDownService.getReligions().subscribe((religions: Religion[]) => {
-        console.log('religions ',religions)
-      });
+   this.religionDropDown$ = this.dropDownService.getReligions().pipe(
+     map((religions) =>
+       religions.map((religion) => ({
+         label: religion.name,
+         value: religion.id,
+       }))
+     )   );
+
+     
 }
   initializeForm() {
     this.form = this.fb.group({

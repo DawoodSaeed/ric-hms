@@ -135,7 +135,10 @@ export interface PaymentMethod extends TypeTable {
 export interface Relation extends TypeTable {}
 export interface Religion extends TypeTable {}
 export interface PatientCheckInStatus extends TypeTable {}
-
+export interface dropDown {
+  label: string;
+  value: string|number|undefined;
+}
 // Stage # 2 of making the typetable #################
 export interface Country extends TypeTable {
   cid?: number;
