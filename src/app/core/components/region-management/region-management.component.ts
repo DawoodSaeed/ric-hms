@@ -1,14 +1,4 @@
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-region-management',
-//   imports: [],
-//   
-// })
-// export class RegionManagementComponent {
-// }
-
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, Signal, signal } from '@angular/core';
 import { AccountService } from '../../services/account.service';
 import {
   BehaviorSubject,
@@ -17,6 +7,7 @@ import {
   filter,
   map,
   Observable,
+  of,
   switchMap,
   tap,
   throwError,
@@ -27,7 +18,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ChangePassword, Role, User } from '../../interfaces/account';
 import { CommonModule } from '@angular/common';
-// import { InputNumber } from 'primeng/inputnumber';
+import { InputNumber } from 'primeng/inputnumber';
 import { Checkbox } from 'primeng/checkbox';
 import { Dialog } from 'primeng/dialog';
 import {
@@ -47,10 +38,19 @@ import { AuthService } from '../../services/auth.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { PasswordModule } from 'primeng/password';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
+import { City, Country, District, Province, Religion } from '../../interfaces/typetable';
+import { TypeTableService } from '../../services/type-table.service';
+import { Tag } from 'primeng/tag';
+import { ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
-  selector: 'app-user-management',
+  selector: 'app-region-management',
   imports: [
+    ConfirmDialogModule,
+    FormsModule,
     TableModule,
     ButtonModule,
     IconFieldModule,
@@ -66,261 +66,411 @@ import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
     TooltipModule,
     PasswordModule,
     BreadcrumbComponent,
+    Tag,
   ],
   templateUrl: './region-management.component.html',
-    styleUrl: './region-management.component.scss'
+  styleUrl: './region-management.component.scss',
+  providers: [MessageService, ConfirmationService],
 })
 export class RegionManagementComponent implements OnInit {
-  private accountService = inject(AccountService);
-  private authService = inject(AuthService);
-  private employeesService = inject(EmployeeService);
-  private notify = inject(NotificationService);
-  userForm!: FormGroup;
-  chPwd!: FormGroup;
-  displayDialog = signal(false);
-  users$: Observable<User[]>;
-  employees$: Observable<Partial<Employee>[]>;
-  roles$: Observable<Role[]>;
-  isLoading = signal(true);
-  loggedInUserId!: number;
-  selectRowId = signal(0);
-  formState = signal<'changePassword' | 'resetPassword' | 'addUser'>('addUser');
-
-  editUserData: User = {
-    userId: 0,
-    empId: 0,
-    userName: '',
-    password: '',
-    status: 0,
-    createdById: 0,
-    createdOn: '',
-    modifiedById: 0,
-    modifiedOn: new Date().toISOString(),
+  private typeTableService = inject(TypeTableService);
+  dataType: string | undefined;
+  formState = signal<'editItem' | 'addItem'>('addItem');
+  displayDialogBox = signal(false);
+  data$!: Observable<Country[] | Province[] | City[] | District[]| Religion[]>;
+  countries$!: Observable<Country[]>;
+  provinces$!: Observable<Province[]>;
+  selectedCountry!: Country | undefined;
+  selectedProvince!: Province | undefined;
+  tableHeadings$!: Observable<any[] | null>;
+  newCountry: Country = {
+    id: 0,
+    name: '',
+    code: '',
+    phoneCode: '',
+    currencyCode: '',
+    status: 1,
+    ...this.getCommonFields(),
   };
-  refreshSub = new BehaviorSubject<boolean>(false);
-  constructor(private fb: FormBuilder) {
-    this.users$ = this.refreshSub.asObservable().pipe(
-      tap(() => this.isLoading.set(true)),
-      switchMap(() =>
-        this.accountService.user$.pipe(
-          catchError(() => {
-            this.notify.showError('');
-            return throwError(() => new Error('Failed to fetch the data'));
-          }),
-          tap(() => this.isLoading.set(false))
-        )
-      )
+
+  newProvince: Province = {
+    id: 0,
+    name: '',
+    code: '',
+    countryId: 0,
+    status: 1,
+    ...this.getCommonFields(),
+  };
+
+  newDistrict: District = {
+    id: 0,
+    name: '',
+    provinceId: 0,
+    countryId: 0,
+    status: 1,
+    ...this.getCommonFields(),
+  };
+
+  newCity: City = {
+    id: 0,
+    name: '',
+    countryId: 0,
+    provinceId: 0,
+    status: 1,
+    ...this.getCommonFields(),
+  };
+
+  newReligion: Religion = {
+    id: 0,
+    name: '',
+    description: '',
+    isActive: 1,
+    ...this.getCommonFields(),
+  };
+  selectedItem: any;
+
+  constructor(
+    public confirmationService: ConfirmationService,
+    private route: ActivatedRoute,
+    private notificationService: NotificationService
+  ) {}
+  ngOnInit(): void {
+    this.dataType = this.route.snapshot.data['dataType'];
+    this.loadData();
+  }
+  loadData() {
+    switch (this.dataType) {
+      case 'Country':
+        this.data$ = this.typeTableService.getCountries();
+        break;
+      case 'Province':
+        this.data$ = this.typeTableService.getAllProvinces();
+        this.getCountryData();
+        break;
+      case 'District':
+        this.data$ = this.typeTableService.getAllDistricts();
+        this.getCountryData();
+        break;
+      case 'City':
+        this.data$ = this.typeTableService.getCities();
+        this.getCountryData();
+        break;
+      case 'Religion':
+        this.data$ = this.typeTableService.getReligions();
+        break;
+      default:
+        this.data$ = of([]);
+    }
+
+    this.tableHeadings$ = this.data$.pipe(
+      map((data) => this.getTableHeadings(data))
     );
-    this.employees$ = this.employeesService.employee$.pipe(
-      map((employee) => {
-        return employee
-          .map((employee) => {
-            return { empId: employee.empId, firstName: employee.firstName };
-          })
-          .filter((employee) => employee.firstName);
-      })
+  }
+  getCountryData() {
+    this.countries$ = this.typeTableService.getCountries();
+  }
+
+  getRegionTitle() {
+    return this.route.snapshot.data['title'];
+  }
+
+  getTableHeadings(tableData: any[] | null): any[] {
+    if (!tableData || tableData.length === 0) return [];
+    return Object.keys(tableData[0]).filter(
+      (heading: any) =>
+        ![
+          'id',
+          'modifiedById',
+          'modifiedOn',
+          'createdById',
+          'createdOn',
+        ].includes(heading)
     );
-
-    this.roles$ = this.accountService.roles$;
   }
-
-  clear(table: Table) {
-    table.clear();
+  trackByID(index: number, item: Country) {
+    return item.id;
   }
-
-  deleteUser(rowData: User) {
-    console.log('Deleting the user: ');
-    console.log(rowData);
-    this.accountService.deleteUser(rowData.userId).subscribe({
-      next: (message) => {
-        console.log(message);
-        this.refreshSub.next(!this.refreshSub.value);
-      },
-      error: (error) => {
-        this.notify.showError('Failed to delete the user.');
-      },
-    });
-  }
-
-  ngOnInit() {
-    // add an user form........
-    this.userForm = this.fb.group({
-      empId: [null, Validators.required],
-      roleId: [null, Validators.required],
-      userName: ['', Validators.required],
-      password: ['', Validators.required],
-      status: [false],
-    });
-
-    // change the password form
-    this.chPwd = this.fb.group({
-      currentPwd: [null, Validators.required],
-      newPwd: [null, Validators.required],
-    });
-
-    this.authService.loggedInUserId$.subscribe({
-      next: (userId) => {
-        this.loggedInUserId = parseInt(userId);
-      },
-
-      error: () => {
-        this.notify.showError('Failed to fetch the user id. Cant proceed.');
-      },
-    });
-  }
-
-  submitForm() {
-    if (
-      this.userForm.invalid ||
-      !this.userForm.get('empId')?.value ||
-      !this.userForm.get('roleId')?.value ||
-      !this.loggedInUserId
-    ) {
-      this.notify.showError('Fill out the required field first.');
-      return;
+  onDropdownChange(event: any, name: string) {
+    if (name === 'country' && event) {
+      console.log(event);
+      this.newProvince.countryId = event.id;
+      this.newDistrict.countryId = event.id;
+      this.newCity.countryId = event.id;
+      if (this.dataType === 'District' || this.dataType === 'City') {
+        this.typeTableService.setCountryID(event.id);
+        this.provinces$ = this.typeTableService.getProvincesCountryWise();
+      }
+    } else if (name === 'province' && event) {
+      console.log(event);
+      this.newDistrict.provinceId = event.id;
+      this.newCity.provinceId = event.id;
     }
-
-    const newUser: User = {
-      // For the edit i want to maintain the past userId, createdOn, createdBy
-      userId: this.editUserData.userId || 0,
-      createdById: this.editUserData.createdById || this.loggedInUserId,
-      createdOn: this.editUserData.createdOn || new Date().toISOString(),
-
-      empId: this.userForm.get('empId')?.value,
-      userName: this.userForm.get('userName')?.value ?? '',
-      password: this.userForm.get('password')?.value ?? '',
-      status: this.userForm.get('status')?.value == true ? 1 : 0,
-      modifiedById: this.loggedInUserId,
-      modifiedOn: new Date().toISOString(),
-    };
-
-    console.log(newUser);
-
-    this.accountService
-      .registerUser(newUser, this.userForm.get('roleId')?.value)
-      .subscribe({
-        next: (message) => {
-          console.log(message);
-          this.displayDialog.set(false);
-          this.refreshSub.next(!this.refreshSub.value);
-        },
-
-        error: (error) => {
-          console.log(error);
-          this.notify.showError(
-            'There was an error while registering the user'
-          );
-        },
-      });
   }
-
-  changePassword(rowData: User, type: 'changePassword' | 'resetPassword') {
-    console.log(rowData);
-    this.selectRowId.set(rowData.userId);
-    this.formState.set(type);
-    this.displayDialog.set(true);
-  }
-
-  changePasswordFormSubmission() {
-    if (
-      this.chPwd.invalid ||
-      !this.chPwd.get('currentPwd')?.value ||
-      !this.chPwd.get('newPwd')?.value
-    ) {
-      this.notify.showError('Fill in all the required fields');
-      return;
-    }
-
-    const changePassword: ChangePassword = {
-      currentPassword: this.chPwd.get('currentPwd')?.value,
-      newPassword: this.chPwd.get('newPwd')?.value,
-      userId: this.selectRowId(),
-    };
-    this.accountService.changePassword(changePassword).subscribe({
-      next: (message) => {
-        console.log(message);
-        this.notify.showSuccess('Password was changed succesfully');
-        this.displayDialog.set(false);
-      },
-
-      error: (error) => {
-        console.log(error);
-        this.notify.showError(error.error.message);
-      },
-    });
-  }
-
-  resetPassword() {
-    if (!this.chPwd.get('newPwd')?.value) {
-      this.notify.showError(
-        'Fill in all the required fields ( New Password ) '
-      );
-      return;
-    }
-
-    this.accountService
-      .resetPassword({
-        newPassword: this.chPwd.get('newPwd')?.value,
-        userId: this.selectRowId(),
-      })
-      .subscribe({
-        next: (message) => {
-          console.log(message);
-          this.notify.showSuccess('Password Reset was successful');
-          this.displayDialog.set(false);
-        },
-
-        error: (error) => {
-          this.notify.showError('Couldnt update the password');
-          this.notify.showError(error.error.message);
-        },
-      });
-  }
-
-  editUser(rowData: any) {
-    console.log(rowData);
-    // empId: [null, Validators.required],
-    //   roleId: [null, Validators.required],
-    //   userName: ['', Validators.required],
-    //   password: ['', Validators.required],
-    //   status: [false],
-    this.formState.set('addUser');
-    this.displayDialog.set(true);
-
-    // For the edit i want to maintain the record of which user created it,
-    // And when it created the user
-    // And what user id was .
-    this.editUserData = {
-      ...this.editUserData,
-
-      createdById: rowData.createdById,
-      userId: rowData.userId,
-      createdOn: rowData.createdOn,
-    };
-
-    this.roles$.subscribe((roles) => {
-      const role = roles.find((role) => role.name == rowData.role);
-      this.userForm.setValue({
-        empId: rowData.empId,
-        userName: rowData.userName,
-        roleId: role?.id,
-        status: rowData.status ? true : false,
-        password: rowData.password,
-      });
-    });
-  }
-
-  dialogClose() {
-    this.editUserData = {
-      userId: 0,
-      empId: 0,
-      userName: '',
-      password: '',
-      status: 0,
+  getCommonFields() {
+    const timestamp = new Date().toISOString();
+    return {
       createdById: 0,
-      createdOn: '',
-      modifiedById: 0,
-      modifiedOn: new Date().toISOString(),
+      createdOn: timestamp,
+      modifiedById: 16,
+      modifiedOn: timestamp,
     };
+  }
+  getTagValue(status: number): string | undefined {
+    if (status === 1) {
+      return 'Active';
+    } else {
+      return 'In-Active';
+    }
+  }
+
+  editItem(rowData: any) {
+    console.log(rowData);
+    this.formState.set('editItem');
+    this.displayDialogBox.set(true);
+    if (this.dataType === 'Country') {
+      this.newCountry = rowData;
+    } else if (this.dataType === 'Province') {
+      this.newProvince = rowData;
+      this.countries$
+        .pipe(
+          map((response) => {
+            console.log('xx ', response);
+            console.log('rowData.id ', rowData.id);
+            return response.find((country) => country.id === rowData.countryId);
+          })
+        )
+        .subscribe({
+          next: (data) => {
+            console.log('chish ', data);
+            this.selectedCountry = data;
+          },
+        });
+    } else if (this.dataType === 'District' || this.dataType === 'City') {
+      this.newDistrict = rowData;
+      this.newCity = rowData;
+      this.countries$
+        .pipe(
+          map((response) => {
+            return response.find((country) => country.id === rowData.countryId);
+          })
+        )
+        .subscribe({
+          next: (data) => {
+            console.log('chish ', data);
+            this.selectedCountry = data;
+          },
+        });
+
+      this.provinces$
+        .pipe(
+          map((response) => {
+            console.log('pp ', response);
+            console.log('rowData.id ', rowData.id);
+            return response.find(
+              (province) => province.id === rowData.provinceId
+            );
+          })
+        )
+        .subscribe({
+          next: (data) => {
+            console.log('chish ', data);
+            this.selectedProvince = data;
+          },
+        });
+    }else if(this.dataType==='Religion'){
+       this.newReligion=rowData
+    }
+  }
+
+  addOrUpdateItem() {
+    console.log(this.newCountry);
+    if (this.dataType === 'Country') {
+      this.typeTableService.addUpdateCountry(this.newCountry).subscribe({
+        next: (data: any) => {
+          console.log(data);
+          if (data) {
+            this.loadData();
+            this.notificationService.showSuccess('Operation successful!');
+            this.displayDialogBox.set(false);
+          }
+        },
+        error: (err) => {
+          console.log(err);
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'Province') {
+      this.typeTableService.addUpdateProvince(this.newProvince).subscribe({
+        next: (data: any) => {
+          console.log(data);
+          if (data) {
+            this.loadData();
+            this.notificationService.showSuccess('Operation successful!');
+            this.displayDialogBox.set(false);
+          }
+        },
+        error: (err) => {
+          console.log(err);
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'District') {
+      this.typeTableService.addUpdateDistricts(this.newDistrict).subscribe({
+        next: (data: any) => {
+          console.log(data);
+          if (data) {
+            this.loadData();
+            this.notificationService.showSuccess('Operation successful!');
+            this.displayDialogBox.set(false);
+          }
+        },
+        error: (err) => {
+          console.log(err);
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'City') {
+      this.typeTableService.addUpdateCities(this.newCity).subscribe({
+        next: (data: any) => {
+          console.log(data);
+          if (data) {
+            this.loadData();
+            this.notificationService.showSuccess('Operation successful!');
+            this.displayDialogBox.set(false);
+          }
+        },
+        error: (err) => {
+          console.log(err);
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'Religion') {
+      console.log('yuuu ',this.newReligion)
+      this.typeTableService.addUpdateReligion(this.newReligion).subscribe({
+        next: (data: any) => {
+          console.log(data);
+          if (data) {
+            this.loadData();
+            this.notificationService.showSuccess('Operation successful!');
+            this.displayDialogBox.set(false);
+          }
+        },
+        error: (err) => {
+          console.log(err);
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    }
+  }
+  deleteItemConfirmation(rowData: any) {
+    if (rowData) {
+      console.log('deleting ', rowData);
+      this.selectedItem = rowData;
+      this.confirmationService.confirm({
+        message: 'Are you sure you want to delete this item?',
+        header: 'Confirm Deletion',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          this.deleteItem();
+        },
+        reject: () => {
+          this.confirmationService.close();
+          console.log('Action canceled.');
+          return;
+        },
+      });
+    }
+  }
+  deleteItem() {
+    if (this.dataType === 'Country') {
+      let newCountry = {
+        ...this.selectedItem,
+        status: 0,
+      };
+      this.typeTableService.addUpdateCountry(newCountry).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'Province') {
+      let newProvince = {
+        ...this.selectedItem,
+        status: 0,
+      };
+      this.typeTableService.addUpdateProvince(newProvince).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'District') {
+      let newDistrict = {
+        ...this.selectedItem,
+        status: 0,
+      };
+      this.typeTableService.addUpdateDistricts(newDistrict).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'City') {
+      let newCity = {
+        ...this.selectedItem,
+        status: 0,
+      };
+      console.log('payload ', newCity);
+      this.typeTableService.addUpdateCities(newCity).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'Religion') {
+      let newReligion = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      console.log('payload ', newReligion);
+      this.typeTableService.addUpdateReligion(newReligion).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    }
   }
 }

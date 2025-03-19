@@ -1,12 +1,12 @@
 export interface TypeTable {
   id?: number;
   name: string;
-  description: string;
+  description?: string;
   createdById?: number | string;
   createdOn?: string;
   modifiedById?: number | string;
   modifiedOn?: string;
-  isActive: number | boolean;
+  isActive?: number | boolean;
 }
 
 export interface Bank extends TypeTable {
@@ -148,23 +148,24 @@ export interface Country extends TypeTable {
 export interface Province extends TypeTable {
   pid?: number;
   code: string;
-  cid: number;
+  cid?: number;
   status: number;
   countryId?: number;
 }
 
 export interface District extends TypeTable {
   did?: number;
-  pid: number;
-  cid: number;
+  pid?: number;
+  countryId?: number;
   status: number;
   provinceId?: number;
 }
 
 export interface City extends TypeTable {
   id?: number;
-  pid: number;
-  cid: number;
+  pid?: number;
+  countryId: number;
+  provinceId:number;
   status: number;
 }
 

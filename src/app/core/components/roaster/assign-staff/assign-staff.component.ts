@@ -102,18 +102,18 @@ export class AssignStaffComponent {
         },
       });
 
-    this.typeTableService
-      .getTimeShifts()
-      .pipe(take(1))
-      .subscribe({
-        next: (value) => {
-          this.timeShifts.set(value);
-        },
-        error: (err) => {
-          console.error('Error fetching time shifts:', err);
-          this.notifyService.showError('Error fetching time shifts:');
-        },
-      });
+    // this.typeTableService
+    //   .getTimeShifts()
+    //   .pipe(take(1))
+    //   .subscribe({
+    //     next: (value) => {
+    //       this.timeShifts.set(value);
+    //     },
+    //     error: (err) => {
+    //       console.error('Error fetching time shifts:', err);
+    //       this.notifyService.showError('Error fetching time shifts:');
+    //     },
+    //   });
   }
 
   getDaysInMonth(dateString: string): number {

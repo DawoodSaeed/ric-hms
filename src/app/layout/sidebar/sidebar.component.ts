@@ -295,19 +295,28 @@ export class SidebarComponent implements OnInit {
           {
             label: 'Countries',
             icon: 'fas fa-globe',
-            route: '/admin/countries',
+            route: '/admin/region-management/countries',
           },
           {
             label: 'Provinces',
             icon: 'fas fa-map-marked-alt',
-            route: '/admin/provinces',
+            route: '/admin/region-management/provinces',
           },
           {
             label: 'Districts',
             icon: 'fas fa-map-marked-alt',
-            route: '/admin/districts',
+            route: '/admin/region-management/districts',
           },
-          { label: 'Cities', icon: 'fas fa-city', route: '/admin/cities' },
+          {
+            label: 'Cities',
+            icon: 'fas fa-city',
+            route: '/admin/region-management/cities',
+          },
+          {
+            label: 'Religion',
+            icon: 'fas fa-place-of-worship',
+            route: '/admin/region-management/religions',
+          },
         ],
       },
       {
@@ -316,8 +325,8 @@ export class SidebarComponent implements OnInit {
         items: [
           {
             label: 'Add Patient',
-            icon: 'fas fa-user-plus',
-            route: '/admin/countries',
+            icon: 'fas fa-user-md',
+            route: '/admin/patient-management/registration',
           },
         ],
       },

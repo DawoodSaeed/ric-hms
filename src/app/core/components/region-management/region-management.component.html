@@ -1,18 +1,19 @@
 <h3
   class="font-bold pl-4 color-gray text-2xl subpixel-antialiased text-gray-800 uppercase"
 >
-  Users
+  {{getRegionTitle()}}
 </h3>
 
 <app-breadcrumb></app-breadcrumb>
 
 <!-- <p-breadcrumb class="max-w-full" [model]="" /> -->
-@let users = users$ | async;
+<!-- @let users = users$ | async; -->
+@let data=data$ | async;
 <p-table
   [scrollable]="true"
   scrollHeight="flex"
   #dt
-  [value]="users || []"
+  [value]="data || []"
   dataKey="id"
   currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
   [showCurrentPageReport]="true"
@@ -27,22 +28,18 @@
   [globalFilterFields]="['name']"
   stateStorage="session"
   stateKey="statedemo-session"
-  [loading]="isLoading()"
 >
+  <!-- [loading]="isLoading()" -->
   <ng-template #caption>
     <div class="flex flex-wrap gap-2">
-      <p-button
-        label="Clear"
-        [outlined]="true"
-        icon="pi pi-filter-slash"
-        (click)="clear(dt)"
-      />
+      <p-button label="Clear" [outlined]="true" icon="pi pi-filter-slash" />
+      <!-- (click)="clear(dt)" -->
       <p-button
         p-button
         icon="pi pi-plus"
-        label="Add User"
+        label="Add {{ this.dataType }}"
         styleClass="ml-2"
-        (click)="formState.set('addUser'); displayDialog.set(true)"
+        (click)="formState.set('addItem'); displayDialogBox.set(true); form.reset()"
       />
       <p-iconfield iconPosition="left" class="ml-auto">
         <p-inputicon>
@@ -60,11 +57,9 @@
   </ng-template>
   <ng-template pTemplate="header" let-columns>
     <tr>
-      <th>Id</th>
-      <th>Employee Name</th>
-      <th>Username</th>
-      <th>Role</th>
-      <th>Status</th>
+      <th *ngFor="let country of tableHeadings$ | async">
+        {{ country | titlecase }}
+      </th>
       <th>Actions</th>
     </tr>
   </ng-template>
@@ -75,58 +70,41 @@
     let-rowIndex="rowIndex"
   >
     <tr [pSelectableRow]="rowData">
-      <td>{{ rowData["userId"] ?? " - " }}</td>
-      <td>{{ rowData["empName"] ?? " - " }}</td>
-      <td>{{ rowData["userName"] ?? " - " }}</td>
-      <td>{{ rowData["role"] ?? " - " }}</td>
-      <td>
-        <span
-          [ngClass]="{
-            'bg-green-100 text-green-800': rowData['status'] === 1,
-            'bg-red-100 text-red-800': rowData['status'] === 0
-          }"
-          class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
-        >
-          {{ rowData["status"] === 1 ? "Active" : "Inactive" }}
-        </span>
+      <td
+        *ngFor="
+          let heading of getTableHeadings(data ?? []);
+          trackBy: trackByID
+        "
+        class="text-center text-justify"
+      >
+        <ng-container *ngIf="heading === 'status'; else defaultCell">
+          <p-tag
+            [severity]="rowData[heading] === 1 ? 'success' : 'danger'"
+            [value]="getTagValue(rowData[heading])"
+            [rounded]="true"
+          />
+        </ng-container>
+        <ng-template #defaultCell>
+          {{ rowData[heading] ?? "-" }}
+        </ng-template>
       </td>
       <td>
-        <button
-          title="Change Password"
-          pButton
-          icon="pi pi-key"
-          class="p-button-rounded p-button-text"
-          (click)="changePassword(rowData, 'changePassword')"
-          pTooltip="Change Password"
-          tooltipPosition="top"
-        ></button>
-
-        <button
-          title="Reset Password"
-          pButton
-          icon="pi pi-undo"
-          class="p-button-rounded p-button-text"
-          (click)="changePassword(rowData, 'resetPassword')"
-          pTooltip="Reset Password"
-          tooltipPosition="top"
-        ></button>
-
         <button
           pButton
           icon="pi pi-pencil"
           class="p-button-rounded p-button-text"
-          (click)="editUser(rowData)"
-          pTooltip="Edit User"
+          pTooltip="Edit Item"
           tooltipPosition="top"
+          (click)="editItem(rowData)"
         ></button>
 
         <button
           pButton
           icon="pi pi-trash"
-          (click)="deleteUser(rowData)"
           class="p-button-rounded p-button-text p-button-danger"
-          pTooltip="Delete User"
+          pTooltip="Delete Item"
           tooltipPosition="top"
+          (click)="deleteItemConfirmation(rowData)" 
         ></button>
       </td>
     </tr>
@@ -134,262 +112,441 @@
 </p-table>
 
 <p-dialog
-  [visible]="displayDialog()"
+  [visible]="displayDialogBox()"
   styleClass="w-full md:w-[40rem]"
   [closable]="false"
   [maximizable]="true"
-  (onHide)="dialogClose()"
 >
+  <!-- (onHide)="dialogClose()" -->
   <ng-template #header>
     <div class="flex items-center justify-between w-full">
       <h3 class="font-semibold text-lg">
-        @if(formState() == 'addUser'){ Register User } @else if(formState() ==
-        'changePassword'){ Change Password }@else { Reset Password }
+        @if(formState() == 'addItem'){ Add {{ this.dataType }} } @if(formState()
+        == 'editItem'){ Edit {{ this.dataType }} }
       </h3>
       <button
         pButton
         icon="pi pi-times"
-        (click)="displayDialog.set(false)"
+        (click)="displayDialogBox.set(false)"
         class="p-button-rounded p-button-text"
       ></button>
     </div>
   </ng-template>
+<form #form="ngForm" (ngSubmit)="form.valid && addOrUpdateItem()" >
+  <!-- To add the building ############## -->
+  <ng-container *ngIf="dataType === 'Country'">
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Country Name
 
-  @if(formState() === 'addUser'){
-  <form [formGroup]="userForm" (ngSubmit)="submitForm()">
-    <div class="p-fluid grid gap-3">
-      <!-- Employee ID -->
-      <div class="col-12 flex flex-col md:flex-row items-center gap-2">
-        <label for="empId" class="w-full md:w-1/3 font-medium">Employee</label>
-        <div class="w-full md:w-2/3">
-          @if(employees$ | async; as employees){
-          <p-select
-            filter="true"
-            [options]="employees"
-            optionLabel="firstName"
-            optionValue="empId"
-            formControlName="empId"
-            placeholder="Select Employee"
-            class="w-full"
-          >
-          </p-select>
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <input
+        pInputText
+        id="name"
+        placeholder="Country Name"
+        required
+        [(ngModel)]="newCountry.name"
+        name="name"
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Code
 
-          <p-message
-            *ngIf="
-              userForm.get('empId')?.invalid &&
-              (userForm.get('empId')?.dirty || userForm.get('empId')?.touched)
-            "
-            severity="error"
-            text="Employee is required."
-          ></p-message>
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <input
+        pInputText
+        id="name"
+        placeholder="Code"
+        required
+        [(ngModel)]="newCountry.code"
+        name="code"
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Phone Code
 
-          }
-        </div>
-      </div>
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <input
+        pInputText
+        id="pCode"
+        placeholder="Phone Code"
+        required
+        name="phoneCode"
+        [(ngModel)]="newCountry.phoneCode"
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium"
+        >Currency Code
 
-      <!-- Role ID -->
-      <div class="col-12 flex flex-col md:flex-row items-center gap-2">
-        <label for="empId" class="w-full md:w-1/3 font-medium">Role</label>
-        <div class="w-full md:w-2/3">
-          @if(roles$ | async; as roles){
-          <p-select
-            filter="true"
-            [options]="roles"
-            optionLabel="name"
-            optionValue="id"
-            formControlName="roleId"
-            placeholder="Select Role"
-            class="w-full"
-          >
-          </p-select>
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <input
+        pInputText
+        id="pCode"
+        placeholder="Currency Code"
+        required
+        name="currencyCode"
+        [(ngModel)]="newCountry.currencyCode"
 
-          <p-message
-            *ngIf="
-              userForm.get('roleId')?.invalid &&
-              (userForm.get('roleId')?.dirty || userForm.get('roleId')?.touched)
-            "
-            severity="error"
-            text="Role is required."
-          ></p-message>
-
-          }
-        </div>
-      </div>
-
-      <!-- Username -->
-      <div class="col-12 flex flex-col md:flex-row items-center gap-2">
-        <label for="userName" class="w-full md:w-1/3 font-medium"
-          >Username</label
-        >
-        <div class="w-full md:w-2/3">
-          <input
-            pInputText
-            formControlName="userName"
-            id="userName"
-            placeholder="Username"
-            class="w-full"
-          />
-          <p-message
-            class="mt-2"
-            *ngIf="
-              userForm.get('userName')?.invalid &&
-              (userForm.get('userName')?.dirty ||
-                userForm.get('userName')?.touched)
-            "
-            severity="error"
-            text="Username is required."
-          ></p-message>
-        </div>
-      </div>
-
-      <!-- Password -->
-      <div class="col-12 flex flex-col md:flex-row items-center gap-2">
-        <label for="password" class="w-full md:w-1/3 font-medium"
-          >Password</label
-        >
-        <div class="w-full md:w-2/3">
-          <input
-            pInputText
-            formControlName="password"
-            id="password"
-            placeholder="Password"
-            type="password"
-            class="w-full"
-          />
-          <p-message
-            class="mt-2"
-            *ngIf="
-              userForm.get('password')?.invalid &&
-              (userForm.get('password')?.dirty ||
-                userForm.get('password')?.touched)
-            "
-            severity="error"
-            text="Password is required."
-          ></p-message>
-        </div>
-      </div>
-
-      <!-- Status -->
-      <div class="col-12 flex flex-col md:flex-row items-center gap-2">
-        <label for="status" class="w-full md:w-1/3 font-medium">Status</label>
-        <div class="w-full md:w-2/3">
-          <p-checkbox formControlName="status" [binary]="true"></p-checkbox>
-        </div>
-      </div>
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
     </div>
 
-    <!-- Buttons -->
-    <div class="flex justify-end mt-4">
-      <button
-        pButton
-        label="Save"
-        type="submit"
-        class="p-button p-button-primary"
-      ></button>
-    </div>
-  </form>
-  }@else if (formState() === 'changePassword') {
-  <form [formGroup]="chPwd" (ngSubmit)="changePasswordFormSubmission()">
-    <!-- Current Password -->
-    <div class="col-12 flex flex-col md:flex-row items-center gap-2">
-      <label for="currentPwd" class="w-full md:w-1/3 font-medium"
-        >Current Password</label
-      >
-      <div class="w-full md:w-2/3">
-        <p-password
-          formControlName="currentPwd"
-          id="currentPwd"
-          placeholder="Current Password"
+    <!-- <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+    >
+      <label for="description" class="font-medium"
+        >Status
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <p-checkbox [binary]="true" />
+    </div> -->
+  </ng-container>
+<!-- Province -->
+   <ng-container *ngIf="dataType === 'Province'">
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Country
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      @if(countries$ |async; as countries){
+
+      <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="countries"
+          [(ngModel)]="selectedCountry"
+          optionLabel="name"
+          placeholder="Select Country"
           class="w-full"
-          type="password"
-          [toggleMask]="true"
+          name="countryName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'country')"
         />
-        <p-message
-          class="mt-2"
-          *ngIf="
-            userForm.get('currentPwd')?.invalid &&
-            (userForm.get('currentPwd')?.dirty ||
-              userForm.get('currentPwd')?.touched)
-          "
-          severity="error"
-          text="Current password is required."
-        ></p-message>
-      </div>
+      }
+
+    </div>
+       <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Province Name
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <input
+        pInputText
+        id="pname"
+        placeholder="Province Name"
+        required
+        [(ngModel)]="newProvince.name"
+        name="pname"
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Code
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <input
+        pInputText
+        id="name"
+        placeholder="Code"
+        required
+        [(ngModel)]="newProvince.code"
+        name="code"
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
     </div>
 
-    <!-- Description -->
-    <div class="col-12 flex flex-col md:flex-row items-center gap-2 mt-5">
-      <label for="newPwd" class="w-full md:w-1/3 font-medium"
-        >New Password</label
-      >
-      <div class="w-full md:w-2/3">
-        <p-password
-          formControlName="newPwd"
-          id="newPwd"
-          placeholder="New Password"
+  
+
+    <!-- <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+    >
+      <label for="description" class="font-medium"
+        >Status
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <p-checkbox [binary]="true" />
+    </div> -->
+  </ng-container>
+
+  <!-- Districts -->
+    <ng-container *ngIf="dataType === 'District'">
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Country
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      @if(countries$ |async; as countries){
+
+      <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="countries"
+          [(ngModel)]="selectedCountry"
+          optionLabel="name"
+          placeholder="Select Country"
           class="w-full"
-          type="password"
-          [toggleMask]="true"
+          name="countryName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'country')"
         />
-        <p-message
-          class="mt-2"
-          *ngIf="
-            userForm.get('newPwd')?.invalid &&
-            (userForm.get('newPwd')?.dirty || userForm.get('newPwd')?.touched)
-          "
-          severity="error"
-          text="New password is required."
-        ></p-message>
-      </div>
-    </div>
+      }
 
-    <!-- Buttons -->
-    <div class="flex justify-end mt-4">
-      <button
-        pButton
-        label="Save"
-        type="submit"
-        class="p-button p-button-primary"
-      ></button>
     </div>
-  </form>
-  }@else {
-  <form [formGroup]="chPwd" (ngSubmit)="resetPassword()">
-    <!-- New  Password -->
-    <div class="col-12 flex flex-col md:flex-row items-center gap-2">
-      <label for="newPwd" class="w-full md:w-1/3 font-medium"
-        >New Password</label
-      >
-      <div class="w-full md:w-2/3">
-        <p-password
-          formControlName="newPwd"
-          id="newPwd"
-          placeholder="New Password"
+       <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Province Name
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+       @if(provinces$ |async; as provinces){
+
+      <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="provinces"
+          [(ngModel)]="selectedProvince"
+          optionLabel="name"
+          placeholder="Select Province"
           class="w-full"
-          type="password"
-          [toggleMask]="true"
+          name="provinceName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'province')"
         />
-        <p-message
-          class="mt-2"
-          *ngIf="
-            userForm.get('newPwd')?.invalid &&
-            (userForm.get('newPwd')?.dirty || userForm.get('newPwd')?.touched)
-          "
-          severity="error"
-          text="New password is required."
-        ></p-message>
-      </div>
+      }
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >District
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <input
+        pInputText
+        id="dname"
+        placeholder="District Name"
+        required
+        [(ngModel)]="newDistrict.name"
+        name="name"
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
     </div>
 
-    <!-- Buttons -->
-    <div class="flex justify-end mt-4">
-      <button
-        pButton
-        label="Save"
-        type="submit"
-        class="p-button p-button-primary"
-      ></button>
+  
+
+    <!-- <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+    >
+      <label for="description" class="font-medium"
+        >Status
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <p-checkbox [binary]="true" />
+    </div> -->
+  </ng-container>
+
+  <!-- Cities -->
+   <ng-container *ngIf="dataType === 'City'">
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Country
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      @if(countries$ |async; as countries){
+
+      <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="countries"
+          [(ngModel)]="selectedCountry"
+          optionLabel="name"
+          placeholder="Select Country"
+          class="w-full"
+          name="countryName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'country')"
+        />
+      }
+
     </div>
-  </form>
-  }
+       <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >Province 
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+       @if(provinces$ |async; as provinces){
+
+      <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="provinces"
+          [(ngModel)]="selectedProvince"
+          optionLabel="name"
+          placeholder="Select Province"
+          class="w-full"
+          name="provinceName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'province')"
+        />
+      }
+    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+    >
+      <label for="name" class="font-medium flex"
+        >City
+
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <input
+        pInputText
+        id="cname"
+        placeholder="City Name"
+        required
+        [(ngModel)]="newCity.name"
+        name="cname"
+        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+      />
+    </div>
+
+  
+
+    <!-- <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+    >
+      <label for="description" class="font-medium"
+        >Status
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <p-checkbox [binary]="true" />
+    </div> -->
+  </ng-container>
+
+  <!-- Religion -->
+    <ng-container *ngIf="dataType === 'Religion'">
+     <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newReligion.name"
+          id="name"
+          placeholder="Religion Name"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newReligion.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+  
+
+    <!-- <div
+      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+    >
+      <label for="description" class="font-medium"
+        >Status
+        <span class="text-red-400 font-bold">*</span>
+      </label>
+      <p-checkbox [binary]="true" />
+    </div> -->
+  </ng-container>
+  <div class="flex justify-end mt-4">
+    <button
+    pButton
+    label="{{formState()==='editItem'?'Update':'Save'}}"
+    class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+    [disabled]="form.invalid"
+    ></button>
+  </div>
+</form>
 </p-dialog>
+ <p-confirmDialog>
+    <ng-template pTemplate="footer" let-confirmation>
+      <button
+        pButton
+        type="button"
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-secondary"
+        (click)="this.confirmationService.close()"
+      ></button>
+
+      <button
+        pButton
+        type="button"
+        label="Proceed"
+        icon="pi pi-check"
+        class="p-button-danger"
+        (click)="deleteItem()"
+      ></button>
+    </ng-template>
+  </p-confirmDialog>

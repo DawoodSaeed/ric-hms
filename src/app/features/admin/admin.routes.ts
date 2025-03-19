@@ -10,6 +10,7 @@ import { RegionManagementComponent } from '../../core/components/region-manageme
 import { RoasterComponent } from '../../core/components/roaster/roaster.component';
 import { AssignStaffComponent } from '../../core/components/roaster/assign-staff/assign-staff.component';
 import { ViewDutiesComponent } from '../../core/components/roaster/view-duties/view-duties.component';
+import { PatientRegistrationComponent } from '../../core/components/patient-registration/patient-registration.component';
 import { DoctorDashboardComponent } from '../doctor/doctor-dashboard.component';
 import { DoctorsComponent } from '../../core/components/doctor-management/doctors/doctors.component';
 export const adminRoutes: Routes = [
@@ -109,50 +110,43 @@ export const adminRoutes: Routes = [
     path: 'region-management', // Corrected spelling and used kebab-case
     children: [
       // Added children for nested routes
-      // {
-      //   path: 'countries',
-      //   component: RegionManagementComponent,
-      //   data: { dataType: 'beds' },
-      // },
       {
-        path: 'users',
-        component: UserManagementComponent,
-        data: { dataType: 'floors' },
+        path: 'countries',
+        component: RegionManagementComponent,
+        data: { dataType: 'Country', title: 'Countries' },
       },
-
       {
-        path: '', // Default route when organizational-building is accessed
-        redirectTo: 'users', // Redirect to buildings as a default
-        pathMatch: 'full',
+        path: 'provinces',
+        component: RegionManagementComponent,
+        data: { dataType: 'Province', title: 'Provinces' },
       },
-    ],
-  },  {
-    path: 'patient-management', // Corrected spelling and used kebab-case
-    children: [
       {
-        path: 'users',
-        component: UserManagementComponent,
-        data: { dataType: 'floors' },
+        path: 'districts',
+        component: RegionManagementComponent,
+        data: { dataType: 'District', title: 'Districts' },
       },
-
-    
+      {
+        path: 'cities',
+        component: RegionManagementComponent,
+        data: { dataType: 'City', title: 'Cities' },
+      },
+      {
+        path: 'religions',
+        component: RegionManagementComponent,
+        data: { dataType: 'Religion', title: 'Religions' },
+      },
     ],
   },
-
-  {
-    path: 'doctor-management', // Corrected spelling and used kebab-case
+    {
+    path: 'patient-management', // Corrected spelling and used kebab-case
     children: [
       // Added children for nested routes
       {
-        path: 'doctors',
-        component: DoctorsComponent,
+        path: 'registration',
+        component: PatientRegistrationComponent,
+        // data: { dataType: 'Country', title: 'Countries' },
       },
-
-      {
-        path: '', // Default route when organizational-building is accessed
-        redirectTo: 'doctors', // Redirect to buildings as a default
-        pathMatch: 'full',
-      },
-    ],
-  },
+     
+    ]
+    }
 ];
