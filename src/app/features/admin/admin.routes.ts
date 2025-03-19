@@ -6,7 +6,7 @@ import { TableComponent } from '../../core/components/table/table.component';
 import { FloorsComponent } from '../../core/components/organization-building/floors/floors.component';
 import { UserManagementComponent } from '../../core/components/user-management/user-management.component';
 import { UserRolesComponent } from '../../core/components/user-roles/user-roles.component';
-import { RegionManagementComponent } from '../../core/components/region-management/region-management.component';
+import { RoasterComponent } from '../../core/components/roaster/roaster.component';
 export const adminRoutes: Routes = [
   {
     path: '',
@@ -20,6 +20,12 @@ export const adminRoutes: Routes = [
     path: 'employees',
     component: EmployeesComponent,
   },
+
+  {
+    path: 'roaster',
+    component: RoasterComponent,
+  },
+
   {
     path: 'organizational-building', // Corrected spelling and used kebab-case
     children: [
@@ -83,11 +89,11 @@ export const adminRoutes: Routes = [
     path: 'region-management', // Corrected spelling and used kebab-case
     children: [
       // Added children for nested routes
-      {
-        path: 'countries',
-        component: RegionManagementComponent,
-        data: { dataType: 'beds' },
-      },
+      // {
+      //   path: 'countries',
+      //   component: RegionManagementComponent,
+      //   data: { dataType: 'beds' },
+      // },
       {
         path: 'users',
         component: UserManagementComponent,
@@ -99,6 +105,17 @@ export const adminRoutes: Routes = [
         redirectTo: 'users', // Redirect to buildings as a default
         pathMatch: 'full',
       },
+    ],
+  },  {
+    path: 'patient-management', // Corrected spelling and used kebab-case
+    children: [
+      {
+        path: 'users',
+        component: UserManagementComponent,
+        data: { dataType: 'floors' },
+      },
+
+    
     ],
   },
 ];
