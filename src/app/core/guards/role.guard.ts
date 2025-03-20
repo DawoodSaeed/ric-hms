@@ -29,7 +29,7 @@ export class RoleGuard implements CanActivate {
           return true; // Access granted for correct role
         }
 
-        this.router.navigate(['/']); // Redirect if role mismatch
+        this.router.navigate([`/${role}`]); // Redirect if role mismatch
         return false;
       }),
       catchError(() => {
