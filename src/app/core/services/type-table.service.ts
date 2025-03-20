@@ -3,7 +3,15 @@ import { PanelMenuModule } from 'primeng/panelmenu';
 
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, catchError, map, Observable, of, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
+} from 'rxjs';
 
 import {
   Bank,
@@ -257,7 +265,7 @@ export class TypeTableService {
       map((religions) =>
         religions.map((religion) => ({
           ...religion,
-          id: religion.name as unknown as number,
+          id: religion.id as unknown as number,
         }))
       )
     );
@@ -296,6 +304,7 @@ export class TypeTableService {
 
   // ###### PROVINCES >>>>>>>>>>>>>
   getProvincesCountryWise(): Observable<Province[]> {
+    console.log('getProvincesCountryWise ');
     return this.countryID$.pipe(
       switchMap((countryID) => {
         if (!countryID) return of([]);
@@ -309,6 +318,7 @@ export class TypeTableService {
   }
 
   getAllProvinces(): Observable<Province[]> {
+    console.log('getAllProvinces');
     return this.getAll<Province>('Provinces').pipe(
       map((response: Province[]) =>
         response.filter((province: Province) => province.status === 1)
@@ -353,7 +363,7 @@ export class TypeTableService {
       map((response: City[]) =>
         response.filter((city: City) => city.status === 1)
       )
-    );;
+    );
   }
 
   addUpdateCities(city: City): Observable<City> {
@@ -415,7 +425,7 @@ export class TypeTableService {
       })
     );
   }
-    
+
   getGrades(): Observable<Grades[]> {
     return this.getAll<Grades>('EducationGrades');
     //   .pipe(

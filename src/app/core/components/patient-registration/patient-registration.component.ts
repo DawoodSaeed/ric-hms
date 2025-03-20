@@ -1,4 +1,4 @@
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { RadioButtonModule } from 'primeng/radiobutton';
@@ -10,11 +10,20 @@ import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { TypeTableService } from '../../services/type-table.service';
 import { dropDown, Religion } from '../../interfaces/typetable';
-import { map, Observable, startWith } from 'rxjs';
+import { map, Observable, startWith, tap } from 'rxjs';
+import { DatePicker } from 'primeng/datepicker';
+import { Select } from 'primeng/select';
+import { FileUploadModule } from 'primeng/fileupload';
+import { PatientService } from '../../services/patient.service';
+import { NotificationService } from '../../services/notification.service';
+
 @Component({
   selector: 'app-patient-registration',
   templateUrl: './patient-registration.component.html',
   imports: [
+    FileUploadModule,
+    Select,
+    DatePicker,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -27,29 +36,89 @@ import { map, Observable, startWith } from 'rxjs';
   ],
 })
 export class PatientRegistrationComponent implements OnInit {
-  form!: FormGroup;
+  patientForm!: FormGroup;
   patientType: string = 'Regular';
-  religionDropDown$!:Observable<any[] >;
-dropDownService=inject(TypeTableService)
-  constructor(private fb: FormBuilder) {}
+  selectedPatientTypeId: number = 1;
+  religionDropDown$!: Observable<any[]>;
+  countryDropDown$!: Observable<any[]>;
+  provinceDropDown$!: Observable<any[]>;
+  cityDropDown$!: Observable<any[]>;
+  guardianDropDown$!: Observable<any[]>;
+  relationDropDown$!: Observable<any[]>;
+  patientTypeDropDown$!: Observable<any[]>;
+  departmentDropDown$!: Observable<any[]>;
+  designationDropDown$!: Observable<any[]>;
+
+  dropDownService = inject(TypeTableService);
+  patientService = inject(PatientService);
+  constructor(private fb: FormBuilder,    private notificationService: NotificationService,
+  ) {}
 
   ngOnInit(): void {
     this.initializeForm();
-    this.fetchDropdowns()
+    this.fetchDropdowns();
   }
-fetchDropdowns(){
-   this.religionDropDown$ = this.dropDownService.getReligions().pipe(
-     map((religions) =>
-       religions.map((religion) => ({
-         label: religion.name,
-         value: religion.id,
-       }))
-     )   );
+  fetchDropdowns() {
+    this.religionDropDown$ = this.dropDownService.getReligions().pipe(
+      map((religions) =>
+        religions.map((religion) => ({
+          label: religion.name,
+          value: religion.id,
+        }))
+      )
+    );
 
-     
-}
+    this.countryDropDown$ = this.dropDownService.getCountries().pipe(
+      tap((contries) => console.log(contries)),
+      map((countries) =>
+        countries.map((countries) => ({
+          label: countries.name,
+          value: countries.id,
+        }))
+      )
+    );
+    this.guardianDropDown$ = this.dropDownService.getGuardianTypes().pipe(
+      tap((guardiantypes) => console.log(guardiantypes)),
+      map((guardiantypes) =>
+        guardiantypes.map((guardiantypes) => ({
+          label: guardiantypes.name,
+          value: guardiantypes.id,
+        }))
+      )
+    );
+    this.relationDropDown$ = this.dropDownService.getRelations().pipe(
+      tap((relations) => console.log(relations)),
+      map((relations) =>
+        relations.map((relations) => ({
+          label: relations.name,
+          value: relations.id,
+        }))
+      )
+    );
+    this.patientTypeDropDown$ = this.dropDownService.getPatientTypes();
+    this.departmentDropDown$ = this.dropDownService
+      .getDepartmentCategories()
+      .pipe(
+        tap((departments) => console.log(departments)),
+        map((departments) =>
+          departments.map((departments) => ({
+            label: departments.name,
+            value: departments.id,
+          }))
+        )
+      );
+    this.designationDropDown$ = this.dropDownService.getDesignations().pipe(
+      tap((designations) => console.log(designations)),
+      map((designations) =>
+        designations.map((designations) => ({
+          label: designations.name,
+          value: designations.id,
+        }))
+      )
+    );
+  }
   initializeForm() {
-    this.form = this.fb.group({
+    this.patientForm = this.fb.group({
       // Common Fields
       patientId: [0],
       mrno: [''],
@@ -97,26 +166,77 @@ fetchDropdowns(){
   onTypeChange(type: string) {
     this.patientType = type;
   }
+  onValueChange(event: any, fieldName: string) {
+    console.log(event.value);
+    if (fieldName === 'country') {
+      this.dropDownService.setCountryID(event.value);
 
-  submit() {
-    let payload = { ...this.form.value };
-
-    // Remove additional fields if patient is Regular
-    if (this.patientType === 'Regular') {
-      delete payload.pnlEmpCardNo;
-      delete payload.pnlEmpCardExpiry;
-      delete payload.pnlDepartment;
-      delete payload.designation;
-      delete payload.pnlDocument1;
-      delete payload.pnlDocument2;
-      delete payload.isSelf;
-      delete payload.dependentNic;
-      delete payload.dependentRelationId;
-      delete payload.dependentDocument1;
-      delete payload.dependentDocument2;
+      this.provinceDropDown$ = this.dropDownService
+        .getProvincesCountryWise()
+        .pipe(
+          tap((provinces) => console.log('provinces ', provinces)),
+          map((provinces) =>
+            provinces.map((provinces) => ({
+              label: provinces.name,
+              value: provinces.id,
+            }))
+          )
+        );
     }
-
-    console.log('Submit Payload:', payload);
-    // Submit to API
   }
+  uploadFile(event: any, docType: string) {
+    if (docType === 'doc1') {
+      this.patientForm.get('');
+    }
+  }
+  formatDateToYMD(dateString: string): string {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  submit() {
+    if (this.patientForm.valid) {
+      if (this.patientForm.value.pnlEmpCardExpiry){
+        this.patientForm.value.pnlEmpCardExpiry = this.formatDateToYMD(
+          this.patientForm.value.pnlEmpCardExpiry
+        );
+      }
+        let payload = {
+          ...this.patientForm.value,
+          patientTypeId: this.selectedPatientTypeId,
+          dob: this.formatDateToYMD(this.patientForm.value.dob),
+        };
+
+      // Remove additional fields if patient is Regular
+      if (this.patientType === 'Regular') {
+        delete payload.pnlEmpCardNo;
+        delete payload.pnlEmpCardExpiry;
+        delete payload.pnlDepartment;
+        delete payload.designation;
+        delete payload.pnlDocument1;
+        delete payload.pnlDocument2;
+        delete payload.isSelf;
+        delete payload.dependentNic;
+        delete payload.dependentRelationId;
+        delete payload.dependentDocument1;
+        delete payload.dependentDocument2;
+      }
+
+      console.log('Submit Payload:', payload);
+      this.patientService.addPatient(payload).subscribe({
+        next: (response: any) => {
+          console.log(response);
+        },
+      });
+      // Submit to API
+    }else{
+      console.log('first')
+      this.patientForm.markAllAsTouched()
+        this.notificationService.showError('Error! Please Try Again');
+
+    }
+  }
+
 }
