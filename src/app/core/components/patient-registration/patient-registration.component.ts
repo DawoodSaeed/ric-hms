@@ -1,5 +1,5 @@
 import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal, Signal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputTextModule } from 'primeng/inputtext';
@@ -16,11 +16,13 @@ import { Select } from 'primeng/select';
 import { FileUploadModule } from 'primeng/fileupload';
 import { PatientService } from '../../services/patient.service';
 import { NotificationService } from '../../services/notification.service';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-patient-registration',
   templateUrl: './patient-registration.component.html',
   imports: [
+    ProgressSpinner,
     FileUploadModule,
     Select,
     DatePicker,
@@ -48,10 +50,12 @@ export class PatientRegistrationComponent implements OnInit {
   patientTypeDropDown$!: Observable<any[]>;
   departmentDropDown$!: Observable<any[]>;
   designationDropDown$!: Observable<any[]>;
-
+isLoading=signal(false)
   dropDownService = inject(TypeTableService);
   patientService = inject(PatientService);
-  constructor(private fb: FormBuilder,    private notificationService: NotificationService,
+  constructor(
+    private fb: FormBuilder,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -122,12 +126,12 @@ export class PatientRegistrationComponent implements OnInit {
       // Common Fields
       patientId: [0],
       mrno: [''],
-      name: [''],
-      gender: [''],
-      maritalStatus: [''],
-      cnic: [''],
+      name: ['', Validators.required],
+      gender: ['', Validators.required],
+      maritalStatus: ['', Validators.required],
+      cnic: ['', Validators.required],
       passport: [''],
-      dob: [null],
+      dob: [null, Validators.required],
       religionId: [0],
       countryId: [0],
       provinceId: [0],
@@ -147,7 +151,7 @@ export class PatientRegistrationComponent implements OnInit {
       patientTypeId: [0],
       porgId: [0],
       packId: [0],
-
+      picture: [''],
       // Additional Fields (Entitle & Panel)
       pnlEmpCardNo: [''],
       pnlEmpCardExpiry: [null],
@@ -184,11 +188,31 @@ export class PatientRegistrationComponent implements OnInit {
         );
     }
   }
-  uploadFile(event: any, docType: string) {
-    if (docType === 'doc1') {
-      this.patientForm.get('');
+  uploadFile(event: any, controlName: string) {
+    const file: File = event.files[0];
+    if (file) {
+      this.convertFileToBase64(file).then((base64: string) => {
+        const base64Only = this.stripBase64Prefix(base64);
+        console.log(`Base64 for ${controlName}:`, base64Only);
+        this.patientForm.get(controlName)?.setValue(base64Only);
+      });
     }
   }
+
+  convertFileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  }
+
+  stripBase64Prefix(base64String: string): string {
+    // Removes everything before and including the comma
+    return base64String.split(',')[1];
+  }
+
   formatDateToYMD(dateString: string): string {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -197,17 +221,19 @@ export class PatientRegistrationComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
   submit() {
+    this.isLoading.set(true)
+     this.patientForm.markAllAsTouched();
     if (this.patientForm.valid) {
-      if (this.patientForm.value.pnlEmpCardExpiry){
+      if (this.patientForm.value.pnlEmpCardExpiry) {
         this.patientForm.value.pnlEmpCardExpiry = this.formatDateToYMD(
           this.patientForm.value.pnlEmpCardExpiry
         );
       }
-        let payload = {
-          ...this.patientForm.value,
-          patientTypeId: this.selectedPatientTypeId,
-          dob: this.formatDateToYMD(this.patientForm.value.dob),
-        };
+      let payload = {
+        ...this.patientForm.value,
+        patientTypeId: this.selectedPatientTypeId,
+        dob: this.formatDateToYMD(this.patientForm.value.dob),
+      };
 
       // Remove additional fields if patient is Regular
       if (this.patientType === 'Regular') {
@@ -228,15 +254,28 @@ export class PatientRegistrationComponent implements OnInit {
       this.patientService.addPatient(payload).subscribe({
         next: (response: any) => {
           console.log(response);
+          if(response){
+              this.notificationService.showSuccess(
+                'Patient registered successfully'
+              );
+          }
+        },
+        error:(err)=>{
+ this.notificationService.showError(err.error.message);
+          this.isLoading.set(false);
+
+        },
+        complete: () => {
+          this.isLoading.set(false);
         },
       });
       // Submit to API
-    }else{
-      console.log('first')
-      this.patientForm.markAllAsTouched()
-        this.notificationService.showError('Error! Please Try Again');
+    } else {
+    this.isLoading.set(false);
 
+      this.notificationService.showError(
+        'Please enter all the required fields'
+      );
     }
   }
-
 }

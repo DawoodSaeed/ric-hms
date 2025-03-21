@@ -64,12 +64,27 @@
         <input
           pInputText
           formControlName="name"
-          class="w-full"
+          class="w-full p-inputtext"
           placeholder="Enter Patient Name"
           variant="filled"
+         [ngClass]="{
+                  'ng-invalid ng-dirty':
+                    patientForm.controls['name'].invalid &&
+                    patientForm.controls['name'].touched
+                }"
         />
       </div>
-
+      <div>
+        <label>Upload Picture</label>
+        <p-fileUpload
+          mode="basic"
+          name="fileUpload"
+          [auto]="true"
+          chooseLabel="Upload Picture"
+          class="w-full"
+          (onSelect)="uploadFile($event, 'picture')"
+        ></p-fileUpload>
+      </div>
       <div>
         <label>Gender</label>
         <p-select
@@ -81,6 +96,10 @@
           placeholder="Select gender"
           class="w-full"
           variant="filled"
+         [ngClass]="{
+  'ng-invalid ng-dirty': patientForm.controls['cnic'].invalid && (patientForm.controls['cnic'].dirty || patientForm.controls['cnic'].touched)
+}"
+
         ></p-select>
       </div>
 
@@ -97,6 +116,10 @@
           placeholder="Select marital status"
           class="w-full"
           variant="filled"
+          [ngClass]="{
+  'ng-invalid ng-dirty': patientForm.controls['cnic'].invalid && (patientForm.controls['cnic'].dirty || patientForm.controls['cnic'].touched)
+}"
+
         ></p-select>
       </div>
 
@@ -108,9 +131,13 @@
           class="w-full"
           placeholder="Enter CNIC"
           variant="filled"
+    [ngClass]="{
+  'ng-invalid ng-dirty': patientForm.controls['cnic'].invalid && (patientForm.controls['cnic'].dirty || patientForm.controls['cnic'].touched)
+}"
+
+
         />
       </div>
-
       <div>
         <label>Passport</label>
         <input
@@ -430,7 +457,7 @@
             [auto]="true"
             chooseLabel="Upload File"
             class="w-full"
-            (uploadHandler)="uploadFile($event, 'doc1')"
+            (onSelect)="uploadFile($event, 'pnlDocument1')"
           ></p-fileUpload>
         </div>
         <div>
@@ -441,7 +468,7 @@
             [auto]="true"
             chooseLabel="Upload File"
             class="w-full"
-            (uploadHandler)="uploadFile($event, 'doc2')"
+            (onSelect)="uploadFile($event, 'pnlDocument2')"
           ></p-fileUpload>
         </div>
       </div>
@@ -476,7 +503,7 @@
       </div>
     </ng-container>
 
-    <div class="text-right mt-6">
+    <div class="text-right mt-6"    *ngIf="!isLoading(); else spinner">
       <p-button
         label="Submit"
         type="submit"
@@ -484,5 +511,17 @@
         class="w-full md:w-1/3"
       ></p-button>
     </div>
+    <ng-template #spinner>
+          <div class="text-right mt-6">
+            <button
+              class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
+            >
+              <p-progress-spinner
+                ariaLabel="loading"
+                [style]="{ width: '25px', height: '25px' }"
+              />
+            </button>
+          </div>
+        </ng-template>
   </form>
 </div>
