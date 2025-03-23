@@ -45,6 +45,7 @@ import {
 } from '../interfaces/typetable';
 
 import { environment } from '../../../environments/environment.development';
+import { Department } from '../interfaces/organisation';
 @Injectable({
   providedIn: 'root',
 })
@@ -140,6 +141,7 @@ export class TypeTableService {
       departmentCategory
     );
   }
+ 
 
   getDiscountTypes(): Observable<DiscountType[]> {
     return this.getAll<DiscountType>('DiscountTypes');
@@ -150,7 +152,11 @@ export class TypeTableService {
   }
 
   getEducationDegrees(): Observable<EducationDegree[]> {
-    return this.getAll<EducationDegree>('EducationDegrees');
+    return this.getAll<EducationDegree>('EducationDegrees').pipe(
+      map((response: EducationDegree[]) =>
+        response.filter((degree: EducationDegree) => degree.isActive === 1)
+      )
+    );
   }
 
   addUpdateEducationDegree(
@@ -160,7 +166,13 @@ export class TypeTableService {
   }
 
   getEducationInstitutions(): Observable<EducationInstitution[]> {
-    return this.getAll<EducationInstitution>('EducationInstitutions');
+    return this.getAll<EducationInstitution>('EducationInstitutions').pipe(
+      map((response: EducationInstitution[]) =>
+        response.filter(
+          (institute: EducationInstitution) => institute.isActive === 1
+        )
+      )
+    );
   }
 
   addUpdateEducationInstitution(
@@ -374,12 +386,14 @@ export class TypeTableService {
 
   getDesignations(): Observable<Designation[]> {
     return this.getAll<Designation>('Designations').pipe(
-      map((departments) =>
-        departments.map((desgn) => ({
-          ...desgn, // Spread existing properties
-          id: desgn.desgnId,
-          // Add new property 'id'
-        }))
+      map(
+        (designations) =>
+          designations
+            .map((desgn) => ({
+              ...desgn,
+              id: desgn.desgnId, // Add id property
+            }))
+            .filter((desgn) => desgn.isActive === 1) // Filter active ones
       )
     );
   }

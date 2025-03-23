@@ -1,7 +1,7 @@
 <h3
   class="font-bold pl-4 color-gray text-2xl subpixel-antialiased text-gray-800 uppercase"
 >
-  {{getRegionTitle()}}
+  {{ getRegionTitle() }}
 </h3>
 
 <app-breadcrumb></app-breadcrumb>
@@ -37,9 +37,11 @@
       <p-button
         p-button
         icon="pi pi-plus"
-        label="Add {{ this.dataType }}"
+        label="Add {{ this.dataType==='deptCats'?'Department Categories':this.dataType==='orgTypes'?'Organization Types':this.dataType }}"
         styleClass="ml-2"
-        (click)="formState.set('addItem'); displayDialogBox.set(true); form.reset()"
+        (click)="
+          formState.set('addItem'); displayDialogBox.set(true); form.reset()
+        "
       />
       <p-iconfield iconPosition="left" class="ml-auto">
         <p-inputicon>
@@ -71,13 +73,15 @@
   >
     <tr [pSelectableRow]="rowData">
       <td
-        *ngFor="
-          let heading of getTableHeadings(data ?? []);
-          trackBy: trackByID
-        "
+        *ngFor="let heading of getTableHeadings(data ?? []); trackBy: trackByID"
         class="text-center text-justify"
       >
-        <ng-container *ngIf="heading === 'status'; else defaultCell">
+        <ng-container
+          *ngIf="
+            heading === 'status' || heading === 'isActive';
+            else defaultCell
+          "
+        >
           <p-tag
             [severity]="rowData[heading] === 1 ? 'success' : 'danger'"
             [value]="getTagValue(rowData[heading])"
@@ -104,7 +108,7 @@
           class="p-button-rounded p-button-text p-button-danger"
           pTooltip="Delete Item"
           tooltipPosition="top"
-          (click)="deleteItemConfirmation(rowData)" 
+          (click)="deleteItemConfirmation(rowData)"
         ></button>
       </td>
     </tr>
@@ -132,84 +136,83 @@
       ></button>
     </div>
   </ng-template>
-<form #form="ngForm" (ngSubmit)="form.valid && addOrUpdateItem()" >
-  <!-- To add the building ############## -->
-  <ng-container *ngIf="dataType === 'Country'">
-    <div
-      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
-    >
-      <label for="name" class="font-medium flex"
-        >Country Name
+  <form #form="ngForm" (ngSubmit)="form.valid && addOrUpdateItem()">
+    <!-- To add the building ############## -->
+    <ng-container *ngIf="dataType === 'Country'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Country Name
 
-        <span class="text-red-400 font-bold">*</span>
-      </label>
-      <input
-        pInputText
-        id="name"
-        placeholder="Country Name"
-        required
-        [(ngModel)]="newCountry.name"
-        name="name"
-        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-      />
-    </div>
-    <div
-      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
-    >
-      <label for="name" class="font-medium flex"
-        >Code
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          id="name"
+          placeholder="Country Name"
+          required
+          [(ngModel)]="newCountry.name"
+          name="name"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Code
 
-        <span class="text-red-400 font-bold">*</span>
-      </label>
-      <input
-        pInputText
-        id="name"
-        placeholder="Code"
-        required
-        [(ngModel)]="newCountry.code"
-        name="code"
-        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-      />
-    </div>
-    <div
-      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
-    >
-      <label for="name" class="font-medium flex"
-        >Phone Code
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          id="name"
+          placeholder="Code"
+          required
+          [(ngModel)]="newCountry.code"
+          name="code"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Phone Code
 
-        <span class="text-red-400 font-bold">*</span>
-      </label>
-      <input
-        pInputText
-        id="pCode"
-        placeholder="Phone Code"
-        required
-        name="phoneCode"
-        [(ngModel)]="newCountry.phoneCode"
-        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-      />
-    </div>
-    <div
-      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
-    >
-      <label for="name" class="font-medium"
-        >Currency Code
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          id="pCode"
+          placeholder="Phone Code"
+          required
+          name="phoneCode"
+          [(ngModel)]="newCountry.phoneCode"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Currency Code
 
-        <span class="text-red-400 font-bold">*</span>
-      </label>
-      <input
-        pInputText
-        id="pCode"
-        placeholder="Currency Code"
-        required
-        name="currencyCode"
-        [(ngModel)]="newCountry.currencyCode"
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          id="pCode"
+          placeholder="Currency Code"
+          required
+          name="currencyCode"
+          [(ngModel)]="newCountry.currencyCode"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
 
-        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-      />
-    </div>
-
-    <!-- <div
+      <!-- <div
       class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
     >
       <label for="description" class="font-medium"
@@ -218,20 +221,20 @@
       </label>
       <p-checkbox [binary]="true" />
     </div> -->
-  </ng-container>
-<!-- Province -->
-   <ng-container *ngIf="dataType === 'Province'">
-    <div
-      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
-    >
-      <label for="name" class="font-medium flex"
-        >Country
+    </ng-container>
+    <!-- Province -->
+    <ng-container *ngIf="dataType === 'Province'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Country
 
-        <span class="text-red-400 font-bold">*</span>
-      </label>
-      @if(countries$ |async; as countries){
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        @if(countries$ |async; as countries){
 
-      <p-select
+        <p-select
           filter="true"
           [checkmark]="true"
           [options]="countries"
@@ -244,49 +247,46 @@
           required
           (ngModelChange)="onDropdownChange($event, 'country')"
         />
-      }
+        }
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Province Name
 
-    </div>
-       <div
-      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
-    >
-      <label for="name" class="font-medium flex"
-        >Province Name
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          id="pname"
+          placeholder="Province Name"
+          required
+          [(ngModel)]="newProvince.name"
+          name="pname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Code
 
-        <span class="text-red-400 font-bold">*</span>
-      </label>
-      <input
-        pInputText
-        id="pname"
-        placeholder="Province Name"
-        required
-        [(ngModel)]="newProvince.name"
-        name="pname"
-        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-      />
-    </div>
-    <div
-      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
-    >
-      <label for="name" class="font-medium flex"
-        >Code
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          id="name"
+          placeholder="Code"
+          required
+          [(ngModel)]="newProvince.code"
+          name="code"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
 
-        <span class="text-red-400 font-bold">*</span>
-      </label>
-      <input
-        pInputText
-        id="name"
-        placeholder="Code"
-        required
-        [(ngModel)]="newProvince.code"
-        name="code"
-        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-      />
-    </div>
-
-  
-
-    <!-- <div
+      <!-- <div
       class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
     >
       <label for="description" class="font-medium"
@@ -295,21 +295,21 @@
       </label>
       <p-checkbox [binary]="true" />
     </div> -->
-  </ng-container>
+    </ng-container>
 
-  <!-- Districts -->
+    <!-- Districts -->
     <ng-container *ngIf="dataType === 'District'">
-    <div
-      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
-    >
-      <label for="name" class="font-medium flex"
-        >Country
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Country
 
-        <span class="text-red-400 font-bold">*</span>
-      </label>
-      @if(countries$ |async; as countries){
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        @if(countries$ |async; as countries){
 
-      <p-select
+        <p-select
           filter="true"
           [checkmark]="true"
           [options]="countries"
@@ -322,20 +322,19 @@
           required
           (ngModelChange)="onDropdownChange($event, 'country')"
         />
-      }
+        }
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Province Name
 
-    </div>
-       <div
-      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
-    >
-      <label for="name" class="font-medium flex"
-        >Province Name
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        @if(provinces$ |async; as provinces){
 
-        <span class="text-red-400 font-bold">*</span>
-      </label>
-       @if(provinces$ |async; as provinces){
-
-      <p-select
+        <p-select
           filter="true"
           [checkmark]="true"
           [options]="provinces"
@@ -348,30 +347,28 @@
           required
           (ngModelChange)="onDropdownChange($event, 'province')"
         />
-      }
-    </div>
-    <div
-      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
-    >
-      <label for="name" class="font-medium flex"
-        >District
+        }
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >District
 
-        <span class="text-red-400 font-bold">*</span>
-      </label>
-      <input
-        pInputText
-        id="dname"
-        placeholder="District Name"
-        required
-        [(ngModel)]="newDistrict.name"
-        name="name"
-        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-      />
-    </div>
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          id="dname"
+          placeholder="District Name"
+          required
+          [(ngModel)]="newDistrict.name"
+          name="name"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
 
-  
-
-    <!-- <div
+      <!-- <div
       class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
     >
       <label for="description" class="font-medium"
@@ -380,21 +377,21 @@
       </label>
       <p-checkbox [binary]="true" />
     </div> -->
-  </ng-container>
+    </ng-container>
 
-  <!-- Cities -->
-   <ng-container *ngIf="dataType === 'City'">
-    <div
-      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
-    >
-      <label for="name" class="font-medium flex"
-        >Country
+    <!-- Cities -->
+    <ng-container *ngIf="dataType === 'City'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Country
 
-        <span class="text-red-400 font-bold">*</span>
-      </label>
-      @if(countries$ |async; as countries){
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        @if(countries$ |async; as countries){
 
-      <p-select
+        <p-select
           filter="true"
           [checkmark]="true"
           [options]="countries"
@@ -407,20 +404,19 @@
           required
           (ngModelChange)="onDropdownChange($event, 'country')"
         />
-      }
+        }
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Province
 
-    </div>
-       <div
-      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
-    >
-      <label for="name" class="font-medium flex"
-        >Province 
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        @if(provinces$ |async; as provinces){
 
-        <span class="text-red-400 font-bold">*</span>
-      </label>
-       @if(provinces$ |async; as provinces){
-
-      <p-select
+        <p-select
           filter="true"
           [checkmark]="true"
           [options]="provinces"
@@ -433,30 +429,28 @@
           required
           (ngModelChange)="onDropdownChange($event, 'province')"
         />
-      }
-    </div>
-    <div
-      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
-    >
-      <label for="name" class="font-medium flex"
-        >City
+        }
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >City
 
-        <span class="text-red-400 font-bold">*</span>
-      </label>
-      <input
-        pInputText
-        id="cname"
-        placeholder="City Name"
-        required
-        [(ngModel)]="newCity.name"
-        name="cname"
-        class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-      />
-    </div>
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          id="cname"
+          placeholder="City Name"
+          required
+          [(ngModel)]="newCity.name"
+          name="cname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
 
-  
-
-    <!-- <div
+      <!-- <div
       class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
     >
       <label for="description" class="font-medium"
@@ -465,11 +459,11 @@
       </label>
       <p-checkbox [binary]="true" />
     </div> -->
-  </ng-container>
+    </ng-container>
 
-  <!-- Religion -->
+    <!-- Religion -->
     <ng-container *ngIf="dataType === 'Religion'">
-     <div
+      <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
         <label for="name" class="font-medium"
@@ -507,46 +501,443 @@
           class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
         ></textarea>
       </div>
+    </ng-container>
+    <!-- Following will be relocated  -->
+    <!-- Education Degree -->
+    <ng-container *ngIf="dataType === 'Degree'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newDegree.name"
+          id="name"
+          placeholder="Degree Name"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newDegree.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+    </ng-container>
+    <!-- Education Institutues -->
+    <ng-container *ngIf="dataType === 'Institue'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newInstitute.name"
+          id="name"
+          placeholder="Institue Name"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newInstitute.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+    </ng-container>
+    <!-- Designations -->
+    <ng-container *ngIf="dataType === 'Designation'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newDesignation.name"
+          id="name"
+          placeholder="Designation Name"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newDesignation.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+    </ng-container>
+    <!-- Departments -->
+    <ng-container *ngIf="dataType === 'Department'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newDepartment.name"
+          id="name"
+          placeholder="Department Name"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newDepartment.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Department
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        @if(departmentCats$ |async; as departmentCats){
+
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="departmentCats"
+          [(ngModel)]="selectedDepartmentCat"
+          optionLabel="name"
+          placeholder="Select Department Category"
+          class="w-full"
+          name="countryName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'departmentCat')"
+        />
+        }
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Code
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newDepartment.code"
+          id="code"
+          placeholder="Department Code"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Amount
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <p-inputNumber
+        name="amount"
+  [(ngModel)]="newDepartment.amount"
+  [min]="0"
+  [useGrouping]="false"
+  placeholder="Amount"
+  (ngModelChange)="calculateDiscountedAmount()"
+></p-inputNumber>
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Discount Type
+
+        </label>
+        @if(discountTypes$ |async; as discountTypes){
+
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="discountTypes"
+          [(ngModel)]="selectedDiscountType"
+          optionLabel="name"
+          placeholder="Select Discount Type"
+          class="w-full"
+          name="discountType"
+          dataKey="id"
+          (ngModelChange)="onDropdownChange($event, 'discountType')"
+        />
+<!-- 
+         <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="departmentCats"
+          [(ngModel)]="selectedDepartmentCat"
+          optionLabel="name"
+          placeholder="Select Department Category"
+          class="w-full"
+          name="countryName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'departmentCat')"
+        /> -->
+        }
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Discount
+
+        </label>
+     <p-inputNumber
+     name="discount"
+  [(ngModel)]="newDepartment.discount"
+  [min]="0"
+  [useGrouping]="false"
+  placeholder="Discount"
+  (ngModelChange)="calculateDiscountedAmount()"
+></p-inputNumber>
+      </div>
+
+    <div
+  class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+>
+  <label class="font-medium">Discounted Amount</label>
+  <span class="w-full p-2 border rounded bg-gray-100">
+    {{ newDepartment.discountedAmount??'-' }}
+  </span>
+</div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >canCheckIn
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <p-checkbox
+          name="canCheckIn"
+          [binary]="true"
+          [ngModel]="newDepartment.canCheckIn === 1"
+          (onChange)="newDepartment.canCheckIn = $event.checked ? 1 : 0"
+        >
+        </p-checkbox>
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >isInPatient
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <p-checkbox
+          name="isInPatient"
+          [binary]="true"
+          [ngModel]="newDepartment.isInPatient === 1"
+          (onChange)="newDepartment.isInPatient = $event.checked ? 1 : 0"
+        >
+        </p-checkbox>
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >isSurgical
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <p-checkbox
+          name="isSurgical"
+          [binary]="true"
+          [ngModel]="newDepartment.isSurgical === 1"
+          (onChange)="newDepartment.isSurgical = $event.checked ? 1 : 0"
+        >
+        </p-checkbox>
+      </div>
+    </ng-container>
+    <!-- Department Cats -->
+    <ng-container *ngIf="dataType === 'deptCats'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newDepartmentCategories.name"
+          id="cname"
+          placeholder="Category Name"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+ <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Select Branch
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        @if(branches$ |async; as branches){
+
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="branches"
+          [(ngModel)]="selectedBranch"
+          optionLabel="name"
+          placeholder="Select Branch"
+          class="w-full"
+          name="branchName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'branch')"
+        />
+        }
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newDepartmentCategories.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+     
+    </ng-container>
+
   
+    <div class="flex justify-end mt-4">
+      <button
+        pButton
+        label="{{ formState() === 'editItem' ? 'Update' : 'Save' }}"
+        class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+        [disabled]="form.invalid"
+      ></button>
+    </div>
 
-    <!-- <div
-      class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
-    >
-      <label for="description" class="font-medium"
-        >Status
-        <span class="text-red-400 font-bold">*</span>
-      </label>
-      <p-checkbox [binary]="true" />
-    </div> -->
-  </ng-container>
-  <div class="flex justify-end mt-4">
-    <button
-    pButton
-    label="{{formState()==='editItem'?'Update':'Save'}}"
-    class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
-    [disabled]="form.invalid"
-    ></button>
-  </div>
-</form>
+    
+  </form>
 </p-dialog>
- <p-confirmDialog>
-    <ng-template pTemplate="footer" let-confirmation>
-      <button
-        pButton
-        type="button"
-        label="Cancel"
-        icon="pi pi-times"
-        class="p-button-secondary"
-        (click)="this.confirmationService.close()"
-      ></button>
+<p-confirmDialog>
+  <ng-template pTemplate="footer" let-confirmation>
+    <button
+      pButton
+      type="button"
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-secondary"
+      (click)="this.confirmationService.close()"
+    ></button>
 
-      <button
-        pButton
-        type="button"
-        label="Proceed"
-        icon="pi pi-check"
-        class="p-button-danger"
-        (click)="deleteItem()"
-      ></button>
-    </ng-template>
-  </p-confirmDialog>
+    <button
+      pButton
+      type="button"
+      label="Proceed"
+      icon="pi pi-check"
+      class="p-button-danger"
+      (click)="deleteItem()"
+    ></button>
+  </ng-template>
+</p-confirmDialog>

@@ -135,18 +135,51 @@ export const adminRoutes: Routes = [
         component: RegionManagementComponent,
         data: { dataType: 'Religion', title: 'Religions' },
       },
+      {
+        path: 'educationDegrees',
+        component: RegionManagementComponent,
+        data: { dataType: 'Degree', title: 'Degrees' },
+      },
+      {
+        path: 'educationInstitutes',
+        component: RegionManagementComponent,
+        data: { dataType: 'Institue', title: 'Institutes' },
+      },
+      {
+        path: 'educationInstitutes',
+        component: RegionManagementComponent,
+        data: { dataType: 'Institue', title: 'Institutes' },
+      },
+      {
+        path: 'designations',
+        component: RegionManagementComponent,
+        data: { dataType: 'Designation', title: 'Designations' },
+      },
+      {
+        path: 'departments',
+        component: RegionManagementComponent,
+        data: { dataType: 'Department', title: 'Departments' },
+      },
+      {
+        path: 'departmentCats',
+        component: RegionManagementComponent,
+        data: { dataType: 'deptCats', title: 'Department Categories' },
+      },
+      {
+        path: 'orgTypes',
+        component: RegionManagementComponent,
+        data: { dataType: 'orgTypes', title: 'Organization Types' },
+      },
     ],
   },
-    {
+  {
     path: 'patient-management', // Corrected spelling and used kebab-case
     children: [
       // Added children for nested routes
       {
         path: 'registration',
         component: PatientRegistrationComponent,
-        // data: { dataType: 'Country', title: 'Countries' },
       },
-     
-    ]
-    }
+    ],
+  },
 ];

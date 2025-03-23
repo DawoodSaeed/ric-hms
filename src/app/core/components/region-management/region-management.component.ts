@@ -1,3 +1,5 @@
+import { DepartmentCategory, DiscountType } from './../../interfaces/typetable';
+import { OrganisationService } from './../../services/organisation.service';
 import { Component, inject, OnInit, Signal, signal } from '@angular/core';
 import { AccountService } from '../../services/account.service';
 import {
@@ -37,18 +39,32 @@ import { Dropdown, DropdownModule } from 'primeng/dropdown';
 import { AuthService } from '../../services/auth.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { PasswordModule } from 'primeng/password';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
-import { City, Country, District, Province, Religion } from '../../interfaces/typetable';
+import {
+  City,
+  Country,
+  Designation,
+  District,
+  EducationDegree,
+  EducationInstitution,
+  Province,
+  Religion,
+} from '../../interfaces/typetable';
 import { TypeTableService } from '../../services/type-table.service';
 import { Tag } from 'primeng/tag';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { Department } from '../../interfaces/organisation';
+import { Branch } from '../../interfaces/branch.interface';
+import { BranchService } from '../../services/branch.service';
 
 @Component({
   selector: 'app-region-management',
   imports: [
+    InputNumberModule,
     ConfirmDialogModule,
     FormsModule,
     TableModule,
@@ -74,14 +90,24 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 })
 export class RegionManagementComponent implements OnInit {
   private typeTableService = inject(TypeTableService);
+  private organizatoinService = inject(OrganisationService);
+  private branchService = inject(BranchService);
+
   dataType: string | undefined;
   formState = signal<'editItem' | 'addItem'>('addItem');
   displayDialogBox = signal(false);
-  data$!: Observable<Country[] | Province[] | City[] | District[]| Religion[]>;
+  data$!: Observable<Country[] | Province[] | City[] | District[] | Religion[]>;
   countries$!: Observable<Country[]>;
   provinces$!: Observable<Province[]>;
+  departmentCats$!: Observable<DepartmentCategory[]>;
+  discountTypes$!: Observable<DiscountType[]>;
+  branches$!: Observable<Branch[]>;
+
   selectedCountry!: Country | undefined;
   selectedProvince!: Province | undefined;
+  selectedDepartmentCat!: DepartmentCategory | undefined;
+  selectedDiscountType!: DiscountType | undefined;
+  selectedBranch!:Branch|undefined;
   tableHeadings$!: Observable<any[] | null>;
   newCountry: Country = {
     id: 0,
@@ -127,6 +153,57 @@ export class RegionManagementComponent implements OnInit {
     isActive: 1,
     ...this.getCommonFields(),
   };
+
+  // Following will be relocated
+  newDegree: EducationDegree = {
+    id: 0,
+    name: '',
+    description: '',
+    isActive: 1,
+    ...this.getCommonFields(),
+  };
+
+  newInstitute: EducationInstitution = {
+    id: 0,
+    name: '',
+    description: '',
+    isActive: 1,
+    ...this.getCommonFields(),
+  };
+
+  newDesignation: Designation = {
+    desgnId: 0,
+    name: '',
+    description: '',
+    isActive: 1,
+    ...this.getCommonFields(),
+  };
+
+  newDepartment: Department = {
+    did: 0,
+    name: '',
+    description: '',
+    code: '',
+    deptCatId: 0,
+    canCheckIn: 0,
+    isInPatient: 0,
+    isSurgical: 0,
+    amount: 0,
+    discountTypeId: 0,
+    discount: 0,
+    discountedAmount: 0,
+    status: 1,
+    ...this.getCommonFields(),
+  };
+
+  newDepartmentCategories: DepartmentCategory = {
+    id: 0,
+    name: '',
+    description: '',
+    branchId: 0,
+    isActive: 1,
+    ...this.getCommonFields(),
+  };
   selectedItem: any;
 
   constructor(
@@ -158,6 +235,24 @@ export class RegionManagementComponent implements OnInit {
       case 'Religion':
         this.data$ = this.typeTableService.getReligions();
         break;
+      case 'Degree':
+        this.data$ = this.typeTableService.getEducationDegrees();
+        break;
+      case 'Institue':
+        this.data$ = this.typeTableService.getEducationInstitutions();
+        break;
+      case 'Designation':
+        this.data$ = this.typeTableService.getDesignations();
+        break;
+      case 'Department':
+        this.data$ = this.organizatoinService.getAllDepartments();
+        this.getDeparmentCats();
+        this.getDiscountTypes();
+        break;
+      case 'deptCats':
+        this.data$ = this.typeTableService.getDepartmentCategories();
+        this.getBranches();
+        break;
       default:
         this.data$ = of([]);
     }
@@ -166,14 +261,21 @@ export class RegionManagementComponent implements OnInit {
       map((data) => this.getTableHeadings(data))
     );
   }
-  getCountryData() {
-    this.countries$ = this.typeTableService.getCountries();
-  }
-
   getRegionTitle() {
     return this.route.snapshot.data['title'];
   }
-
+  getCountryData() {
+    this.countries$ = this.typeTableService.getCountries();
+  }
+  getDeparmentCats() {
+    this.departmentCats$ = this.typeTableService.getDepartmentCategories();
+  }
+  getDiscountTypes() {
+    this.discountTypes$ = this.typeTableService.getDiscountTypes();
+  }
+  getBranches() {
+    this.branches$ = this.branchService.getAllBranches();
+  }
   getTableHeadings(tableData: any[] | null): any[] {
     if (!tableData || tableData.length === 0) return [];
     return Object.keys(tableData[0]).filter(
@@ -184,12 +286,18 @@ export class RegionManagementComponent implements OnInit {
           'modifiedOn',
           'createdById',
           'createdOn',
+          'countryId',
+          'provinceId',
+          'did',
+          'deptCatId',
+          'discountTypeId',
         ].includes(heading)
     );
   }
   trackByID(index: number, item: Country) {
     return item.id;
   }
+
   onDropdownChange(event: any, name: string) {
     if (name === 'country' && event) {
       console.log(event);
@@ -205,6 +313,18 @@ export class RegionManagementComponent implements OnInit {
       this.newDistrict.provinceId = event.id;
       this.newCity.provinceId = event.id;
     }
+
+    if (name === 'departmentCat' && event) {
+      this.newDepartment.deptCatId = event.id;
+    }
+    if (name === 'discountType' && event) {
+      this.newDepartment.discountTypeId = event.id;
+      // this.selectedDiscountType=event.name
+      // console.log('selectedDiscountType ', this.selectedDiscountType);
+    }
+     if (name === 'branch' && event) {
+       this.newDepartmentCategories.branchId = event.id;
+     }
   }
   getCommonFields() {
     const timestamp = new Date().toISOString();
@@ -277,8 +397,18 @@ export class RegionManagementComponent implements OnInit {
             this.selectedProvince = data;
           },
         });
-    }else if(this.dataType==='Religion'){
-       this.newReligion=rowData
+    } else if (this.dataType === 'Religion') {
+      this.newReligion = rowData;
+    } else if (this.dataType === 'Degree') {
+      this.newDegree = rowData;
+    } else if (this.dataType === 'Institue') {
+      this.newInstitute = rowData;
+    } else if (this.dataType === 'Designation') {
+      this.newDesignation = rowData;
+    } else if (this.dataType === 'Department') {
+      this.newDepartment = rowData;
+    } else if (this.dataType === 'deptCats') {
+      this.newDepartmentCategories = rowData;
     }
   }
 
@@ -345,7 +475,7 @@ export class RegionManagementComponent implements OnInit {
         },
       });
     } else if (this.dataType === 'Religion') {
-      console.log('yuuu ',this.newReligion)
+      console.log('yuuu ', this.newReligion);
       this.typeTableService.addUpdateReligion(this.newReligion).subscribe({
         next: (data: any) => {
           console.log(data);
@@ -360,6 +490,91 @@ export class RegionManagementComponent implements OnInit {
           this.notificationService.showError(err.error.message);
         },
       });
+    } else if (this.dataType === 'Degree') {
+      console.log('Degree ', this.newDegree);
+      this.typeTableService.addUpdateEducationDegree(this.newDegree).subscribe({
+        next: (data: any) => {
+          console.log(data);
+          if (data) {
+            this.loadData();
+            this.notificationService.showSuccess('Operation successful!');
+            this.displayDialogBox.set(false);
+          }
+        },
+        error: (err) => {
+          console.log(err);
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'Institue') {
+      console.log('Institue ', this.newInstitute);
+      this.typeTableService
+        .addUpdateEducationInstitution(this.newInstitute)
+        .subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (data) {
+              this.loadData();
+              this.notificationService.showSuccess('Operation successful!');
+              this.displayDialogBox.set(false);
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.notificationService.showError(err.error.message);
+          },
+        });
+    } else if (this.dataType === 'Designation') {
+      this.typeTableService
+        .addUpdateDesignations(this.newDesignation)
+        .subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (data) {
+              this.loadData();
+              this.notificationService.showSuccess('Operation successful!');
+              this.displayDialogBox.set(false);
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.notificationService.showError(err.error.message);
+          },
+        });
+    } else if (this.dataType === 'Department') {
+      this.organizatoinService
+        .createOrUpdateDepartment(this.newDepartment)
+        .subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (data) {
+              this.loadData();
+              this.notificationService.showSuccess('Operation successful!');
+              this.displayDialogBox.set(false);
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.notificationService.showError(err.error.message);
+          },
+        });
+    } else if (this.dataType === 'deptCats') {
+      this.typeTableService
+        .addUpdateDepartmentCategory(this.newDepartmentCategories)
+        .subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (data) {
+              this.loadData();
+              this.notificationService.showSuccess('Operation successful!');
+              this.displayDialogBox.set(false);
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.notificationService.showError(err.error.message);
+          },
+        });
     }
   }
   deleteItemConfirmation(rowData: any) {
@@ -471,6 +686,111 @@ export class RegionManagementComponent implements OnInit {
           this.notificationService.showError(err.error.message);
         },
       });
+    } else if (this.dataType === 'Degree') {
+      let newDegree = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      console.log('payload ', newDegree);
+      this.typeTableService.addUpdateEducationDegree(newDegree).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'Institue') {
+      let newItem = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      console.log('payload ', newItem);
+      this.typeTableService.addUpdateEducationInstitution(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'Designation') {
+      let newItem = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      this.typeTableService.addUpdateDesignations(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'Department') {
+      let newItem = {
+        ...this.selectedItem,
+        status: 0,
+      };
+      this.organizatoinService.createOrUpdateDepartment(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'deptCats') {
+      let newItem = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      this.typeTableService.addUpdateDepartmentCategory(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    }
+  }
+
+  calculateDiscountedAmount() {
+    if (this.newDepartment.discountTypeId === 1) {
+      this.newDepartment.discountedAmount =
+        this.newDepartment.amount - this.newDepartment.discount;
+    } else if (this.newDepartment.discountTypeId === 2) {
+      this.newDepartment.discountedAmount =
+        this.newDepartment.amount -
+        (this.newDepartment.amount * this.newDepartment.discount) / 100;
+    } else {
+      this.newDepartment.discountedAmount = this.newDepartment.amount;
     }
   }
 }

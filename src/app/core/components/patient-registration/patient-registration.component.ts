@@ -71,7 +71,15 @@ isLoading=signal(false)
         }))
       )
     );
-
+this.provinceDropDown$ = this.dropDownService.getProvincesCountryWise().pipe(
+  tap((provinces) => console.log('provinces ', provinces)),
+  map((provinces) =>
+    provinces.map((provinces) => ({
+      label: provinces.name,
+      value: provinces.id,
+    }))
+  )
+);
     this.countryDropDown$ = this.dropDownService.getCountries().pipe(
       tap((contries) => console.log(contries)),
       map((countries) =>
@@ -175,17 +183,7 @@ isLoading=signal(false)
     if (fieldName === 'country') {
       this.dropDownService.setCountryID(event.value);
 
-      this.provinceDropDown$ = this.dropDownService
-        .getProvincesCountryWise()
-        .pipe(
-          tap((provinces) => console.log('provinces ', provinces)),
-          map((provinces) =>
-            provinces.map((provinces) => ({
-              label: provinces.name,
-              value: provinces.id,
-            }))
-          )
-        );
+      
     }
   }
   uploadFile(event: any, controlName: string) {

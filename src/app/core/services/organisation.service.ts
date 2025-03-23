@@ -21,10 +21,12 @@ export class OrganisationService {
   getAllDepartments(): Observable<Department[]> {
     return this.http.get<Department[]>(`${this.baseUrl}/AllDepartments`).pipe(
       map((departments) =>
-        departments.map(dept => ({
-          ...dept,   // Spread existing properties
-          id: dept.did  // Add new property 'id'
-        }))
+        departments
+          .map((dept) => ({
+            ...dept, // Spread existing properties
+            id: dept.did, // Add new property 'id'
+          }))
+          .filter((department: Department) => department.status === 1)
       )
     );
   }

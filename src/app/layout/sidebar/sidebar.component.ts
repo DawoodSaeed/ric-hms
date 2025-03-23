@@ -149,22 +149,22 @@ export class SidebarComponent implements OnInit {
               {
                 label: 'Designations',
                 icon: 'fas fa-id-card-alt',
-                route: '/admin/designations',
+                route: '/admin/region-management/designations',
               },
               {
                 label: 'Departments',
-                icon: 'fas fa-building-columns',
-                route: '/admin/departments',
+                icon: 'fas fa-sitemap',
+                route: '/admin/region-management/departments',
               },
               {
                 label: 'Department Categories',
                 icon: 'fas fa-tags',
-                route: '/admin/department-categories',
+                route: '/admin/region-management/departmentCats',
               },
               {
                 label: 'Organization Types',
                 icon: 'fas fa-sitemap',
-                route: '/admin/organization-types',
+                route: '/admin/region-management/orgTypes',
               },
               {
                 label: 'Job Types',
@@ -175,7 +175,7 @@ export class SidebarComponent implements OnInit {
           },
           {
             label: 'Patient Management',
-            icon: 'fas fa-hospital-user',
+            icon: 'fas fa-user-injured',
             items: [
               {
                 label: 'Patient Types',
@@ -267,12 +267,12 @@ export class SidebarComponent implements OnInit {
               {
                 label: 'Education Institutes',
                 icon: 'fas fa-school',
-                route: '/admin/education-institutes',
+                route: '/admin/region-management/educationInstitutes',
               },
               {
                 label: 'Education Degrees',
                 icon: 'fas fa-certificate',
-                route: '/admin/education-degrees',
+                route: '/admin/region-management/educationDegrees',
               },
               {
                 label: 'Gazzated Types',
@@ -317,6 +317,16 @@ export class SidebarComponent implements OnInit {
             icon: 'fas fa-place-of-worship',
             route: '/admin/region-management/religions',
           },
+          // {
+          //   label: 'Education Degrees',
+          //   icon: 'fas fa-graduation-cap',
+          //   route: '/admin/region-management/educationDegrees',
+          // },
+          // {
+          //   label: 'Education Institutions',
+          //   icon: 'fas fa-graduation-cap',
+          //   route: '/admin/region-management/educationInstitutes',
+          // },
         ],
       },
       {
