@@ -98,7 +98,9 @@ export class TypeTableService {
   getBloodGroups(): Observable<TypeTable[]> {
     return this.getAll<TypeTable>('BloodGroup');
   }
-
+  addUpdateBloodGroup(bloodGroup: TypeTable): Observable<TypeTable> {
+    return this.addUpdate<TypeTable>('BloodGroup', bloodGroup);
+  }
   getGazzatedTypes(): Observable<TypeTable[]> {
     return this.getAllPost<TypeTable>('GazzatedTypes');
   }
@@ -141,7 +143,6 @@ export class TypeTableService {
       departmentCategory
     );
   }
- 
 
   getDiscountTypes(): Observable<DiscountType[]> {
     return this.getAll<DiscountType>('DiscountTypes');
@@ -234,7 +235,7 @@ export class TypeTableService {
       map((response: OrganizationType[]) =>
         response.filter((org: OrganizationType) => org.isActive === 1)
       )
-    );;
+    );
   }
 
   addUpdateOrganizationType(
@@ -247,11 +248,32 @@ export class TypeTableService {
   }
 
   getPatientCheckInStatuses(): Observable<PatientCheckInStatus[]> {
-    return this.getAllPost<PatientCheckInStatus>('PatientCheckInStatus'); // POST for GetAll
+    return this.getAll<PatientCheckInStatus>('PatientCheckInStatus').pipe(
+      map((response: PatientCheckInStatus[]) =>
+        response.filter((type: PatientCheckInStatus) => type.isActive === 1)
+      ),
+      catchError((error) => {
+        console.log('error fetching countries');
+        return of([]);
+      })
+    ); // POST for GetAll
+  }
+  addUpdatePatientCheckInStatuses(
+    status: PatientCheckInStatus
+  ): Observable<PatientCheckInStatus> {
+    return this.addUpdate<PatientCheckInStatus>('PatientCheckInStatus', status); // POST for GetAll
   }
 
   getPatientTypes(): Observable<PatientType[]> {
-    return this.getAll<PatientType>('PatientTypes');
+    return this.getAll<PatientType>('PatientTypes').pipe(
+      map((response: PatientType[]) =>
+        response.filter((type: PatientType) => type.isActive === 1)
+      ),
+      catchError((error) => {
+        console.log('error fetching countries');
+        return of([]);
+      })
+    );
   }
 
   addUpdatePatientType(patientType: PatientType): Observable<PatientType> {

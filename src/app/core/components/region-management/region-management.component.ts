@@ -1,4 +1,16 @@
-import { DepartmentCategory, DiscountType, JobType, OrganizationType } from './../../interfaces/typetable';
+import {
+  Bank,
+  CheckInType,
+  DepartmentCategory,
+  DiscountType,
+  GuardianType,
+  JobType,
+  OrganizationType,
+  PatientCheckInStatus,
+  PatientType,
+  PaymentMethod,
+  TypeTable,
+} from './../../interfaces/typetable';
 import { OrganisationService } from './../../services/organisation.service';
 import { Component, inject, OnInit, Signal, signal } from '@angular/core';
 import { AccountService } from '../../services/account.service';
@@ -227,6 +239,70 @@ export class RegionManagementComponent implements OnInit {
     isHonorary: false,
     branchId: 0,
   };
+
+  newPatientType: PatientType = {
+    id: 0,
+    name: '',
+    description: '',
+    isActive: 1,
+  };
+  newPatientCheckInStatus: PatientCheckInStatus = {
+    id: 0,
+    name: '',
+    description: '',
+    isActive: 1,
+  };
+
+  newCheckInType: CheckInType = {
+    id: 0,
+    name: '',
+    description: '',
+    isActive: 1,
+  };
+
+  newGuardianType: GuardianType = {
+    id: 0,
+    name: '',
+    description: '',
+    isActive: 1,
+  };
+  newBloodGroup: TypeTable = {
+    id: 0,
+    name: '',
+    description: '',
+    isActive: 1,
+  };
+
+  newPaymentMethod: PaymentMethod = {
+    id: 0,
+    name: '',
+    description: '',
+    branchId: 0,
+    isActive: 1,
+  };
+
+  newDiscountType: DiscountType = {
+    id: 0,
+    name: '',
+    description: '',
+    isActive: 1,
+  };
+  newChargesType: TypeTable = {
+    id: 0,
+    name: '',
+    description: '',
+    isActive: 1,
+  };
+
+  newBank: Bank = {
+    id: 0,
+    name: '',
+    description: '',
+    abbrivation: '',
+    code: '',
+    isActive: 1,
+  };
+
   selectedItem: any;
 
   constructor(
@@ -281,6 +357,33 @@ export class RegionManagementComponent implements OnInit {
         break;
       case 'jobTypes':
         this.data$ = this.typeTableService.getJobTypes();
+
+        break;
+      case 'patientTypes':
+        this.data$ = this.typeTableService.getPatientTypes();
+        break;
+      case 'patientCheckInStatus':
+        this.data$ = this.typeTableService.getPatientCheckInStatuses();
+        break;
+      case 'checkInTypes':
+        this.data$ = this.typeTableService.getCheckInTypes();
+        break;
+      case 'guardianTypes':
+        this.data$ = this.typeTableService.getGuardianTypes();
+        break;
+      case 'bloodGroups':
+        this.data$ = this.typeTableService.getBloodGroups();
+        break;
+      case 'paymentmethods':
+        this.data$ = this.typeTableService.getPaymentMethods();
+        this.getBranches();
+        break;
+      case 'discountTypes':
+      case 'chargesTypes':
+        this.data$ = this.typeTableService.getChargesTypes();
+        break;
+      case 'Bank':
+        this.data$ = this.typeTableService.getBanks();
         break;
       default:
         this.data$ = of([]);
@@ -353,6 +456,8 @@ export class RegionManagementComponent implements OnInit {
     }
     if (name === 'branch' && event) {
       this.newDepartmentCategories.branchId = event.id;
+      this.newJobType.branchId = event.id;
+      this.newPaymentMethod.branchId = event.id;
     }
   }
   getCommonFields() {
@@ -440,6 +545,26 @@ export class RegionManagementComponent implements OnInit {
       this.newDepartmentCategories = rowData;
     } else if (this.dataType === 'orgTypes') {
       this.newOrgTypes = rowData;
+    } else if (this.dataType === 'jobTypes') {
+      this.newJobType = rowData;
+    } else if (this.dataType === 'patientTypes') {
+      this.newPatientType = rowData;
+    } else if (this.dataType === 'patientCheckInStatus') {
+      this.newPatientCheckInStatus = rowData;
+    } else if (this.dataType === 'checkInTypes') {
+      this.newCheckInType = rowData;
+    } else if (this.dataType === 'guardianTypes') {
+      this.newGuardianType = rowData;
+    } else if (this.dataType === 'bloodGroups') {
+      this.newBloodGroup = rowData;
+    } else if (this.dataType === 'paymentmethods') {
+      this.newPaymentMethod = rowData;
+    } else if (this.dataType === 'discountTypes') {
+      this.newDiscountType = rowData;
+    } else if (this.dataType === 'chargesTypes') {
+      this.newChargesType = rowData;
+    } else if (this.dataType === 'Bank') {
+      this.newBank = rowData;
     }
   }
 
@@ -609,6 +734,172 @@ export class RegionManagementComponent implements OnInit {
     } else if (this.dataType === 'orgTypes') {
       this.typeTableService
         .addUpdateOrganizationType(this.newOrgTypes)
+        .subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (data) {
+              this.loadData();
+              this.notificationService.showSuccess('Operation successful!');
+              this.displayDialogBox.set(false);
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.notificationService.showError(err.error.message);
+          },
+        });
+    } else if (this.dataType === 'jobTypes') {
+      this.typeTableService.addUpdateJobType(this.newJobType).subscribe({
+        next: (data: any) => {
+          console.log(data);
+          if (data) {
+            this.loadData();
+            this.notificationService.showSuccess('Operation successful!');
+            this.displayDialogBox.set(false);
+          }
+        },
+        error: (err) => {
+          console.log(err);
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'patientTypes') {
+      this.typeTableService
+        .addUpdatePatientType(this.newPatientType)
+        .subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (data) {
+              this.loadData();
+              this.notificationService.showSuccess('Operation successful!');
+              this.displayDialogBox.set(false);
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.notificationService.showError(err.error.message);
+          },
+        });
+    } else if (this.dataType === 'patientCheckInStatus') {
+      this.typeTableService
+        .addUpdatePatientCheckInStatuses(this.newPatientCheckInStatus)
+        .subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (data) {
+              this.loadData();
+              this.notificationService.showSuccess('Operation successful!');
+              this.displayDialogBox.set(false);
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.notificationService.showError(err.error.message);
+          },
+        });
+    } else if (this.dataType === 'checkInTypes') {
+      this.typeTableService
+        .addUpdateCheckInType(this.newCheckInType)
+        .subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (data) {
+              this.loadData();
+              this.notificationService.showSuccess('Operation successful!');
+              this.displayDialogBox.set(false);
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.notificationService.showError(err.error.message);
+          },
+        });
+    } else if (this.dataType === 'guardianTypes') {
+      this.typeTableService
+        .addUpdateGuardianType(this.newGuardianType)
+        .subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (data) {
+              this.loadData();
+              this.notificationService.showSuccess('Operation successful!');
+              this.displayDialogBox.set(false);
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.notificationService.showError(err.error.message);
+          },
+        });
+    } else if (this.dataType === 'bloodGroups') {
+      this.typeTableService.addUpdateBloodGroup(this.newBloodGroup).subscribe({
+        next: (data: any) => {
+          console.log(data);
+          if (data) {
+            this.loadData();
+            this.notificationService.showSuccess('Operation successful!');
+            this.displayDialogBox.set(false);
+          }
+        },
+        error: (err) => {
+          console.log(err);
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'paymentmethods') {
+      this.typeTableService
+        .addUpdatePaymentMethod(this.newPaymentMethod)
+        .subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (data) {
+              this.loadData();
+              this.notificationService.showSuccess('Operation successful!');
+              this.displayDialogBox.set(false);
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.notificationService.showError(err.error.message);
+          },
+        });
+    } else if (this.dataType === 'discountTypes') {
+      this.typeTableService
+        .addUpdateDiscountType(this.newDiscountType)
+        .subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (data) {
+              this.loadData();
+              this.notificationService.showSuccess('Operation successful!');
+              this.displayDialogBox.set(false);
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.notificationService.showError(err.error.message);
+          },
+        });
+    } else if (this.dataType === 'chargesTypes') {
+      this.typeTableService
+        .addUpdateChargesType(this.newChargesType)
+        .subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (data) {
+              this.loadData();
+              this.notificationService.showSuccess('Operation successful!');
+              this.displayDialogBox.set(false);
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.notificationService.showError(err.error.message);
+          },
+        });
+    } else if (this.dataType === 'Bank') {
+      this.typeTableService
+        .addUpdateBank(this.newBank)
         .subscribe({
           next: (data: any) => {
             console.log(data);
@@ -832,6 +1123,186 @@ export class RegionManagementComponent implements OnInit {
         isActive: 0,
       };
       this.typeTableService.addUpdateOrganizationType(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'jobTypes') {
+      let newItem = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      this.typeTableService.addUpdateJobType(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'patientTypes') {
+      let newItem = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      this.typeTableService.addUpdatePatientType(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'patientCheckInStatus') {
+      let newItem = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      this.typeTableService.addUpdatePatientCheckInStatuses(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'checkInTypes') {
+      let newItem = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      this.typeTableService.addUpdateCheckInType(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'guardianTypes') {
+      let newItem = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      this.typeTableService.addUpdateGuardianType(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'bloodGroups') {
+      let newItem = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      this.typeTableService.addUpdateBloodGroup(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'paymentmethods') {
+      let newItem = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      this.typeTableService.addUpdatePaymentMethod(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'discountTypes') {
+      let newItem = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      this.typeTableService.addUpdateDiscountType(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'chargesTypes') {
+      let newItem = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      this.typeTableService.addUpdateChargesType(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'Bank') {
+      let newItem = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      this.typeTableService.addUpdateBank(newItem).subscribe({
         next: (response: any) => {
           console.log(response);
           this.loadData();

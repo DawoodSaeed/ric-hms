@@ -175,6 +175,75 @@ export const adminRoutes: Routes = [
         component: RegionManagementComponent,
         data: { dataType: 'jobTypes', title: 'Job Types' },
       },
+      {
+        path: 'patientTypes',
+        component: RegionManagementComponent,
+        data: { dataType: 'patientTypes', title: 'Patient Types' },
+      },
+      {
+        path: 'patientCheckInStatus',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'patientCheckInStatus',
+          title: 'Patient CheckIn Status',
+        },
+      },
+      {
+        path: 'checkInTypes',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'checkInTypes',
+          title: 'CheckIn Types',
+        },
+      },
+      {
+        path: 'guardianTypes',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'guardianTypes',
+          title: 'Guardian Types',
+        },
+      },
+      {
+        path: 'bloodGroups',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'bloodGroups',
+          title: 'Blood Groups',
+        },
+      },
+      {
+        path: 'paymentmethods',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'paymentmethods',
+          title: 'Payment Methods',
+        },
+      },
+      {
+        path: 'discountTypes',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'discountTypes',
+          title: 'Discount Types',
+        },
+      },
+      {
+        path: 'chargesTypes',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'chargesTypes',
+          title: 'Charges Types',
+        },
+      },
+      {
+        path: 'banks',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'Bank',
+          title: 'Banks',
+        },
+      },
     ],
   },
   {

@@ -37,7 +37,13 @@
       <p-button
         p-button
         icon="pi pi-plus"
-        label="Add {{ this.dataType==='deptCats'?'Department Categories':this.dataType==='orgTypes'?'Organization Types':this.dataType }}"
+        label="Add {{
+          this.dataType === 'deptCats'
+            ? 'Department Categories'
+            : this.dataType === 'orgTypes'
+            ? 'Organization Types'
+            : this.dataType
+        }}"
         styleClass="ml-2"
         (click)="
           formState.set('addItem'); displayDialogBox.set(true); form.reset()
@@ -125,8 +131,22 @@
   <ng-template #header>
     <div class="flex items-center justify-between w-full">
       <h3 class="font-semibold text-lg">
-        @if(formState() == 'addItem'){ Add {{ this.dataType==='deptCats'?'Department Categories':this.dataType==='orgTypes'?'Organization Types':this.dataType }} } @if(formState()
-        == 'editItem'){ Edit {{ this.dataType==='deptCats'?'Department Categories':this.dataType==='orgTypes'?'Organization Types':this.dataType }}" }
+        @if(formState() == 'addItem'){ Add
+        {{
+          this.dataType === "deptCats"
+            ? "Department Categories"
+            : this.dataType === "orgTypes"
+            ? "Organization Types"
+            : this.dataType
+        }}
+        } @if(formState() == 'editItem'){ Edit
+        {{
+          this.dataType === "deptCats"
+            ? "Department Categories"
+            : this.dataType === "orgTypes"
+            ? "Organization Types"
+            : this.dataType
+        }}" }
       </h3>
       <button
         pButton
@@ -719,21 +739,18 @@
           <span class="text-red-400 font-bold">*</span>
         </label>
         <p-inputNumber
-        name="amount"
-  [(ngModel)]="newDepartment.amount"
-  [min]="0"
-  [useGrouping]="false"
-  placeholder="Amount"
-  (ngModelChange)="calculateDiscountedAmount()"
-></p-inputNumber>
+          name="amount"
+          [(ngModel)]="newDepartment.amount"
+          [min]="0"
+          [useGrouping]="false"
+          placeholder="Amount"
+          (ngModelChange)="calculateDiscountedAmount()"
+        ></p-inputNumber>
       </div>
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
-        <label for="name" class="font-medium flex"
-          >Discount Type
-
-        </label>
+        <label for="name" class="font-medium flex">Discount Type </label>
         @if(discountTypes$ |async; as discountTypes){
 
         <p-select
@@ -748,48 +765,32 @@
           dataKey="id"
           (ngModelChange)="onDropdownChange($event, 'discountType')"
         />
-<!-- 
-         <p-select
-          filter="true"
-          [checkmark]="true"
-          [options]="departmentCats"
-          [(ngModel)]="selectedDepartmentCat"
-          optionLabel="name"
-          placeholder="Select Department Category"
-          class="w-full"
-          name="countryName"
-          dataKey="id"
-          required
-          (ngModelChange)="onDropdownChange($event, 'departmentCat')"
-        /> -->
+
         }
       </div>
 
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
       >
-        <label for="description" class="font-medium"
-          >Discount
-
-        </label>
-     <p-inputNumber
-     name="discount"
-  [(ngModel)]="newDepartment.discount"
-  [min]="0"
-  [useGrouping]="false"
-  placeholder="Discount"
-  (ngModelChange)="calculateDiscountedAmount()"
-></p-inputNumber>
+        <label for="description" class="font-medium">Discount </label>
+        <p-inputNumber
+          name="discount"
+          [(ngModel)]="newDepartment.discount"
+          [min]="0"
+          [useGrouping]="false"
+          placeholder="Discount"
+          (ngModelChange)="calculateDiscountedAmount()"
+        ></p-inputNumber>
       </div>
 
-    <div
-  class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
->
-  <label class="font-medium">Discounted Amount</label>
-  <span class="w-full p-2 border rounded bg-gray-100">
-    {{ newDepartment.discountedAmount??'-' }}
-  </span>
-</div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label class="font-medium">Discounted Amount</label>
+        <span class="w-full p-2 border rounded bg-gray-100">
+          {{ newDepartment.discountedAmount ?? "-" }}
+        </span>
+      </div>
 
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
@@ -860,7 +861,7 @@
           class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
         />
       </div>
- <div
+      <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
       >
         <label for="name" class="font-medium flex"
@@ -904,9 +905,8 @@
           class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
         ></textarea>
       </div>
-     
     </ng-container>
-  <!-- Organization Types -->
+    <!-- Organization Types -->
     <ng-container *ngIf="dataType === 'orgTypes'">
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
@@ -947,7 +947,582 @@
         ></textarea>
       </div>
     </ng-container>
-  
+    <!-- JobType Form -->
+    <ng-container *ngIf="dataType === 'jobTypes'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium">
+          Name <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newJobType.name"
+          id="name"
+          placeholder="Job Type Name"
+          required
+          name="jobTypeName"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium">
+          Description <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newJobType.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="jobTypeDescription"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Select Branch
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        @if(branches$ |async; as branches){
+
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="branches"
+          [(ngModel)]="selectedBranch"
+          optionLabel="name"
+          placeholder="Select Branch"
+          class="w-full"
+          name="branchName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'branch')"
+        />
+        }
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label class="font-medium">Value</label>
+        <p-inputNumber
+          name="value"
+          [(ngModel)]="newJobType.value"
+          [min]="0"
+          [useGrouping]="false"
+          placeholder="Value"
+        ></p-inputNumber>
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label class="font-medium">Enable GP</label>
+        <p-checkbox
+          name="enableGp"
+          [binary]="true"
+          [ngModel]="newJobType.enableGp"
+          (onChange)="newJobType.enableGp = $event.checked"
+        ></p-checkbox>
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label class="font-medium">Enable GI</label>
+        <p-checkbox
+          name="enableGi"
+          [binary]="true"
+          [ngModel]="newJobType.enableGi"
+          (onChange)="newJobType.enableGi = $event.checked"
+        ></p-checkbox>
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label class="font-medium">Enable BF</label>
+        <p-checkbox
+          name="enableBf"
+          [binary]="true"
+          [ngModel]="newJobType.enableBf"
+          (onChange)="newJobType.enableBf = $event.checked"
+        ></p-checkbox>
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label class="font-medium">Enable Income Tax</label>
+        <p-checkbox
+          name="enableIncomeTax"
+          [binary]="true"
+          [ngModel]="newJobType.enableIncomeTax"
+          (onChange)="newJobType.enableIncomeTax = $event.checked"
+        ></p-checkbox>
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label class="font-medium">Enable Service Tax</label>
+        <p-checkbox
+          name="enableServiceTax"
+          [binary]="true"
+          [ngModel]="newJobType.enableServiceTax"
+          (onChange)="newJobType.enableServiceTax = $event.checked"
+        ></p-checkbox>
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label class="font-medium">Is Honorary</label>
+        <p-checkbox
+          name="isHonorary"
+          [binary]="true"
+          [ngModel]="newJobType.isHonorary"
+          (onChange)="newJobType.isHonorary = $event.checked"
+        ></p-checkbox>
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label class="font-medium">Active</label>
+        <p-checkbox
+          name="isActive"
+          [binary]="true"
+          [ngModel]="newJobType.isActive === 1"
+          (onChange)="newJobType.isActive = $event.checked ? 1 : 0"
+        ></p-checkbox>
+      </div>
+    </ng-container>
+<!-- Patient Type -->
+    <ng-container *ngIf="dataType === 'patientTypes'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newPatientType.name"
+          id="name"
+          placeholder="Type Name"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newPatientType.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+    </ng-container>
+     <!-- Patient Checkin status -->
+    <ng-container *ngIf="dataType === 'patientCheckInStatus'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newPatientCheckInStatus.name"
+          id="name"
+          placeholder="Status Name"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newPatientCheckInStatus.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+    </ng-container>
+        <!-- CheckIn Type -->
+    <ng-container *ngIf="dataType === 'checkInTypes'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newCheckInType.name"
+          id="name"
+          placeholder="Status Name"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newCheckInType.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+    </ng-container>
+     <!-- Guardian Type -->
+    <ng-container *ngIf="dataType === 'guardianTypes'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newGuardianType.name"
+          id="name"
+          placeholder="Guardian Type"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newGuardianType.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+    </ng-container>
+      <!-- BloodGroup -->
+    <ng-container *ngIf="dataType === 'bloodGroups'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newBloodGroup.name"
+          id="name"
+          placeholder="Bloodgroup Type"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newBloodGroup.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+    </ng-container>
+     <!-- Payment Methods -->
+    <ng-container *ngIf="dataType === 'paymentmethods'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newPaymentMethod.name"
+          id="cname"
+          placeholder="Method Name"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium flex"
+          >Select Branch
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        @if(branches$ |async; as branches){
+
+        <p-select
+          filter="true"
+          [checkmark]="true"
+          [options]="branches"
+          [(ngModel)]="selectedBranch"
+          optionLabel="name"
+          placeholder="Select Branch"
+          class="w-full"
+          name="branchName"
+          dataKey="id"
+          required
+          (ngModelChange)="onDropdownChange($event, 'branch')"
+        />
+        }
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newPaymentMethod.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+    </ng-container>
+     <!-- DiscountType -->
+    <ng-container *ngIf="dataType === 'discountTypes'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newDiscountType.name"
+          id="name"
+          placeholder="Discount Name"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newDiscountType.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+    </ng-container>
+      <!-- Charges Types -->
+    <ng-container *ngIf="dataType === 'chargesTypes'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newChargesType.name"
+          id="name"
+          placeholder="Charge Name"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newChargesType.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+    </ng-container>
+    <!-- Bank Form -->
+<ng-container *ngIf="dataType === 'Bank'">
+  <div class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+    <label for="name" class="font-medium">
+      Name <span class="text-red-400 font-bold">*</span>
+    </label>
+    <input
+      pInputText
+      [(ngModel)]="newBank.name"
+      id="name"
+      placeholder="Bank Name"
+      required
+      name="bankName"
+      class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+    />
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start">
+    <label for="description" class="font-medium">
+      Description <span class="text-red-400 font-bold">*</span>
+    </label>
+    <textarea
+      pInputTextarea
+      [(ngModel)]="newBank.description"
+      id="description"
+      placeholder="Description"
+      required
+      rows="5"
+      name="bankDescription"
+      class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+    ></textarea>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+    <label for="abbrivation" class="font-medium">
+      Abbreviation <span class="text-red-400 font-bold">*</span>
+    </label>
+    <input
+      pInputText
+      [(ngModel)]="newBank.abbrivation"
+      id="abbrivation"
+      placeholder="Abbreviation (e.g., HBL, UBL)"
+      required
+      name="bankAbbrivation"
+      class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+    />
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center">
+    <label for="code" class="font-medium">
+      Code <span class="text-red-400 font-bold">*</span>
+    </label>
+    <input
+      pInputText
+      [(ngModel)]="newBank.code"
+      id="code"
+      placeholder="Bank Code"
+      required
+      name="bankCode"
+      class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+    />
+  </div>
+
+ 
+</ng-container>
+
     <div class="flex justify-end mt-4">
       <button
         pButton
@@ -956,8 +1531,6 @@
         [disabled]="form.invalid"
       ></button>
     </div>
-
-    
   </form>
 </p-dialog>
 <p-confirmDialog>
