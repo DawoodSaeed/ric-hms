@@ -1,4 +1,4 @@
-import { DepartmentCategory, DiscountType } from './../../interfaces/typetable';
+import { DepartmentCategory, DiscountType, JobType, OrganizationType } from './../../interfaces/typetable';
 import { OrganisationService } from './../../services/organisation.service';
 import { Component, inject, OnInit, Signal, signal } from '@angular/core';
 import { AccountService } from '../../services/account.service';
@@ -107,7 +107,7 @@ export class RegionManagementComponent implements OnInit {
   selectedProvince!: Province | undefined;
   selectedDepartmentCat!: DepartmentCategory | undefined;
   selectedDiscountType!: DiscountType | undefined;
-  selectedBranch!:Branch|undefined;
+  selectedBranch!: Branch | undefined;
   tableHeadings$!: Observable<any[] | null>;
   newCountry: Country = {
     id: 0,
@@ -204,6 +204,29 @@ export class RegionManagementComponent implements OnInit {
     isActive: 1,
     ...this.getCommonFields(),
   };
+
+  newOrgTypes: OrganizationType = {
+    id: 0,
+    name: '',
+    description: '',
+    isActive: 1,
+  };
+
+  newJobType: JobType = {
+    id: 0,
+    name: '',
+    description: '',
+    isDeleted: false,
+    isActive: 0,
+    enableGp: false,
+    enableGi: false,
+    enableBf: false,
+    value: 0,
+    enableIncomeTax: false,
+    enableServiceTax: false,
+    isHonorary: false,
+    branchId: 0,
+  };
   selectedItem: any;
 
   constructor(
@@ -252,6 +275,12 @@ export class RegionManagementComponent implements OnInit {
       case 'deptCats':
         this.data$ = this.typeTableService.getDepartmentCategories();
         this.getBranches();
+        break;
+      case 'orgTypes':
+        this.data$ = this.typeTableService.getOrganizationTypes();
+        break;
+      case 'jobTypes':
+        this.data$ = this.typeTableService.getJobTypes();
         break;
       default:
         this.data$ = of([]);
@@ -322,9 +351,9 @@ export class RegionManagementComponent implements OnInit {
       // this.selectedDiscountType=event.name
       // console.log('selectedDiscountType ', this.selectedDiscountType);
     }
-     if (name === 'branch' && event) {
-       this.newDepartmentCategories.branchId = event.id;
-     }
+    if (name === 'branch' && event) {
+      this.newDepartmentCategories.branchId = event.id;
+    }
   }
   getCommonFields() {
     const timestamp = new Date().toISOString();
@@ -409,6 +438,8 @@ export class RegionManagementComponent implements OnInit {
       this.newDepartment = rowData;
     } else if (this.dataType === 'deptCats') {
       this.newDepartmentCategories = rowData;
+    } else if (this.dataType === 'orgTypes') {
+      this.newOrgTypes = rowData;
     }
   }
 
@@ -561,6 +592,23 @@ export class RegionManagementComponent implements OnInit {
     } else if (this.dataType === 'deptCats') {
       this.typeTableService
         .addUpdateDepartmentCategory(this.newDepartmentCategories)
+        .subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (data) {
+              this.loadData();
+              this.notificationService.showSuccess('Operation successful!');
+              this.displayDialogBox.set(false);
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.notificationService.showError(err.error.message);
+          },
+        });
+    } else if (this.dataType === 'orgTypes') {
+      this.typeTableService
+        .addUpdateOrganizationType(this.newOrgTypes)
         .subscribe({
           next: (data: any) => {
             console.log(data);
@@ -766,6 +814,24 @@ export class RegionManagementComponent implements OnInit {
         isActive: 0,
       };
       this.typeTableService.addUpdateDepartmentCategory(newItem).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.loadData();
+          this.confirmationService.close();
+          this.notificationService.showSuccess('Operation successful!');
+        },
+
+        error: (err) => {
+          this.confirmationService.close();
+          this.notificationService.showError(err.error.message);
+        },
+      });
+    } else if (this.dataType === 'orgTypes') {
+      let newItem = {
+        ...this.selectedItem,
+        isActive: 0,
+      };
+      this.typeTableService.addUpdateOrganizationType(newItem).subscribe({
         next: (response: any) => {
           console.log(response);
           this.loadData();

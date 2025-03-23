@@ -170,6 +170,11 @@ export const adminRoutes: Routes = [
         component: RegionManagementComponent,
         data: { dataType: 'orgTypes', title: 'Organization Types' },
       },
+      {
+        path: 'jobTypes',
+        component: RegionManagementComponent,
+        data: { dataType: 'jobTypes', title: 'Job Types' },
+      },
     ],
   },
   {

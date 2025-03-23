@@ -169,7 +169,7 @@ export class SidebarComponent implements OnInit {
               {
                 label: 'Job Types',
                 icon: 'fas fa-briefcase',
-                route: '/admin/job-types',
+                route: '/admin/region-management/jobTypes',
               },
             ],
           },

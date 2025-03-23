@@ -230,7 +230,11 @@ export class TypeTableService {
   }
 
   getOrganizationTypes(): Observable<OrganizationType[]> {
-    return this.getAll<OrganizationType>('OrganizationTypes');
+    return this.getAll<OrganizationType>('OrganizationTypes').pipe(
+      map((response: OrganizationType[]) =>
+        response.filter((org: OrganizationType) => org.isActive === 1)
+      )
+    );;
   }
 
   addUpdateOrganizationType(

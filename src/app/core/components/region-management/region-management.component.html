@@ -125,8 +125,8 @@
   <ng-template #header>
     <div class="flex items-center justify-between w-full">
       <h3 class="font-semibold text-lg">
-        @if(formState() == 'addItem'){ Add {{ this.dataType }} } @if(formState()
-        == 'editItem'){ Edit {{ this.dataType }} }
+        @if(formState() == 'addItem'){ Add {{ this.dataType==='deptCats'?'Department Categories':this.dataType==='orgTypes'?'Organization Types':this.dataType }} } @if(formState()
+        == 'editItem'){ Edit {{ this.dataType==='deptCats'?'Department Categories':this.dataType==='orgTypes'?'Organization Types':this.dataType }}" }
       </h3>
       <button
         pButton
@@ -906,7 +906,47 @@
       </div>
      
     </ng-container>
+  <!-- Organization Types -->
+    <ng-container *ngIf="dataType === 'orgTypes'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium"
+          >Name
 
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newOrgTypes.name"
+          id="name"
+          placeholder="Organization Name"
+          required
+          name="rname"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium"
+          >Description
+
+          <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newOrgTypes.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="relDes"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
+    </ng-container>
   
     <div class="flex justify-end mt-4">
       <button
