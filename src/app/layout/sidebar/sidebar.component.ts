@@ -102,12 +102,12 @@ export class SidebarComponent implements OnInit {
         items: [
           {
             label: 'Employees',
-            icon: 'pi pi-circle-on',
+            icon: 'pi pi-users',
             route: '/admin/employees',
           },
           {
             label: 'Add Employee',
-            icon: 'pi pi-circle-on',
+            icon: 'pi pi-user-plus',
             route: '/admin/addEmployee',
           },
 
@@ -295,22 +295,41 @@ export class SidebarComponent implements OnInit {
           {
             label: 'Countries',
             icon: 'fas fa-globe',
-            route: '/admin/countries',
+            route: '/admin/region-management/countries',
           },
           {
             label: 'Provinces',
             icon: 'fas fa-map-marked-alt',
-            route: '/admin/provinces',
+            route: '/admin/region-management/provinces',
           },
           {
             label: 'Districts',
             icon: 'fas fa-map-marked-alt',
-            route: '/admin/districts',
+            route: '/admin/region-management/districts',
           },
-          { label: 'Cities', icon: 'fas fa-city', route: '/admin/cities' },
+          {
+            label: 'Cities',
+            icon: 'fas fa-city',
+            route: '/admin/region-management/cities',
+          },
+          {
+            label: 'Religion',
+            icon: 'fas fa-place-of-worship',
+            route: '/admin/region-management/religions',
+          },
         ],
       },
-
+      {
+        label: 'Patient Management',
+        icon: 'fas fa-briefcase-medical',
+        items: [
+          {
+            label: 'Add Patient',
+            icon: 'fas fa-user-md',
+            route: '/admin/patient-management/registration',
+          },
+        ],
+      },
       {
         label: 'Doctor Management',
         icon: 'fas fa-map-marked-alt',

@@ -1,8 +1,9 @@
+import { PanelMenuModule } from 'primeng/panelmenu';
 // typetable.service.ts
 
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, map, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, switchMap } from 'rxjs';
 
 import {
   Bank,
@@ -286,7 +287,15 @@ export class TypeTableService {
 
   // ###### COUNTRIES >>>>>>>>>>>>>
   getCountries(): Observable<Country[]> {
-    return this.getAll<Country>('Countries');
+    return this.getAll<Country>('Countries').pipe(
+      map((response: Country[]) =>
+        response.filter((country: Country) => country.status === 1)
+      ),
+      catchError((error) => {
+        console.log('error fetching countries');
+        return of([]);
+      })
+    );
   }
 
   addUpdateCountry(country: Country): Observable<Country> {
@@ -294,7 +303,7 @@ export class TypeTableService {
   }
 
   // ###### PROVINCES >>>>>>>>>>>>>
-  getProvinces(): Observable<Province[]> {
+  getProvincesCountryWise(): Observable<Province[]> {
     return this.countryID$.pipe(
       switchMap((countryID) => {
         if (!countryID) return of([]);
@@ -307,13 +316,21 @@ export class TypeTableService {
     );
   }
 
+  getAllProvinces(): Observable<Province[]> {
+    return this.getAll<Province>('Provinces').pipe(
+      map((response: Province[]) =>
+        response.filter((province: Province) => province.status === 1)
+      )
+    );
+  }
+
   addUpdateProvince(province: Province): Observable<Province> {
     return this.addUpdate<Province>('Provinces', province);
   }
 
   // ###### DISTRICTS >>>>>>>>>>>>>
 
-  getDistricts(): Observable<District[]> {
+  getDistrictsProvinceWise(): Observable<District[]> {
     return this.provinceID$.pipe(
       switchMap((provinceID) => {
         if (!provinceID) return of([]); // Return empty array if no province selected
@@ -325,6 +342,13 @@ export class TypeTableService {
       })
     );
   }
+  getAllDistricts(): Observable<District[]> {
+    return this.getAll<District>('Districts').pipe(
+      map((response: District[]) =>
+        response.filter((district: District) => district.status === 1)
+      )
+    );
+  }
 
   addUpdateDistricts(district: District): Observable<District> {
     return this.addUpdate<District>('Districts', district);
@@ -333,14 +357,18 @@ export class TypeTableService {
   // ###### CITIES >>>>>>>>>>>>>
 
   getCities(): Observable<City[]> {
-    return this.getAll<City>('Cities');
+    return this.getAll<City>('Cities').pipe(
+      map((response: City[]) =>
+        response.filter((city: City) => city.status === 1)
+      )
+    );;
   }
 
   addUpdateCities(city: City): Observable<City> {
     return this.addUpdate<City>('Cities', city);
   }
 
-  // ###### DESIGNATIONS >>>>>>>>>>>>> #################################
+  // ###### DESIGNATIONS >>>>>>>>>>>>>
 
   getDesignations(): Observable<Designation[]> {
     return this.getAll<Designation>('Designations').pipe(
@@ -358,7 +386,7 @@ export class TypeTableService {
     return this.addUpdate<Designation>('Designations', designation);
   }
 
-  // Third Phase #######################################
+  // Third Phase
   getSpeciality(): Observable<Speciality[]> {
     return this.getAll<Speciality>('Specialities').pipe(
       map((Specialities) =>
@@ -395,17 +423,17 @@ export class TypeTableService {
       })
     );
   }
+    
   getGrades(): Observable<Grades[]> {
     return this.getAll<Grades>('EducationGrades');
-  }
-
-  // Fourth Phase after usama's work #############################
-  getTimeShifts(): Observable<TimeShift[]> {
-    return this.getAll<TimeShift>('TimeShifts');
-  }
-
-  addUpdateTimeShits(timeshift: TimeShift): Observable<TimeShift> {
-    return this.addUpdate<TimeShift>('TimeShifts', timeshift);
+    //   .pipe(
+    //     map((Grades) =>
+    //       Grades.map(grade => ({
+    //         ...grade,   // Spread existing properties
+    //         id: grade.subSpId  // Add new property 'id'
+    //       }))
+    //     )
+    //   );;
   }
 
   // ######## Doctor management type table #################################

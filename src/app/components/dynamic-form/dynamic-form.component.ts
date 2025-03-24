@@ -237,7 +237,7 @@ export class DynamicFormComponent implements OnInit {
           isEdit: this.isEdit,
           isDelete: this.isDelete,
         });
-  if(!this.isEdit && !this.isDelete && selectedTab.tabName!=='Basic Info'){
+  if( !this.isDelete && selectedTab.tabName!=='Basic Info'){
     console.log('selected Tab ',selectedTab);
      // Validate only the fields of the selected tab
      selectedTab.sections.forEach((section) => {
