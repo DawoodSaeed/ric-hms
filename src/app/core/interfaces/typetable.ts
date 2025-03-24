@@ -1,3 +1,5 @@
+import { BaseEntity } from './doctormanagement';
+
 export interface TypeTable {
   id?: number;
   name: string;
@@ -202,4 +204,57 @@ export interface TimeShift extends TypeTable {
   isSunday: boolean;
   isNightShift: boolean;
   branchId: number;
+}
+
+// ######### Doctor management type table #################################
+export interface Instruction extends TypeTable {
+  instrId: number;
+  name: string;
+  urduName: string;
+  description: string;
+  status: number;
+}
+
+export interface InstructionData {
+  instruction: Instruction;
+  specialities: number[];
+}
+
+export interface FollowUp extends TypeTable {
+  followId: number;
+  name: string;
+  urduName: string;
+  description: string;
+  status: number;
+}
+
+export interface FollowUpData {
+  followUp: FollowUp;
+  specialities: number[];
+}
+
+export interface Diagnosis extends TypeTable {
+  digId: number;
+  name: string;
+  description: string;
+  specialityId: number;
+  code: string;
+  status: number;
+}
+
+export interface DiagnosisData {
+  diagnosis: Diagnosis;
+  specialities: number[];
+}
+
+export interface Complaint extends TypeTable {
+  compId: number;
+  name: string;
+  description: string;
+  status: number;
+}
+
+export interface ComplaintData {
+  complaint: Complaint;
+  specialities: number[];
 }

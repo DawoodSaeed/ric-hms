@@ -67,7 +67,7 @@ export class LoginComponent implements OnInit {
           // console.log(user.token);
           console.log('navigating');
 
-          this.router.navigate(['/admin/']);
+          this.router.navigate([`/${user.role?.toLowerCase()}/`]);
         },
 
         error: (err) => {

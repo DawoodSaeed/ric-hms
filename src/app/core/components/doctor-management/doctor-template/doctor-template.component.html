@@ -1,0 +1,613 @@
+<h2 class="text-2xl font-bold mb-4 md:px-5">Add Template</h2>
+<app-breadcrumb />
+<form
+  [formGroup]="form"
+  class="space-y-6 p-4 rounded-lg"
+  (ngSubmit)="onSubmit()"
+>
+  <div class="p-fluid space-y-4">
+    <!-- Template Name Field -->
+    <div class="p-field flex flex-col space-y-2">
+      <label for="templateName" class="text-sm font-medium text-gray-700"
+        >Template Name</label
+      >
+      <div
+        class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2"
+      >
+        @let templateNames = templateNames$ | async; @if (templateNames) {
+        <p-select
+          id="templateName"
+          [loading]="isLoadingTemplateNames"
+          formControlName="templateName"
+          [options]="templateNames"
+          optionLabel="name"
+          optionValue="tempId"
+          [showClear]="true"
+          styleClass="w-full"
+          (onChange)="onTemplateNameChange()"
+        >
+          <ng-template pTemplate="item" let-item>
+            {{ item.name }}
+          </ng-template>
+        </p-select>
+        }
+        <button
+          type="button"
+          pButton
+          icon="pi pi-plus"
+          class="p-button-primary w-full md:w-auto"
+          (click)="openTemplateNameDialog()"
+        >
+          New
+        </button>
+      </div>
+      <small *ngIf="isLoadingTemplateNames" class="text-gray-500"
+        >Loading template names...</small
+      >
+    </div>
+
+    <!-- Template Instruction Field -->
+    <div class="p-field flex flex-col space-y-2">
+      <label for="templateInstruction" class="text-sm font-medium text-gray-700"
+        >Template Instruction</label
+      >
+      <div
+        class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2"
+      >
+        @let templateInstructions = templateInstructions$ | async; @if
+        (templateInstructions) {
+        <p-multiselect
+          id="templateInstruction"
+          [loading]="isLoadingTemplateInstructions"
+          formControlName="templateInstruction"
+          [options]="templateInstructions"
+          optionLabel="name"
+          optionValue="instrId"
+          [showClear]="true"
+          styleClass="w-full"
+          multiple="true"
+        >
+          <ng-template pTemplate="item" let-item>
+            {{ item.name }}
+          </ng-template>
+        </p-multiselect>
+        }
+        <button
+          type="button"
+          pButton
+          icon="pi pi-plus"
+          class="p-button-primary w-full md:w-auto"
+          (click)="openTemplateInstructionDialog()"
+        >
+          New
+        </button>
+      </div>
+      <small *ngIf="isLoadingTemplateInstructions" class="text-gray-500"
+        >Loading template instructions...</small
+      >
+    </div>
+
+    <!-- Follow Up Field -->
+    <div class="p-field flex flex-col space-y-2">
+      <label for="followUp" class="text-sm font-medium text-gray-700"
+        >Follow Up</label
+      >
+      <div
+        class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2"
+      >
+        @let followUps = followUps$ | async; @if (followUps) {
+        <p-multiselect
+          id="followUp"
+          [loading]="isLoadingFollowUps"
+          formControlName="followUp"
+          [options]="followUps"
+          optionLabel="name"
+          optionValue="followId"
+          [showClear]="true"
+          styleClass="w-full"
+        >
+          <ng-template pTemplate="item" let-item>
+            {{ item.name }}
+          </ng-template>
+        </p-multiselect>
+        }
+        <button
+          type="button"
+          pButton
+          icon="pi pi-plus"
+          class="p-button-primary w-full md:w-auto"
+          (click)="openFollowUpDialog()"
+        >
+          New
+        </button>
+      </div>
+      <small *ngIf="isLoadingFollowUps" class="text-gray-500"
+        >Loading follow ups...</small
+      >
+    </div>
+
+    <!-- Complaints Field -->
+    <div class="p-field flex flex-col space-y-2">
+      <label for="complaints" class="text-sm font-medium text-gray-700"
+        >Complaints</label
+      >
+      <div
+        class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2"
+      >
+        @let complaints = complaints$ | async; @if (complaints) {
+        <p-multiselect
+          [loading]="isLoadingComplaints"
+          id="complaints"
+          formControlName="complaints"
+          [options]="complaints"
+          optionLabel="name"
+          optionValue="compId"
+          [showClear]="true"
+          class="w-full"
+        >
+          <ng-template pTemplate="item" let-item>
+            {{ item.name }}
+          </ng-template>
+        </p-multiselect>
+        }
+        <button
+          type="button"
+          pButton
+          icon="pi pi-plus"
+          class="p-button-primary w-full md:w-auto"
+          (click)="openComplaintsDialog()"
+        >
+          New
+        </button>
+      </div>
+      <small *ngIf="isLoadingComplaints" class="text-gray-500"
+        >Loading complaints...</small
+      >
+    </div>
+
+    <!-- Diagnosis Field -->
+    <div class="p-field flex flex-col space-y-2">
+      <label for="diagnosis" class="text-sm font-medium text-gray-700">
+        Diagnosis
+      </label>
+      <div
+        class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2"
+      >
+        @let diagnosis = dignosis$ | async; @if (diagnosis) {
+        <p-multiselect
+          [loading]="isLoadingDignosis"
+          id="diagnosis"
+          formControlName="diagnosis"
+          [options]="diagnosis"
+          optionLabel="name"
+          optionValue="digId"
+          [showClear]="true"
+          [virtualScroll]="true"
+          [virtualScrollItemSize]="43"
+          styleClass="w-full"
+        >
+          <ng-template pTemplate="item" let-item>
+            {{ item.name }}
+          </ng-template>
+        </p-multiselect>
+        }
+        <button
+          type="button"
+          pButton
+          icon="pi pi-plus"
+          class="p-button-primary w-full md:w-auto"
+          (click)="openDignosisDialog()"
+        >
+          New
+        </button>
+      </div>
+      <small *ngIf="isLoadingDignosis" class="text-gray-500">
+        Loading dignosis...
+      </small>
+    </div>
+  </div>
+
+  <button
+    type="submit"
+    pButton
+    icon="pi pi-save"
+    class="p-button-primary w-full md:w-auto"
+    [disabled]="!form.valid"
+  >
+    Submit
+  </button>
+</form>
+
+<!-- Add New Template Name Dialog -->
+<p-dialog
+  header="Add New Template"
+  [(visible)]="displayTemplateNameDialog"
+  [modal]="true"
+  [style]="{ width: '90vw', maxWidth: '600px' }"
+  [breakpoints]="{ '960px': '75vw', '640px': '90vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form [formGroup]="templateNameForm" class="space-y-4">
+    <!-- Template Name Field -->
+    <div class="p-field">
+      <label for="newTemplateName" class="text-sm font-medium text-gray-700"
+        >Template Name</label
+      >
+      <input
+        pInputText
+        id="newTemplateName"
+        formControlName="newTemplateName"
+        type="text"
+        class="w-full p-2 border rounded"
+        placeholder="Enter template name"
+      />
+    </div>
+
+    <!-- Template Description Field -->
+    <div class="p-field">
+      <label
+        for="newTemplateDescription"
+        class="text-sm font-medium text-gray-700"
+        >Template Description</label
+      >
+      <textarea
+        pTextarea
+        id="newTemplateDescription"
+        formControlName="newTemplateDescription"
+        class="w-full p-2 border rounded"
+        placeholder="Enter template description"
+      ></textarea>
+    </div>
+
+    <!-- Save Button -->
+    <button
+      type="button"
+      pButton
+      icon="pi pi-save"
+      class="p-button-primary w-full md:w-auto"
+      (click)="saveTemplateName()"
+    >
+      Save
+    </button>
+  </form>
+</p-dialog>
+
+<!-- Add New Template Instruction Dialog -->
+<p-dialog
+  header="Add New Template Instruction"
+  [(visible)]="displayTemplateInstructionDialog"
+  [modal]="true"
+  [style]="{ width: '90vw', maxWidth: '600px' }"
+  [breakpoints]="{ '960px': '75vw', '640px': '90vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form [formGroup]="templateInstructionForm" class="space-y-4">
+    <!-- Name Field -->
+    <div class="p-field">
+      <label for="name" class="text-sm font-medium text-gray-700">Name</label>
+      <input
+        pInputText
+        id="name"
+        formControlName="name"
+        type="text"
+        class="w-full p-2 border rounded"
+        placeholder="Enter instruction name"
+      />
+    </div>
+
+    <!-- Urdu Name Field -->
+    <div class="p-field">
+      <label for="urduName" class="text-sm font-medium text-gray-700"
+        >Urdu Name</label
+      >
+      <div class="flex space-x-2">
+        <input
+          pInputText
+          id="urduName"
+          formControlName="urduName"
+          type="text"
+          class="w-full p-2 border rounded"
+          placeholder="Enter Urdu name"
+        />
+      </div>
+    </div>
+
+    <!-- Description Field -->
+    <div class="p-field">
+      <label for="description" class="text-sm font-medium text-gray-700"
+        >Description</label
+      >
+      <textarea
+        pTextarea
+        id="description"
+        formControlName="description"
+        class="w-full p-2 border rounded"
+        placeholder="Enter description"
+      ></textarea>
+    </div>
+
+    <!-- Specialities Dropdown -->
+    <div class="p-field">
+      @let specialities = specialities$ | async; @if (specialities) {
+      <label for="specialities" class="text-sm font-medium text-gray-700"
+        >Specialities</label
+      >
+      <p-multiselect
+        id="specialities"
+        formControlName="specialities"
+        [options]="specialities"
+        optionLabel="name"
+        optionValue="spId"
+        class="w-full"
+      >
+        <ng-template pTemplate="item" let-item>
+          {{ item.name }}
+        </ng-template>
+      </p-multiselect>
+      }
+    </div>
+
+    <!-- Save Button -->
+    <button
+      type="button"
+      pButton
+      icon="pi pi-save"
+      class="p-button-primary w-full md:w-auto"
+      (click)="saveTemplateInstruction()"
+      [disabled]="templateInstructionForm.invalid"
+    >
+      Save
+    </button>
+  </form>
+</p-dialog>
+
+<!-- Add New Follow Up Dialog -->
+<p-dialog
+  header="Add New Follow Up"
+  [(visible)]="displayFollowUpDialog"
+  [modal]="true"
+  [style]="{ width: '90vw', maxWidth: '600px' }"
+  [breakpoints]="{ '960px': '75vw', '640px': '90vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form [formGroup]="followUpForm" class="space-y-4">
+    <!-- Name Field -->
+    <div class="p-field">
+      <label for="name" class="text-sm font-medium text-gray-700">Name</label>
+      <input
+        pInputText
+        id="name"
+        formControlName="name"
+        type="text"
+        class="w-full p-2 border rounded"
+        placeholder="Enter follow-up name"
+      />
+    </div>
+
+    <!-- Urdu Name Field -->
+    <div class="p-field">
+      <label for="urduName" class="text-sm font-medium text-gray-700"
+        >Urdu Name</label
+      >
+      <div class="flex space-x-2">
+        <input
+          pInputText
+          id="urduName"
+          formControlName="urduName"
+          type="text"
+          class="w-full p-2 border rounded"
+          placeholder="Enter Urdu name"
+        />
+      </div>
+    </div>
+
+    <!-- Description Field -->
+    <div class="p-field">
+      <label for="description" class="text-sm font-medium text-gray-700"
+        >Description</label
+      >
+      <textarea
+        pTextarea
+        id="description"
+        formControlName="description"
+        class="w-full p-2 border rounded"
+        placeholder="Enter description"
+      ></textarea>
+    </div>
+
+    <!-- Specialities Dropdown -->
+    <div class="p-field">
+      @if (specialities) {
+      <label for="specialities" class="text-sm font-medium text-gray-700"
+        >Specialities</label
+      >
+      <p-multiselect
+        id="specialities"
+        formControlName="specialities"
+        [options]="specialities"
+        optionLabel="name"
+        optionValue="spId"
+        class="w-full"
+      >
+        <ng-template pTemplate="item" let-item>
+          {{ item.name }}
+        </ng-template>
+      </p-multiselect>
+      }
+    </div>
+
+    <!-- Save Button -->
+    <button
+      type="button"
+      pButton
+      icon="pi pi-save"
+      class="p-button-primary w-full md:w-auto"
+      (click)="saveFollowUp()"
+      [disabled]="followUpForm.invalid"
+    >
+      Save
+    </button>
+  </form>
+</p-dialog>
+
+<!-- Add New Complaint Dialog -->
+<p-dialog
+  header="Add New Complaint"
+  [(visible)]="displayComplaintsDialog"
+  [modal]="true"
+  [style]="{ width: '90vw', maxWidth: '600px' }"
+  [breakpoints]="{ '960px': '75vw', '640px': '90vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form [formGroup]="complaintsForm" class="space-y-4">
+    <!-- Name Field -->
+    <div class="p-field">
+      <label for="name" class="text-sm font-medium text-gray-700">Name</label>
+      <input
+        pInputText
+        id="name"
+        formControlName="name"
+        type="text"
+        class="w-full p-2 border rounded"
+        placeholder="Enter complaint name"
+      />
+    </div>
+
+    <!-- Description Field -->
+    <div class="p-field">
+      <label for="description" class="text-sm font-medium text-gray-700"
+        >Description</label
+      >
+      <textarea
+        pTextarea
+        id="description"
+        formControlName="description"
+        class="w-full p-2 border rounded"
+        placeholder="Enter description"
+      ></textarea>
+    </div>
+
+    <!-- Specialities Dropdown -->
+    <div class="p-field">
+      @if (specialities) {
+      <label for="specialities" class="text-sm font-medium text-gray-700"
+        >Specialities</label
+      >
+      <p-multiselect
+        id="specialities"
+        formControlName="specialities"
+        [options]="specialities"
+        optionLabel="name"
+        optionValue="spId"
+        class="w-full"
+      >
+        <ng-template pTemplate="item" let-item>
+          {{ item.name }}
+        </ng-template>
+      </p-multiselect>
+      }
+    </div>
+
+    <!-- Save Button -->
+    <button
+      type="button"
+      pButton
+      icon="pi pi-save"
+      class="p-button-primary w-full md:w-auto"
+      (click)="saveComplaints()"
+      [disabled]="complaintsForm.invalid"
+    >
+      Save
+    </button>
+  </form>
+</p-dialog>
+
+<!-- Add New Dignosis Dialog -->
+<p-dialog
+  header="Add New Dignosis"
+  [(visible)]="displayDignosisDialog"
+  [modal]="true"
+  [style]="{ width: '90vw', maxWidth: '600px' }"
+  [breakpoints]="{ '960px': '75vw', '640px': '90vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form [formGroup]="dignosisForm" class="space-y-4">
+    <!-- Name Field -->
+    <div class="p-field">
+      <label for="name" class="text-sm font-medium text-gray-700">Name</label>
+      <input
+        pInputText
+        id="name"
+        formControlName="name"
+        type="text"
+        class="w-full p-2 border rounded"
+        placeholder="Enter dignosis name"
+      />
+    </div>
+
+    <!-- Code Field -->
+    <div class="p-field">
+      <label for="code" class="text-sm font-medium text-gray-700">Code</label>
+      <input
+        pInputText
+        id="code"
+        formControlName="code"
+        type="text"
+        class="w-full p-2 border rounded"
+        placeholder="Enter dignosis code"
+      />
+    </div>
+
+    <!-- Description Field -->
+    <div class="p-field">
+      <label for="description" class="text-sm font-medium text-gray-700"
+        >Description</label
+      >
+      <textarea
+        pTextarea
+        id="description"
+        formControlName="description"
+        class="w-full p-2 border rounded"
+        placeholder="Enter description"
+      ></textarea>
+    </div>
+
+    <!-- Specialities Dropdown -->
+    <div class="p-field">
+      @if (specialities) {
+      <label for="specialities" class="text-sm font-medium text-gray-700"
+        >Specialities</label
+      >
+      <p-multiselect
+        id="specialities"
+        formControlName="specialities"
+        [options]="specialities"
+        optionLabel="name"
+        optionValue="spId"
+        class="w-full"
+      >
+        <ng-template pTemplate="item" let-item>
+          {{ item.name }}
+        </ng-template>
+      </p-multiselect>
+      }
+    </div>
+
+    <!-- Save Button -->
+    <button
+      type="button"
+      pButton
+      icon="pi pi-save"
+      class="p-button-primary w-full md:w-auto"
+      (click)="saveDignosis()"
+      [disabled]="dignosisForm.invalid"
+    >
+      Save
+    </button>
+  </form>
+</p-dialog>
