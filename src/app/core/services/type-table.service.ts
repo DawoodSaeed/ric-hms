@@ -8,9 +8,13 @@ import { BehaviorSubject, catchError, map, Observable, of, switchMap } from 'rxj
 import {
   Bank,
   City,
+  Complaint,
+  ComplaintData,
   Country,
   DepartmentCategory,
   Designation,
+  Diagnosis,
+  DiagnosisData,
   DiscountType,
   District,
   EducationDegree,
@@ -18,8 +22,12 @@ import {
   EmploymentStatus,
   Facility,
   FieldOfStudy,
+  FollowUp,
+  FollowUpData,
   Grades,
   GuardianType,
+  Instruction,
+  InstructionData,
   JobType,
   OrganizationType,
   PatientCheckInStatus,
@@ -426,5 +434,38 @@ export class TypeTableService {
     //       }))
     //     )
     //   );;
+  }
+
+  // ######## Doctor management type table #################################
+  getInstructions(): Observable<Instruction[]> {
+    return this.getAll<Instruction>('Instructions');
+  }
+
+  addUpdateInstruction(instruction: InstructionData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Instructions/AddUpdate`, instruction);
+  }
+
+  getFollowUps(): Observable<FollowUp[]> {
+    return this.getAll<FollowUp>('FollowUps');
+  }
+
+  addUpdateFollowUp(followUp: FollowUpData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/FollowUps/AddUpdate`, followUp);
+  }
+
+  getDiagnosis(): Observable<Diagnosis[]> {
+    return this.getAll<Diagnosis>('Diagnosis');
+  }
+
+  addUpdateDiagnosis(diagnosis: DiagnosisData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Diagnosis/AddUpdate`, diagnosis);
+  }
+
+  getComplaints(): Observable<Complaint[]> {
+    return this.getAll<Complaint>('Complaints');
+  }
+
+  addUpdateComplaint(complaint: ComplaintData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Complaints/AddUpdate`, complaint);
   }
 }
