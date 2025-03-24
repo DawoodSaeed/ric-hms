@@ -49,13 +49,18 @@
   <form [formGroup]="patientForm" (ngSubmit)="submit()">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
       <div>
-        <label>MR No</label>
+        <label>Patient CNIC</label>
         <input
           pInputText
-          formControlName="mrno"
+          formControlName="cnic"
           class="w-full"
-          placeholder="Enter MR No"
+          placeholder="Enter CNIC"
           variant="filled"
+    [ngClass]="{
+  'ng-invalid ng-dirty': patientForm.controls['cnic'].invalid && (patientForm.controls['cnic'].dirty || patientForm.controls['cnic'].touched)
+}"
+
+
         />
       </div>
 
@@ -123,21 +128,7 @@
         ></p-select>
       </div>
 
-      <div>
-        <label>CNIC</label>
-        <input
-          pInputText
-          formControlName="cnic"
-          class="w-full"
-          placeholder="Enter CNIC"
-          variant="filled"
-    [ngClass]="{
-  'ng-invalid ng-dirty': patientForm.controls['cnic'].invalid && (patientForm.controls['cnic'].dirty || patientForm.controls['cnic'].touched)
-}"
-
-
-        />
-      </div>
+      
       <div>
         <label>Passport</label>
         <input
@@ -525,3 +516,10 @@
         </ng-template>
   </form>
 </div>
+<!-- <p-confirmdialog key="positionDialog" position="top" /> -->
+<p-confirmDialog 
+  position="center" 
+  styleClass="custom-confirm-dialog" 
+  [closable]="false" 
+  [baseZIndex]="10000">
+</p-confirmDialog>

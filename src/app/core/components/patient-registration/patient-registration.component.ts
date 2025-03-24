@@ -10,18 +10,21 @@ import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { TypeTableService } from '../../services/type-table.service';
 import { dropDown, Religion } from '../../interfaces/typetable';
-import { map, Observable, startWith, tap } from 'rxjs';
+import { catchError, debounce, debounceTime, distinctUntilChanged, filter, map, Observable, of, startWith, switchMap, tap } from 'rxjs';
 import { DatePicker } from 'primeng/datepicker';
 import { Select } from 'primeng/select';
 import { FileUploadModule } from 'primeng/fileupload';
 import { PatientService } from '../../services/patient.service';
 import { NotificationService } from '../../services/notification.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialog } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-patient-registration',
   templateUrl: './patient-registration.component.html',
   imports: [
+    ConfirmDialog,
     ProgressSpinner,
     FileUploadModule,
     Select,
@@ -36,6 +39,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
     CalendarModule,
     ButtonModule,
   ],
+  providers:[ConfirmationService]
 })
 export class PatientRegistrationComponent implements OnInit {
   patientForm!: FormGroup;
@@ -50,10 +54,11 @@ export class PatientRegistrationComponent implements OnInit {
   patientTypeDropDown$!: Observable<any[]>;
   departmentDropDown$!: Observable<any[]>;
   designationDropDown$!: Observable<any[]>;
-isLoading=signal(false)
+  isLoading = signal(false);
   dropDownService = inject(TypeTableService);
   patientService = inject(PatientService);
   constructor(
+    private confirmationService: ConfirmationService,
     private fb: FormBuilder,
     private notificationService: NotificationService
   ) {}
@@ -61,6 +66,7 @@ isLoading=signal(false)
   ngOnInit(): void {
     this.initializeForm();
     this.fetchDropdowns();
+   
   }
   fetchDropdowns() {
     this.religionDropDown$ = this.dropDownService.getReligions().pipe(
@@ -71,15 +77,17 @@ isLoading=signal(false)
         }))
       )
     );
-this.provinceDropDown$ = this.dropDownService.getProvincesCountryWise().pipe(
-  tap((provinces) => console.log('provinces ', provinces)),
-  map((provinces) =>
-    provinces.map((provinces) => ({
-      label: provinces.name,
-      value: provinces.id,
-    }))
-  )
-);
+    this.provinceDropDown$ = this.dropDownService
+      .getProvincesCountryWise()
+      .pipe(
+        tap((provinces) => console.log('provinces ', provinces)),
+        map((provinces) =>
+          provinces.map((provinces) => ({
+            label: provinces.name,
+            value: provinces.id,
+          }))
+        )
+      );
     this.countryDropDown$ = this.dropDownService.getCountries().pipe(
       tap((contries) => console.log(contries)),
       map((countries) =>
@@ -133,7 +141,6 @@ this.provinceDropDown$ = this.dropDownService.getProvincesCountryWise().pipe(
     this.patientForm = this.fb.group({
       // Common Fields
       patientId: [0],
-      mrno: [''],
       name: ['', Validators.required],
       gender: ['', Validators.required],
       maritalStatus: ['', Validators.required],
@@ -173,6 +180,38 @@ this.provinceDropDown$ = this.dropDownService.getProvincesCountryWise().pipe(
       dependentDocument1: [''],
       dependentDocument2: [''],
     });
+
+    this.patientForm.get('cnic')?.valueChanges.pipe(
+      tap((cnic)=>console.log(cnic)),
+      // debounceTime(500),
+      distinctUntilChanged(),
+      filter(cnic=>cnic.length===13),
+      switchMap((cnic=>this.patientService.getPatientByCnic(cnic).pipe(
+        // catcherror to gracefully handle not found
+        catchError((err)=>{
+          return of(null)
+        })
+      )))
+    ).subscribe({
+      next:(response)=>{
+          if (response) {
+   this.confirmationService.confirm({
+     header: 'Patient Found!',
+     icon: 'pi pi-user-check',
+     message:
+       'This CNIC is already registered. Do you want to load the patient details?',
+     acceptLabel: 'Yes, Load It',
+     rejectLabel: 'No, Continue New',
+     acceptButtonStyleClass: 'p-button-success',
+     rejectButtonStyleClass: 'p-button-secondary',
+     accept: () => {
+       this.patientForm.patchValue(response);
+     },
+   });
+
+    }
+  }
+});
   }
 
   onTypeChange(type: string) {
@@ -182,8 +221,6 @@ this.provinceDropDown$ = this.dropDownService.getProvincesCountryWise().pipe(
     console.log(event.value);
     if (fieldName === 'country') {
       this.dropDownService.setCountryID(event.value);
-
-      
     }
   }
   uploadFile(event: any, controlName: string) {
@@ -196,6 +233,13 @@ this.provinceDropDown$ = this.dropDownService.getProvincesCountryWise().pipe(
       });
     }
   }
+  // checkCNIC(event:any){
+  //   console.log(event.target.value)
+  //   let cnic=event.target.value
+  //    this.patientService
+  //      .getPatientByCnic(cnic)
+  //      .subscribe((response) => console.log('cnic response ', response));
+  // };
 
   convertFileToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -219,8 +263,8 @@ this.provinceDropDown$ = this.dropDownService.getProvincesCountryWise().pipe(
     return `${year}-${month}-${day}`;
   }
   submit() {
-    this.isLoading.set(true)
-     this.patientForm.markAllAsTouched();
+    this.isLoading.set(true);
+    this.patientForm.markAllAsTouched();
     if (this.patientForm.valid) {
       if (this.patientForm.value.pnlEmpCardExpiry) {
         this.patientForm.value.pnlEmpCardExpiry = this.formatDateToYMD(
@@ -252,16 +296,15 @@ this.provinceDropDown$ = this.dropDownService.getProvincesCountryWise().pipe(
       this.patientService.addPatient(payload).subscribe({
         next: (response: any) => {
           console.log(response);
-          if(response){
-              this.notificationService.showSuccess(
-                'Patient registered successfully'
-              );
+          if (response) {
+            this.notificationService.showSuccess(
+              'Patient registered successfully'
+            );
           }
         },
-        error:(err)=>{
- this.notificationService.showError(err.error.message);
+        error: (err) => {
+          this.notificationService.showError(err.error.message);
           this.isLoading.set(false);
-
         },
         complete: () => {
           this.isLoading.set(false);
@@ -269,7 +312,7 @@ this.provinceDropDown$ = this.dropDownService.getProvincesCountryWise().pipe(
       });
       // Submit to API
     } else {
-    this.isLoading.set(false);
+      this.isLoading.set(false);
 
       this.notificationService.showError(
         'Please enter all the required fields'
