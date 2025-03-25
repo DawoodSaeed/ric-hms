@@ -3,7 +3,15 @@ import { PanelMenuModule } from 'primeng/panelmenu';
 
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, catchError, map, Observable, of, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
+} from 'rxjs';
 
 import {
   Bank,
@@ -45,6 +53,7 @@ import {
 } from '../interfaces/typetable';
 
 import { environment } from '../../../environments/environment.development';
+import { Department } from '../interfaces/organisation';
 @Injectable({
   providedIn: 'root',
 })
@@ -97,7 +106,9 @@ export class TypeTableService {
   getBloodGroups(): Observable<TypeTable[]> {
     return this.getAll<TypeTable>('BloodGroup');
   }
-
+  addUpdateBloodGroup(bloodGroup: TypeTable): Observable<TypeTable> {
+    return this.addUpdate<TypeTable>('BloodGroup', bloodGroup);
+  }
   getGazzatedTypes(): Observable<TypeTable[]> {
     return this.getAllPost<TypeTable>('GazzatedTypes');
   }
@@ -150,7 +161,11 @@ export class TypeTableService {
   }
 
   getEducationDegrees(): Observable<EducationDegree[]> {
-    return this.getAll<EducationDegree>('EducationDegrees');
+    return this.getAll<EducationDegree>('EducationDegrees').pipe(
+      map((response: EducationDegree[]) =>
+        response.filter((degree: EducationDegree) => degree.isActive === 1)
+      )
+    );
   }
 
   addUpdateEducationDegree(
@@ -160,7 +175,13 @@ export class TypeTableService {
   }
 
   getEducationInstitutions(): Observable<EducationInstitution[]> {
-    return this.getAll<EducationInstitution>('EducationInstitutions');
+    return this.getAll<EducationInstitution>('EducationInstitutions').pipe(
+      map((response: EducationInstitution[]) =>
+        response.filter(
+          (institute: EducationInstitution) => institute.isActive === 1
+        )
+      )
+    );
   }
 
   addUpdateEducationInstitution(
@@ -218,7 +239,11 @@ export class TypeTableService {
   }
 
   getOrganizationTypes(): Observable<OrganizationType[]> {
-    return this.getAll<OrganizationType>('OrganizationTypes');
+    return this.getAll<OrganizationType>('OrganizationTypes').pipe(
+      map((response: OrganizationType[]) =>
+        response.filter((org: OrganizationType) => org.isActive === 1)
+      )
+    );
   }
 
   addUpdateOrganizationType(
@@ -231,11 +256,32 @@ export class TypeTableService {
   }
 
   getPatientCheckInStatuses(): Observable<PatientCheckInStatus[]> {
-    return this.getAllPost<PatientCheckInStatus>('PatientCheckInStatus'); // POST for GetAll
+    return this.getAll<PatientCheckInStatus>('PatientCheckInStatus').pipe(
+      map((response: PatientCheckInStatus[]) =>
+        response.filter((type: PatientCheckInStatus) => type.isActive === 1)
+      ),
+      catchError((error) => {
+        console.log('error fetching countries');
+        return of([]);
+      })
+    ); // POST for GetAll
+  }
+  addUpdatePatientCheckInStatuses(
+    status: PatientCheckInStatus
+  ): Observable<PatientCheckInStatus> {
+    return this.addUpdate<PatientCheckInStatus>('PatientCheckInStatus', status); // POST for GetAll
   }
 
   getPatientTypes(): Observable<PatientType[]> {
-    return this.getAll<PatientType>('PatientTypes');
+    return this.getAll<PatientType>('PatientTypes').pipe(
+      map((response: PatientType[]) =>
+        response.filter((type: PatientType) => type.isActive === 1)
+      ),
+      catchError((error) => {
+        console.log('error fetching countries');
+        return of([]);
+      })
+    );
   }
 
   addUpdatePatientType(patientType: PatientType): Observable<PatientType> {
@@ -265,7 +311,7 @@ export class TypeTableService {
       map((religions) =>
         religions.map((religion) => ({
           ...religion,
-          id: religion.name as unknown as number,
+          id: religion.id as unknown as number,
         }))
       )
     );
@@ -304,6 +350,7 @@ export class TypeTableService {
 
   // ###### PROVINCES >>>>>>>>>>>>>
   getProvincesCountryWise(): Observable<Province[]> {
+    console.log('getProvincesCountryWise ');
     return this.countryID$.pipe(
       switchMap((countryID) => {
         if (!countryID) return of([]);
@@ -317,6 +364,7 @@ export class TypeTableService {
   }
 
   getAllProvinces(): Observable<Province[]> {
+    console.log('getAllProvinces');
     return this.getAll<Province>('Provinces').pipe(
       map((response: Province[]) =>
         response.filter((province: Province) => province.status === 1)
@@ -361,7 +409,7 @@ export class TypeTableService {
       map((response: City[]) =>
         response.filter((city: City) => city.status === 1)
       )
-    );;
+    );
   }
 
   addUpdateCities(city: City): Observable<City> {
@@ -372,12 +420,14 @@ export class TypeTableService {
 
   getDesignations(): Observable<Designation[]> {
     return this.getAll<Designation>('Designations').pipe(
-      map((departments) =>
-        departments.map((desgn) => ({
-          ...desgn, // Spread existing properties
-          id: desgn.desgnId,
-          // Add new property 'id'
-        }))
+      map(
+        (designations) =>
+          designations
+            .map((desgn) => ({
+              ...desgn,
+              id: desgn.desgnId, // Add id property
+            }))
+            .filter((desgn) => desgn.isActive === 1) // Filter active ones
       )
     );
   }
@@ -423,7 +473,7 @@ export class TypeTableService {
       })
     );
   }
-    
+
   getGrades(): Observable<Grades[]> {
     return this.getAll<Grades>('EducationGrades');
     //   .pipe(

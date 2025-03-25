@@ -193,7 +193,6 @@ export class DynamicFormComponent implements OnInit {
     if (this.formStructure?.tabs) {
       const selectedTab = this.formStructure.tabs[this.selectedTabIndex];
       if (!selectedTab) return; // Safety check
-  
       let tabData: any = {};
       let isValid = true;
   if(!this.isDelete){

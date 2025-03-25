@@ -149,58 +149,58 @@ export class SidebarComponent implements OnInit {
               {
                 label: 'Designations',
                 icon: 'fas fa-id-card-alt',
-                route: '/admin/designations',
+                route: '/admin/region-management/designations',
               },
               {
                 label: 'Departments',
-                icon: 'fas fa-building-columns',
-                route: '/admin/departments',
+                icon: 'fas fa-sitemap',
+                route: '/admin/region-management/departments',
               },
               {
                 label: 'Department Categories',
                 icon: 'fas fa-tags',
-                route: '/admin/department-categories',
+                route: '/admin/region-management/departmentCats',
               },
               {
                 label: 'Organization Types',
                 icon: 'fas fa-sitemap',
-                route: '/admin/organization-types',
+                route: '/admin/region-management/orgTypes',
               },
               {
                 label: 'Job Types',
                 icon: 'fas fa-briefcase',
-                route: '/admin/job-types',
+                route: '/admin/region-management/jobTypes',
               },
             ],
           },
           {
             label: 'Patient Management',
-            icon: 'fas fa-hospital-user',
+            icon: 'fas fa-user-injured',
             items: [
               {
                 label: 'Patient Types',
                 icon: 'fas fa-user-injured',
-                route: '/admin/patient-types',
+                route: '/admin/region-management/patientTypes',
               },
               {
                 label: 'Patient Check-in Status',
                 icon: 'fas fa-clipboard-check',
-                route: '/admin/patient-checkin-status',
+                route: '/admin/region-management/patientCheckInStatus',
               },
               {
                 label: 'Check-in Types',
                 icon: 'fas fa-sign-in-alt',
-                route: '/admin/checkin-types',
+                route: '/admin/region-management/checkInTypes',
               },
               {
                 label: 'Guardian Types',
                 icon: 'fas fa-user-shield',
-                route: '/admin/guardian-types',
+                route: '/admin/region-management/guardianTypes',
               },
               {
                 label: 'Blood Groups',
                 icon: 'fas fa-tint',
-                route: '/admin/blood-groups',
+                route: '/admin/region-management/bloodGroups',
               },
             ],
           },
@@ -211,22 +211,22 @@ export class SidebarComponent implements OnInit {
               {
                 label: 'Payment Methods',
                 icon: 'fas fa-credit-card',
-                route: '/admin/payment-methods',
+                route: '/admin/region-management/paymentmethods',
               },
               {
                 label: 'Discount Types',
                 icon: 'fas fa-percent',
-                route: '/admin/discount-types',
+                route: '/admin/region-management/discountTypes',
               },
               {
                 label: 'Charges Types',
                 icon: 'fas fa-file-invoice-dollar',
-                route: '/admin/charges-types',
+                route: '/admin/region-management/chargesTypes',
               },
               {
                 label: 'Banks',
                 icon: 'fas fa-university',
-                route: '/admin/banks',
+                route: '/admin/region-management/banks',
               },
             ],
           },
@@ -267,12 +267,12 @@ export class SidebarComponent implements OnInit {
               {
                 label: 'Education Institutes',
                 icon: 'fas fa-school',
-                route: '/admin/education-institutes',
+                route: '/admin/region-management/educationInstitutes',
               },
               {
                 label: 'Education Degrees',
                 icon: 'fas fa-certificate',
-                route: '/admin/education-degrees',
+                route: '/admin/region-management/educationDegrees',
               },
               {
                 label: 'Gazzated Types',
@@ -317,6 +317,16 @@ export class SidebarComponent implements OnInit {
             icon: 'fas fa-place-of-worship',
             route: '/admin/region-management/religions',
           },
+          // {
+          //   label: 'Education Degrees',
+          //   icon: 'fas fa-graduation-cap',
+          //   route: '/admin/region-management/educationDegrees',
+          // },
+          // {
+          //   label: 'Education Institutions',
+          //   icon: 'fas fa-graduation-cap',
+          //   route: '/admin/region-management/educationInstitutes',
+          // },
         ],
       },
       {

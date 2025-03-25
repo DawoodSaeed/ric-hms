@@ -135,18 +135,125 @@ export const adminRoutes: Routes = [
         component: RegionManagementComponent,
         data: { dataType: 'Religion', title: 'Religions' },
       },
+      {
+        path: 'educationDegrees',
+        component: RegionManagementComponent,
+        data: { dataType: 'Degree', title: 'Degrees' },
+      },
+      {
+        path: 'educationInstitutes',
+        component: RegionManagementComponent,
+        data: { dataType: 'Institue', title: 'Institutes' },
+      },
+      {
+        path: 'educationInstitutes',
+        component: RegionManagementComponent,
+        data: { dataType: 'Institue', title: 'Institutes' },
+      },
+      {
+        path: 'designations',
+        component: RegionManagementComponent,
+        data: { dataType: 'Designation', title: 'Designations' },
+      },
+      {
+        path: 'departments',
+        component: RegionManagementComponent,
+        data: { dataType: 'Department', title: 'Departments' },
+      },
+      {
+        path: 'departmentCats',
+        component: RegionManagementComponent,
+        data: { dataType: 'deptCats', title: 'Department Categories' },
+      },
+      {
+        path: 'orgTypes',
+        component: RegionManagementComponent,
+        data: { dataType: 'orgTypes', title: 'Organization Types' },
+      },
+      {
+        path: 'jobTypes',
+        component: RegionManagementComponent,
+        data: { dataType: 'jobTypes', title: 'Job Types' },
+      },
+      {
+        path: 'patientTypes',
+        component: RegionManagementComponent,
+        data: { dataType: 'patientTypes', title: 'Patient Types' },
+      },
+      {
+        path: 'patientCheckInStatus',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'patientCheckInStatus',
+          title: 'Patient CheckIn Status',
+        },
+      },
+      {
+        path: 'checkInTypes',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'checkInTypes',
+          title: 'CheckIn Types',
+        },
+      },
+      {
+        path: 'guardianTypes',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'guardianTypes',
+          title: 'Guardian Types',
+        },
+      },
+      {
+        path: 'bloodGroups',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'bloodGroups',
+          title: 'Blood Groups',
+        },
+      },
+      {
+        path: 'paymentmethods',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'paymentmethods',
+          title: 'Payment Methods',
+        },
+      },
+      {
+        path: 'discountTypes',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'discountTypes',
+          title: 'Discount Types',
+        },
+      },
+      {
+        path: 'chargesTypes',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'chargesTypes',
+          title: 'Charges Types',
+        },
+      },
+      {
+        path: 'banks',
+        component: RegionManagementComponent,
+        data: {
+          dataType: 'Bank',
+          title: 'Banks',
+        },
+      },
     ],
   },
-    {
+  {
     path: 'patient-management', // Corrected spelling and used kebab-case
     children: [
       // Added children for nested routes
       {
         path: 'registration',
         component: PatientRegistrationComponent,
-        // data: { dataType: 'Country', title: 'Countries' },
       },
-     
-    ]
-    }
+    ],
+  },
 ];

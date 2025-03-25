@@ -1,0 +1,8 @@
+.ng-invalid.ng-dirty {
+    border: 1px solid red !important;
+}
+::ng-deep{
+    p-inputmask input{
+        width: 100%;
+    }
+}

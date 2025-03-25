@@ -15,7 +15,7 @@ export interface Bank extends TypeTable {
   bankId?: number;
   abbrivation: string;
   code: string;
-  bank: number;
+  bank?: number;
 }
 
 export interface DepartmentCategory extends TypeTable {
@@ -128,6 +128,7 @@ export interface Scale extends TypeTable {
 
 export interface CheckInType extends TypeTable {}
 export interface DiscountType extends TypeTable {}
+
 export interface EmploymentStatus extends TypeTable {}
 export interface Facility extends TypeTable {}
 export interface GuardianType extends TypeTable {}
@@ -137,7 +138,10 @@ export interface PaymentMethod extends TypeTable {
 export interface Relation extends TypeTable {}
 export interface Religion extends TypeTable {}
 export interface PatientCheckInStatus extends TypeTable {}
-
+export interface dropDown {
+  label: string;
+  value: string|number|undefined;
+}
 // Stage # 2 of making the typetable #################
 export interface Country extends TypeTable {
   cid?: number;
