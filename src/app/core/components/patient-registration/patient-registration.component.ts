@@ -19,11 +19,13 @@ import { NotificationService } from '../../services/notification.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
+import { InputMask } from 'primeng/inputmask';
 
 @Component({
   selector: 'app-patient-registration',
   templateUrl: './patient-registration.component.html',
   imports: [
+    InputMask,
     ConfirmDialog,
     ProgressSpinner,
     FileUploadModule,
@@ -185,7 +187,7 @@ export class PatientRegistrationComponent implements OnInit {
       tap((cnic)=>console.log(cnic)),
       // debounceTime(500),
       distinctUntilChanged(),
-      filter(cnic=>cnic.length===13),
+      filter(cnic=>cnic.length===15),
       switchMap((cnic=>this.patientService.getPatientByCnic(cnic).pipe(
         // catcherror to gracefully handle not found
         catchError((err)=>{

@@ -48,20 +48,21 @@
 
   <form [formGroup]="patientForm" (ngSubmit)="submit()">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-      <div>
+      <div class="flex flex-col">
         <label>Patient CNIC</label>
-        <input
-          pInputText
-          formControlName="cnic"
-          class="w-full"
-          placeholder="Enter CNIC"
+        <p-inputMask
           variant="filled"
-    [ngClass]="{
-  'ng-invalid ng-dirty': patientForm.controls['cnic'].invalid && (patientForm.controls['cnic'].dirty || patientForm.controls['cnic'].touched)
-}"
-
-
-        />
+          formControlName="cnic"
+          mask="99999-9999999-9"
+          placeholder="Enter CNIC"
+          class="w-full"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              patientForm.controls['cnic'].invalid &&
+              (patientForm.controls['cnic'].dirty ||
+                patientForm.controls['cnic'].touched)
+          }"
+        ></p-inputMask>
       </div>
 
       <div>
@@ -72,11 +73,11 @@
           class="w-full p-inputtext"
           placeholder="Enter Patient Name"
           variant="filled"
-         [ngClass]="{
-                  'ng-invalid ng-dirty':
-                    patientForm.controls['name'].invalid &&
-                    patientForm.controls['name'].touched
-                }"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              patientForm.controls['name'].invalid &&
+              patientForm.controls['name'].touched
+          }"
         />
       </div>
       <div>
@@ -101,10 +102,12 @@
           placeholder="Select gender"
           class="w-full"
           variant="filled"
-         [ngClass]="{
-  'ng-invalid ng-dirty': patientForm.controls['cnic'].invalid && (patientForm.controls['cnic'].dirty || patientForm.controls['cnic'].touched)
-}"
-
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              patientForm.controls['cnic'].invalid &&
+              (patientForm.controls['cnic'].dirty ||
+                patientForm.controls['cnic'].touched)
+          }"
         ></p-select>
       </div>
 
@@ -122,13 +125,14 @@
           class="w-full"
           variant="filled"
           [ngClass]="{
-  'ng-invalid ng-dirty': patientForm.controls['cnic'].invalid && (patientForm.controls['cnic'].dirty || patientForm.controls['cnic'].touched)
-}"
-
+            'ng-invalid ng-dirty':
+              patientForm.controls['cnic'].invalid &&
+              (patientForm.controls['cnic'].dirty ||
+                patientForm.controls['cnic'].touched)
+          }"
         ></p-select>
       </div>
 
-      
       <div>
         <label>Passport</label>
         <input
@@ -494,7 +498,7 @@
       </div>
     </ng-container>
 
-    <div class="text-right mt-6"    *ngIf="!isLoading(); else spinner">
+    <div class="text-right mt-6" *ngIf="!isLoading(); else spinner">
       <p-button
         label="Submit"
         type="submit"
@@ -503,23 +507,24 @@
       ></p-button>
     </div>
     <ng-template #spinner>
-          <div class="text-right mt-6">
-            <button
-              class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
-            >
-              <p-progress-spinner
-                ariaLabel="loading"
-                [style]="{ width: '25px', height: '25px' }"
-              />
-            </button>
-          </div>
-        </ng-template>
+      <div class="text-right mt-6">
+        <button
+          class="cursor-pointer mt-4 bg-[#2929b9] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
+        >
+          <p-progress-spinner
+            ariaLabel="loading"
+            [style]="{ width: '25px', height: '25px' }"
+          />
+        </button>
+      </div>
+    </ng-template>
   </form>
 </div>
 <!-- <p-confirmdialog key="positionDialog" position="top" /> -->
-<p-confirmDialog 
-  position="center" 
-  styleClass="custom-confirm-dialog" 
-  [closable]="false" 
-  [baseZIndex]="10000">
+<p-confirmDialog
+  position="center"
+  styleClass="custom-confirm-dialog"
+  [closable]="false"
+  [baseZIndex]="10000"
+>
 </p-confirmDialog>
