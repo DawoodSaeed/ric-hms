@@ -65,13 +65,13 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: (user) => {
           // console.log(user.token);
-    console.log('navigating');
+          console.log('navigating');
 
-          this.router.navigate(['/admin/']);
+          this.router.navigate([`/${user.role?.toLowerCase()}/`]);
         },
 
         error: (err) => {
-           if (err.status == 401) {
+          if (err.status == 401) {
             this.authForm.setErrors({
               unAuth: true,
             });
