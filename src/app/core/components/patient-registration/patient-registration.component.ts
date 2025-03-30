@@ -9,7 +9,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { TypeTableService } from '../../services/type-table.service';
-import { dropDown, Religion } from '../../interfaces/typetable';
+import { City, dropDown, Religion } from '../../interfaces/typetable';
 import { catchError, debounce, debounceTime, distinctUntilChanged, filter, map, Observable, of, startWith, switchMap, tap } from 'rxjs';
 import { DatePicker } from 'primeng/datepicker';
 import { Select } from 'primeng/select';
@@ -90,6 +90,19 @@ export class PatientRegistrationComponent implements OnInit {
           }))
         )
       );
+
+      this.cityDropDown$ = this.dropDownService.getCitiesByProvinces().pipe(
+        tap((cities) => console.log('cities ', cities)),
+        map((cities: City[]) => {
+         return cities.map((city: City) => {
+            return {
+              label: city.name,
+              value: city.id,
+            };
+          });
+        })
+      );
+      // this.cityDropDown$=this.dropDownService.getcit
     this.countryDropDown$ = this.dropDownService.getCountries().pipe(
       tap((contries) => console.log(contries)),
       map((countries) =>
@@ -224,6 +237,9 @@ export class PatientRegistrationComponent implements OnInit {
     if (fieldName === 'country') {
       this.dropDownService.setCountryID(event.value);
     }
+     if (fieldName === 'province') {
+       this.dropDownService.setProvinceID(event.value);
+     }
   }
   uploadFile(event: any, controlName: string) {
     const file: File = event.files[0];
