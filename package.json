@@ -21,6 +21,7 @@
     "@fortawesome/fontawesome-free": "^5.10.2",
     "@primeng/themes": "^19.0.5",
     "@tailwindcss/postcss": "^4.0.5",
+    "jsbarcode": "^3.11.6",
     "jspdf": "^3.0.1",
     "notyf": "^3.10.0",
     "postcss": "^8.5.1",
