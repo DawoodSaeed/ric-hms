@@ -338,6 +338,11 @@ export class SidebarComponent implements OnInit {
             icon: 'fas fa-user-md',
             route: '/admin/patient-management/registration',
           },
+          {
+            label: 'Patient Checkin',
+            icon: 'fas fa-user-md',
+            route: '/admin/patient-management/checkin',
+          },
         ],
       },
       {

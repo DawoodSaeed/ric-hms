@@ -20,6 +20,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { InputMask } from 'primeng/inputmask';
+import { OrganisationService } from '../../services/organisation.service';
 
 @Component({
   selector: 'app-patient-registration',
@@ -59,6 +60,7 @@ export class PatientRegistrationComponent implements OnInit {
   isLoading = signal(false);
   dropDownService = inject(TypeTableService);
   patientService = inject(PatientService);
+  organizationService=inject(OrganisationService)
   constructor(
     private confirmationService: ConfirmationService,
     private fb: FormBuilder,
@@ -151,6 +153,7 @@ export class PatientRegistrationComponent implements OnInit {
         }))
       )
     );
+    this.organizationService.getPanelOrg().subscribe(orgs=>console.log('orgs ',orgs))
   }
   initializeForm() {
     this.patientForm = this.fb.group({

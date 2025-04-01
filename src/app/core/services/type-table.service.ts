@@ -529,4 +529,6 @@ export class TypeTableService {
   addUpdateComplaint(complaint: ComplaintData): Observable<any> {
     return this.http.post(`${this.apiUrl}/Complaints/AddUpdate`, complaint);
   }
+
+  
 }
