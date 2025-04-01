@@ -252,6 +252,10 @@ export const adminRoutes: Routes = [
     children: [
       // Added children for nested routes
       {
+        path: 'registration',
+        component: PatientRegistrationComponent,
+      },
+      {
         path: 'checkin',
         component: PatientCheckinComponent,
       },
