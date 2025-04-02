@@ -26,6 +26,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { Checkbox } from 'primeng/checkbox';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-patient-checkin',
@@ -37,6 +38,7 @@ import { Checkbox } from 'primeng/checkbox';
     InputTextModule,
     TextareaModule,
     Checkbox,
+    ButtonModule,
   ],
   providers: [BrowserModule],
 })
@@ -46,7 +48,7 @@ export class PatientCheckinComponent implements OnInit {
     { name: 'amount', label: 'Amount', type: 'number' },
     { name: 'paidAmount', label: 'Paid Amount', type: 'number' },
     { name: 'isDiscount', label: 'Is Discount', type: 'checkbox' },
-    { name: 'discountTypeId', label: 'Discount Type', type: 'number' },
+    { name: 'discountTypeId', label: 'Discount Type', type: 'dropdown' },
     { name: 'discountRate', label: 'Discount Rate', type: 'number' },
     { name: 'paymentMethodId', label: 'Payment Method', type: 'number' },
 
@@ -74,7 +76,7 @@ export class PatientCheckinComponent implements OnInit {
     this.checkinForm = this.fb.group({
       patientId: [0, Validators.required],
       patientTypeId: [1, Validators.required], // Walkin / Referral
-      checkInTypeID: [null, Validators.required], // Emergency / Department / Doctor
+      checkInTypeID: [1, Validators.required], // Emergency / Department / Doctor
       amount: [0, Validators.required],
       paidAmount: [0, Validators.required],
       isDiscount: [false],
