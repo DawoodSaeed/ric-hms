@@ -216,7 +216,7 @@ export class PatientRegistrationComponent implements OnInit {
       .get('cnic')
       ?.valueChanges.pipe(
         tap((cnic) => console.log(cnic)),
-        // debounceTime(500),
+        debounceTime(1000),
         distinctUntilChanged(),
         filter((cnic) => cnic.length === 15),
         switchMap((cnic) =>
@@ -232,7 +232,7 @@ export class PatientRegistrationComponent implements OnInit {
         next: (response) => {
           if (response) {
             this.confirmationService.confirm({
-              header: 'Patient Found!',
+              header: 'Patient Already Registered!',
               icon: 'pi pi-user-check',
               message:
                 'This CNIC is already registered. Do you want to load the patient details?',
@@ -306,6 +306,7 @@ export class PatientRegistrationComponent implements OnInit {
 
     if (this.patientForm.valid) {
       let patientName = this.patientForm.get('name')?.value;
+      let patientType=this.patientType
       let cnic = this.patientForm.get('cnic')?.value;
       let mrNo = '123456789876543';//this will come from backend
 
@@ -345,7 +346,7 @@ export class PatientRegistrationComponent implements OnInit {
               'Patient registered successfully'
             );
             console.log('resss', response);
-            this.patientService.generatePDF(patientName,mrNo,cnic)
+            this.patientService.generatePDF(`${patientName}(${patientType})`,mrNo,cnic)
           }
         },
         error: (err) => {
