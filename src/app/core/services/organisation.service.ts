@@ -83,16 +83,5 @@ export class OrganisationService {
     );
   }
 
-  getPanelOrg(): Observable<PanelOrg[]> {
-    return this.http.get<PanelOrg[]>(`${this.baseUrl}/GetPanelOrg`).pipe(
-      map((departments) =>
-        departments
-          .map((org) => ({
-            ...org, // Spread existing properties
-            id: org.porgId, // Add new property 'id'
-          }))
-          .filter((department: PanelOrg) => department.status === 1)
-      )
-    );
-  }
+
 }

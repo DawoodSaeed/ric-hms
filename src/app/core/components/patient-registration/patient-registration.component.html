@@ -358,27 +358,43 @@
       </div> -->
 
       <div>
-        <label>Organization (porgId)</label>
-        <input
+        <label>Panel Organization </label>
+        <!-- <input
           pInputText
           formControlName="porgId"
           type="number"
           class="w-full"
           placeholder="Enter Organization ID"
           variant="filled"
-        />
+        /> -->
+           <p-select
+            [options]="(panelOrgDropDown$ | async) ?? []"
+            formControlName="porgId"
+            placeholder="Enter Panel Org "
+            class="w-full"
+            variant="filled"
+            (onChange)="onValueChange($event,'panelOrg')"
+          ></p-select>
       </div>
 
       <div>
-        <label>Package (packId)</label>
-        <input
+        <label>Package</label>
+        <!-- <input
           pInputText
           formControlName="packId"
           type="number"
           class="w-full"
           placeholder="Enter Package ID"
           variant="filled"
-        />
+        /> -->
+         <p-select
+            [options]="(panelPkgDropDown$ | async) ?? []"
+            formControlName="packId"
+            placeholder="Enter Package"
+            class="w-full"
+            variant="filled"
+            (onChange)="onValueChange($event,'panelOrg')"
+          ></p-select>
       </div>
     </div>
 
