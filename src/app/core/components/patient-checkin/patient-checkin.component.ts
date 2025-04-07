@@ -1,3 +1,4 @@
+import { DiscountType } from './../../interfaces/typetable';
 // import { Component, inject, OnInit } from '@angular/core';
 // import { TypeTableService } from '../../services/type-table.service';
 // import { OrganisationService } from '../../services/organisation.service';
@@ -8,8 +9,7 @@
 //   styleUrl: './patient-checkin.component.scss'
 // })
 // export class PatientCheckinComponent implements OnInit {
-//   private dropDownService=inject(TypeTableService)
-//   private orgDropDownService=inject(OrganisationService)
+
 // ngOnInit(): void {
 //   this.dropDownService.getCheckInTypes().subscribe((checinTypes:any)=>console.log('checkintypes ',checinTypes))
 // // this.dropDownService.getPatientCheckInStatuses().subscribe(statuses=>console.log(statuses))
@@ -19,15 +19,18 @@
 // }
 
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms'; // ✅ Import this
+import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { Checkbox } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
-
+import { TypeTableService } from '../../services/type-table.service';
+import { OrganisationService } from '../../services/organisation.service';
+import { map, Observable } from 'rxjs';
+import { Select } from 'primeng/select';
 @Component({
   selector: 'app-patient-checkin',
   templateUrl: './patient-checkin.component.html',
@@ -39,28 +42,33 @@ import { ButtonModule } from 'primeng/button';
     TextareaModule,
     Checkbox,
     ButtonModule,
+    Select
   ],
   providers: [BrowserModule],
 })
 export class PatientCheckinComponent implements OnInit {
   checkinForm!: FormGroup;
+
+  private dropDownService = inject(TypeTableService);
+  private orgDropDownService = inject(OrganisationService);
+  discountTypesDropDown$!: Observable<any[]>;
   commonFields = [
     { name: 'amount', label: 'Amount', type: 'number' },
     { name: 'paidAmount', label: 'Paid Amount', type: 'number' },
     { name: 'isDiscount', label: 'Is Discount', type: 'checkbox' },
-    { name: 'discountTypeId', label: 'Discount Type', type: 'dropdown' },
+    { name: 'discountTypeId', label: 'Discount Type', type: 'dropdown' ,options$:this.discountTypesDropDown$},
     { name: 'discountRate', label: 'Discount Rate', type: 'number' },
     { name: 'paymentMethodId', label: 'Payment Method', type: 'number' },
-
     { name: 'bookingRemarks', label: 'Booking Remarks', type: 'textarea' },
     { name: 'patientCondition', label: 'Patient Condition', type: 'textarea' },
     { name: 'reason', label: 'Reason', type: 'textarea' },
   ];
+
   constructor(private fb: FormBuilder) {}
 
   ngOnInit() {
     this.initForm();
-
+    this.fetchDropdowns();
     // Handle form updates dynamically
     this.checkinForm.get('patientTypeId')?.valueChanges.subscribe(() => {
       this.updateFormFields();
@@ -89,7 +97,28 @@ export class PatientCheckinComponent implements OnInit {
       reason: [''],
     });
   }
+  fetchDropdowns() {
 
+      this.discountTypesDropDown$ = this.dropDownService
+        .getDiscountTypes()
+        .pipe(
+          map((response: DiscountType[]) =>
+            response.map((res) => ({
+              label: res.name,
+              value: res.id,
+            }))
+          )
+        );
+let discountField = this.commonFields.find(
+  (f) => f.name === 'discountTypeId'
+);
+// Got the reference of object
+console.log('found ', discountField);
+
+if(discountField){
+  discountField.options$=this.discountTypesDropDown$
+}
+  }
   // Function to update form fields dynamically
   updateFormFields() {
     const patientType = this.checkinForm.get('patientTypeId')?.value;

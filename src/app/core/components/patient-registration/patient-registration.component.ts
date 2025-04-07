@@ -9,7 +9,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { TypeTableService } from '../../services/type-table.service';
-import { City, dropDown, Religion } from '../../interfaces/typetable';
+import { City, DiscountType, dropDown, Religion } from '../../interfaces/typetable';
 import {
   catchError,
   debounce,
@@ -77,6 +77,7 @@ export class PatientRegistrationComponent implements OnInit {
   dropDownService = inject(TypeTableService);
   patientService = inject(PatientService);
   organizationService = inject(OrganisationService);
+  
   constructor(
     private confirmationService: ConfirmationService,
     private fb: FormBuilder,
@@ -186,6 +187,9 @@ export class PatientRegistrationComponent implements OnInit {
         }))
       )
     );
+
+
+
   }
 
   initializeForm() {
