@@ -28,7 +28,7 @@ export class PatientService {
       .pipe(map((response) => response.patient));
   };
 
-  generatePDF(patientName:string,mrNo:string,cnic:string) {
+  generatePDF(patientName: string, mrNo: string, cnic: string) {
     const doc = new jsPDF({
       orientation: 'portrait', // or "landscape"
       unit: 'mm', // Units: "mm", "cm", "in", "px"

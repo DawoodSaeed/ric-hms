@@ -1,0 +1,224 @@
+<app-breadcrumb />
+
+<div class="">
+  <h2 class="text-xl font-semibold mb-4">Patients Queue</h2>
+
+  <p-tabView [(activeIndex)]="activeTab">
+    <p-tabPanel header="Clinical Practice">
+      <ng-template pTemplate="header">
+        <div class="flex align-items-center gap-2">
+          <span> Clinical Practice </span>
+          <p-badge value="1" class="mr-2" severity="danger"></p-badge>
+        </div>
+      </ng-template>
+
+      <!-- for the content -->
+      <ng-template pTemplate="content">
+        <p-table
+          [value]="patients"
+          class="mt-4"
+          [paginator]="false"
+          [rows]="10"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Sr.</th>
+              <th>Name</th>
+              <th>MR No</th>
+              <th>Visit No</th>
+              <th>Waiting Time</th>
+              <th>Status</th>
+              <th>Doctor/Department</th>
+              <th>Action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-patient let-index="rowIndex">
+            <tr>
+              <td>{{ index + 1 }}</td>
+              <td>{{ patient.name }}</td>
+              <td>{{ patient.mrNo }}</td>
+              <td>{{ patient.visitNo }}</td>
+              <td>{{ patient.waitingTime }}</td>
+              <td>{{ patient.status }}</td>
+              <td>{{ patient.department }}</td>
+              <td>
+                <button
+                  pButton
+                  icon="pi pi-eye"
+                  class="p-button-text p-button-sm mr-2"
+                ></button>
+                <button
+                  pButton
+                  icon="pi pi-trash"
+                  class="p-button-danger p-button-sm p-button-text"
+                ></button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-template>
+    </p-tabPanel>
+    <p-tabPanel header="Hold">
+      <ng-template pTemplate="header">
+        <div class="flex align-items-center gap-2">
+          <span> Hold</span>
+          <p-badge value="0" class="ml-2" severity="warn"></p-badge>
+        </div>
+      </ng-template>
+
+      <!-- for the content -->
+      <ng-template pTemplate="content">
+        <p-table
+          [value]="patients"
+          class="mt-4"
+          [paginator]="false"
+          [rows]="10"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Sr.</th>
+              <th>Name</th>
+              <th>MR No</th>
+              <th>Visit No</th>
+              <th>Waiting Time</th>
+              <th>Status</th>
+              <th>Doctor/Department</th>
+              <th>Action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-patient let-index="rowIndex">
+            <tr>
+              <td>{{ index + 1 }}</td>
+              <td>{{ patient.name }}</td>
+              <td>{{ patient.mrNo }}</td>
+              <td>{{ patient.visitNo }}</td>
+              <td>{{ patient.waitingTime }}</td>
+              <td>{{ patient.status }}</td>
+              <td>{{ patient.department }}</td>
+              <td>
+                <button
+                  pButton
+                  icon="pi pi-eye"
+                  class="p-button-text p-button-sm mr-2"
+                ></button>
+                <button
+                  pButton
+                  icon="pi pi-trash"
+                  class="p-button-danger p-button-sm p-button-text"
+                ></button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-template>
+    </p-tabPanel>
+    <p-tabPanel header="Consulted">
+      <ng-template pTemplate="header">
+        <div class="flex align-items-center gap-2">
+          <span> Consulted </span>
+          <p-badge value="1" class="ml-2" severity="success"></p-badge>
+        </div>
+      </ng-template>
+
+      <!-- for the content -->
+      <ng-template pTemplate="content">
+        <p-table
+          [value]="patients"
+          class="mt-4"
+          [paginator]="false"
+          [rows]="10"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Sr.</th>
+              <th>Name</th>
+              <th>MR No</th>
+              <th>Visit No</th>
+              <th>Waiting Time</th>
+              <th>Status</th>
+              <th>Doctor/Department</th>
+              <th>Action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-patient let-index="rowIndex">
+            <tr>
+              <td>{{ index + 1 }}</td>
+              <td>{{ patient.name }}</td>
+              <td>{{ patient.mrNo }}</td>
+              <td>{{ patient.visitNo }}</td>
+              <td>{{ patient.waitingTime }}</td>
+              <td>{{ patient.status }}</td>
+              <td>{{ patient.department }}</td>
+              <td>
+                <button
+                  pButton
+                  icon="pi pi-eye"
+                  class="p-button-text p-button-sm mr-2"
+                ></button>
+                <button
+                  pButton
+                  icon="pi pi-trash"
+                  class="p-button-danger p-button-sm p-button-text"
+                ></button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-template>
+    </p-tabPanel>
+    <p-tabPanel header="IPD">
+      <ng-template pTemplate="header">
+        <div class="flex align-items-center gap-2">
+          <span> IPD </span>
+          <p-badge value="739" class="ml-2" severity="info"></p-badge>
+        </div>
+      </ng-template>
+
+      <!-- for the content -->
+      <ng-template pTemplate="content">
+        <p-table
+          [value]="patients"
+          class="mt-4"
+          [paginator]="false"
+          [rows]="10"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Sr.</th>
+              <th>Name</th>
+              <th>MR No</th>
+              <th>Visit No</th>
+              <th>Waiting Time</th>
+              <th>Status</th>
+              <th>Doctor/Department</th>
+              <th>Action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-patient let-index="rowIndex">
+            <tr>
+              <td>{{ index + 1 }}</td>
+              <td>{{ patient.name }}</td>
+              <td>{{ patient.mrNo }}</td>
+              <td>{{ patient.visitNo }}</td>
+              <td>{{ patient.waitingTime }}</td>
+              <td>{{ patient.status }}</td>
+              <td>{{ patient.department }}</td>
+              <td>
+                <button
+                  pButton
+                  icon="pi pi-eye"
+                  class="p-button-text p-button-sm mr-2"
+                ></button>
+                <button
+                  pButton
+                  icon="pi pi-trash"
+                  class="p-button-danger p-button-sm p-button-text"
+                ></button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-template>
+    </p-tabPanel>
+  </p-tabView>
+</div>
