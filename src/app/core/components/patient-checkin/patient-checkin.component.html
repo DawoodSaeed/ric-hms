@@ -1,0 +1,178 @@
+<form
+  [formGroup]="checkinForm"
+  (ngSubmit)="onSubmit()"
+  class="w-full mx-auto p-6 space-y-4"
+>
+  <h2 class="text-3xl font-bold mb-6">Patient CheckIn</h2>
+
+  <!-- Patient Type -->
+  
+  <div>
+    <label class="block text-lg font-medium text-gray-700">Patient Type:</label>
+    <div class="flex space-x-4 mt-2">
+      <label class="flex items-center space-x-2 cursor-pointer">
+        <input
+          type="radio"
+          formControlName="patientTypeId"
+          [value]="1"
+          class="accent-blue-600"
+        />
+        <span>Walkin</span>
+      </label>
+      <label class="flex items-center space-x-2 cursor-pointer">
+        <input
+          type="radio"
+          formControlName="patientTypeId"
+          [value]="2"
+          class="accent-blue-600"
+        />
+        <span>Referral</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Check-in Type -->
+  <div *ngIf="checkinForm.get('patientTypeId')?.value">
+    <label class="block text-lg font-medium text-gray-700">Check in to:</label>
+    <div class="flex space-x-4 mt-2">
+      <label class="flex items-center space-x-2 cursor-pointer">
+        <input
+          type="radio"
+          formControlName="checkInTypeID"
+          [value]="1"
+          class="accent-blue-600"
+        />
+        <span>Emergency</span>
+      </label>
+      <label class="flex items-center space-x-2 cursor-pointer">
+        <input
+          type="radio"
+          formControlName="checkInTypeID"
+          [value]="2"
+          class="accent-blue-600"
+        />
+        <span>Department</span>
+      </label>
+      <label class="flex items-center space-x-2 cursor-pointer">
+        <input
+          type="radio"
+          formControlName="checkInTypeID"
+          [value]="3"
+          class="accent-blue-600"
+        />
+        <span>Doctor</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Dynamic Fields Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <!--  Common Fields (Always Visible) -->
+    <div *ngFor="let field of commonFields">
+      <label>{{ field.label }}:</label>
+      <input
+        pInputText
+        *ngIf="field.type !== 'textarea' && field.type !== 'checkbox'"
+        type="{{ field.type }}"
+          variant="filled"
+
+        formControlName="{{ field.name }}"
+        class="w-full p-inputtext"
+      />
+      <textarea
+      pTextarea 
+      variant="filled"
+        *ngIf="field.type === 'textarea'"
+        formControlName="{{ field.name }}"
+        class="w-full px-3 py-2 border rounded-md focus:ring focus:ring-blue-200"
+      ></textarea>
+      <p-checkbox
+    
+        *ngIf="field.type === 'checkbox'"
+        type="checkbox"
+        formControlName="{{ field.name }}"
+        class="h-5 w-5 accent-blue-600 block"
+      />
+    </div>
+    <!-- Department & Sub-Department -->
+    <div *ngIf="checkinForm.get('deptId')">
+      <label class="block text-sm font-medium text-gray-700"
+        >Department ID:</label
+      >
+      <input
+        type="number"
+        formControlName="deptId"
+        class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-200"
+      />
+    </div>
+
+    <div *ngIf="checkinForm.get('subDeptId')">
+      <label class="block text-sm font-medium text-gray-700"
+        >Sub Department ID:</label
+      >
+      <input
+        type="number"
+        formControlName="subDeptId"
+        class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-200"
+      />
+    </div>
+
+    <!-- Doctor ID -->
+    <div *ngIf="checkinForm.get('doctorId')">
+      <label class="block text-sm font-medium text-gray-700">Doctor ID:</label>
+      <input
+        type="text"
+        formControlName="doctorId"
+        class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-200"
+      />
+    </div>
+
+    <!-- Referral Fields -->
+    <div *ngIf="checkinForm.get('isRefered')">
+      <label class="block text-sm font-medium text-gray-700"
+        >Is Referred:</label
+      >
+      <input
+        type="checkbox"
+        formControlName="isRefered"
+        class="h-5 w-5 accent-blue-600"
+      />
+    </div>
+
+    <div *ngIf="checkinForm.get('outSideDocName')">
+      <label class="block text-sm font-medium text-gray-700"
+        >Outside Doctor Name:</label
+      >
+      <input
+        type="text"
+        formControlName="outSideDocName"
+        class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-200"
+      />
+    </div>
+
+    <div *ngIf="checkinForm.get('referedNotes')">
+      <label class="block text-sm font-medium text-gray-700"
+        >Referred Notes:</label
+      >
+      <textarea
+      pTextarea
+      variant="filled"
+        formControlName="referedNotes"
+        class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-200"
+      ></textarea>
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="text-right mt-6">
+    <p-button
+       label="Submit"
+      type="submit"
+       icon="pi pi-check"
+      [disabled]="checkinForm.invalid"
+      class="w-full md:w-1/3"
+    >
+      
+    </p-button>
+  </div>
+</form>

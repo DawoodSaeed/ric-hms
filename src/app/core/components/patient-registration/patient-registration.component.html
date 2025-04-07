@@ -48,7 +48,7 @@
 
   <form [formGroup]="patientForm" (ngSubmit)="submit()">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-      <div class="flex flex-col">
+      <div class="flex flex-col cnicInput">
         <label>Patient CNIC</label>
         <p-inputMask
           variant="filled"
@@ -196,19 +196,19 @@
           placeholder="Enter Province"
           class="w-full"
           variant="filled"
+          (onChange)="onValueChange($event, 'province')"
         ></p-select>
       </div>
 
       <div>
         <label>City</label>
-        <input
-          pInputText
+         <p-select
+          [options]="(cityDropDown$ | async) ?? []"
           formControlName="cityId"
-          type="number"
+          placeholder="Enter City"
           class="w-full"
-          placeholder="Enter City ID"
           variant="filled"
-        />
+        ></p-select>
       </div>
 
       <div>

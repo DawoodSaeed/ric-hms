@@ -9,8 +9,20 @@ import { CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { TypeTableService } from '../../services/type-table.service';
-import { dropDown, Religion } from '../../interfaces/typetable';
-import { catchError, debounce, debounceTime, distinctUntilChanged, filter, map, Observable, of, startWith, switchMap, tap } from 'rxjs';
+import { City, dropDown, Religion } from '../../interfaces/typetable';
+import {
+  catchError,
+  debounce,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  of,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { DatePicker } from 'primeng/datepicker';
 import { Select } from 'primeng/select';
 import { FileUploadModule } from 'primeng/fileupload';
@@ -20,6 +32,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { InputMask } from 'primeng/inputmask';
+import { OrganisationService } from '../../services/organisation.service';
 
 @Component({
   selector: 'app-patient-registration',
@@ -41,7 +54,7 @@ import { InputMask } from 'primeng/inputmask';
     CalendarModule,
     ButtonModule,
   ],
-  providers:[ConfirmationService]
+  providers: [ConfirmationService],
 })
 export class PatientRegistrationComponent implements OnInit {
   patientForm!: FormGroup;
@@ -59,6 +72,7 @@ export class PatientRegistrationComponent implements OnInit {
   isLoading = signal(false);
   dropDownService = inject(TypeTableService);
   patientService = inject(PatientService);
+  organizationService = inject(OrganisationService);
   constructor(
     private confirmationService: ConfirmationService,
     private fb: FormBuilder,
@@ -68,7 +82,6 @@ export class PatientRegistrationComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     this.fetchDropdowns();
-   
   }
   fetchDropdowns() {
     this.religionDropDown$ = this.dropDownService.getReligions().pipe(
@@ -90,6 +103,19 @@ export class PatientRegistrationComponent implements OnInit {
           }))
         )
       );
+
+    this.cityDropDown$ = this.dropDownService.getCitiesByProvinces().pipe(
+      tap((cities) => console.log('cities ', cities)),
+      map((cities: City[]) => {
+        return cities.map((city: City) => {
+          return {
+            label: city.name,
+            value: city.id,
+          };
+        });
+      })
+    );
+    // this.cityDropDown$=this.dropDownService.getcit
     this.countryDropDown$ = this.dropDownService.getCountries().pipe(
       tap((contries) => console.log(contries)),
       map((countries) =>
@@ -138,6 +164,9 @@ export class PatientRegistrationComponent implements OnInit {
         }))
       )
     );
+    this.organizationService
+      .getPanelOrg()
+      .subscribe((orgs) => console.log('orgs ', orgs));
   }
   initializeForm() {
     this.patientForm = this.fb.group({
@@ -183,37 +212,41 @@ export class PatientRegistrationComponent implements OnInit {
       dependentDocument2: [''],
     });
 
-    this.patientForm.get('cnic')?.valueChanges.pipe(
-      tap((cnic)=>console.log(cnic)),
-      // debounceTime(500),
-      distinctUntilChanged(),
-      filter(cnic=>cnic.length===15),
-      switchMap((cnic=>this.patientService.getPatientByCnic(cnic).pipe(
-        // catcherror to gracefully handle not found
-        catchError((err)=>{
-          return of(null)
-        })
-      )))
-    ).subscribe({
-      next:(response)=>{
+    this.patientForm
+      .get('cnic')
+      ?.valueChanges.pipe(
+        tap((cnic) => console.log(cnic)),
+        debounceTime(1000),
+        distinctUntilChanged(),
+        filter((cnic) => cnic.length === 15),
+        switchMap((cnic) =>
+          this.patientService.getPatientByCnic(cnic).pipe(
+            // catcherror to gracefully handle not found
+            catchError((err) => {
+              return of(null);
+            })
+          )
+        )
+      )
+      .subscribe({
+        next: (response) => {
           if (response) {
-   this.confirmationService.confirm({
-     header: 'Patient Found!',
-     icon: 'pi pi-user-check',
-     message:
-       'This CNIC is already registered. Do you want to load the patient details?',
-     acceptLabel: 'Yes, Load It',
-     rejectLabel: 'No, Continue New',
-     acceptButtonStyleClass: 'p-button-success',
-     rejectButtonStyleClass: 'p-button-secondary',
-     accept: () => {
-       this.patientForm.patchValue(response);
-     },
-   });
-
-    }
-  }
-});
+            this.confirmationService.confirm({
+              header: 'Patient Already Registered!',
+              icon: 'pi pi-user-check',
+              message:
+                'This CNIC is already registered. Do you want to load the patient details?',
+              acceptLabel: 'Yes, Load It',
+              rejectLabel: 'No, Continue New',
+              acceptButtonStyleClass: 'p-button-success',
+              rejectButtonStyleClass: 'p-button-secondary',
+              accept: () => {
+                this.patientForm.patchValue(response);
+              },
+            });
+          }
+        },
+      });
   }
 
   onTypeChange(type: string) {
@@ -223,6 +256,9 @@ export class PatientRegistrationComponent implements OnInit {
     console.log(event.value);
     if (fieldName === 'country') {
       this.dropDownService.setCountryID(event.value);
+    }
+    if (fieldName === 'province') {
+      this.dropDownService.setProvinceID(event.value);
     }
   }
   uploadFile(event: any, controlName: string) {
@@ -267,7 +303,14 @@ export class PatientRegistrationComponent implements OnInit {
   submit() {
     this.isLoading.set(true);
     this.patientForm.markAllAsTouched();
+
     if (this.patientForm.valid) {
+      let patientName = this.patientForm.get('name')?.value;
+      let patientType=this.patientType
+      let cnic = this.patientForm.get('cnic')?.value;
+      let mrNo = '123456789876543';//this will come from backend
+
+
       if (this.patientForm.value.pnlEmpCardExpiry) {
         this.patientForm.value.pnlEmpCardExpiry = this.formatDateToYMD(
           this.patientForm.value.pnlEmpCardExpiry
@@ -302,6 +345,8 @@ export class PatientRegistrationComponent implements OnInit {
             this.notificationService.showSuccess(
               'Patient registered successfully'
             );
+            console.log('resss', response);
+            this.patientService.generatePDF(`${patientName}(${patientType})`,mrNo,cnic)
           }
         },
         error: (err) => {

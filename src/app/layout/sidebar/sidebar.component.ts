@@ -335,8 +335,13 @@ export class SidebarComponent implements OnInit {
         items: [
           {
             label: 'Add Patient',
-            icon: 'fas fa-user-md',
+            icon: 'fas fa-user-plus',
             route: '/admin/patient-management/registration',
+          },
+          {
+            label: 'Patient Checkin',
+            icon: 'fas fa-clipboard-list',
+            route: '/admin/patient-management/checkin',
           },
         ],
       },

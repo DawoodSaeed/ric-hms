@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, map, Observable, of, switchMap } from 'rxjs';
-import { Department, SubDepartment, Service } from '../interfaces/organisation';
+import { Department, SubDepartment, Service, PanelOrg } from '../interfaces/organisation';
 import { environment } from '../../../environments/environment.development';
 import { SubSpeciality } from '../interfaces/typetable';
 @Injectable({
@@ -38,28 +38,28 @@ export class OrganisationService {
   }
   // Sub-Departments
   getAllSubDepartments(): Observable<SubDepartment[]> {
-    this.http.get<SubDepartment[]>(`${this.baseUrl}/AllSubDepartments`).pipe(
-      map((subDepts) =>
-        subDepts.map(subDept => ({
-          ...subDept,
-          id: subDept.subDid // Add 'id' property
-        }))
+    this.http
+      .get<SubDepartment[]>(`${this.baseUrl}/AllSubDepartments`)
+      .pipe(
+        map((subDepts) =>
+          subDepts.map((subDept) => ({
+            ...subDept,
+            id: subDept.subDid, // Add 'id' property
+          }))
+        )
       )
-    ).subscribe((subDepts) => {
-      this.subDepartments$.next(subDepts); // Push all subDepartments into BehaviorSubject
-    });
-  
+      .subscribe((subDepts) => {
+        this.subDepartments$.next(subDepts); // Push all subDepartments into BehaviorSubject
+      });
+
     return this.departmentID$.pipe(
       switchMap((departmentID) => {
         if (!departmentID) return of([]);
         return this.subDepartments$.pipe(
-          map((subDepts) =>{
-
-            console.log('subDeptsx ',subDepts)
-            return subDepts.filter(subDept => subDept.did
-              === departmentID)
-          }
-          )
+          map((subDepts) => {
+            console.log('subDeptsx ', subDepts);
+            return subDepts.filter((subDept) => subDept.did === departmentID);
+          })
         );
       })
     );
@@ -80,6 +80,19 @@ export class OrganisationService {
     return this.http.post<Service>(
       `${this.baseUrl}/CreateOrUpdateService`,
       service
+    );
+  }
+
+  getPanelOrg(): Observable<PanelOrg[]> {
+    return this.http.get<PanelOrg[]>(`${this.baseUrl}/GetPanelOrg`).pipe(
+      map((departments) =>
+        departments
+          .map((org) => ({
+            ...org, // Spread existing properties
+            id: org.porgId, // Add new property 'id'
+          }))
+          .filter((department: PanelOrg) => department.status === 1)
+      )
     );
   }
 }

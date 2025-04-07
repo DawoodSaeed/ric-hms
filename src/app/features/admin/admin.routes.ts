@@ -13,6 +13,7 @@ import { ViewDutiesComponent } from '../../core/components/roaster/view-duties/v
 import { PatientRegistrationComponent } from '../../core/components/patient-registration/patient-registration.component';
 import { DoctorDashboardComponent } from '../doctor/doctor-dashboard.component';
 import { DoctorsComponent } from '../../core/components/doctor-management/doctors/doctors.component';
+import { PatientCheckinComponent } from '../../core/components/patient-checkin/patient-checkin.component';
 export const adminRoutes: Routes = [
   {
     path: '',
@@ -253,6 +254,10 @@ export const adminRoutes: Routes = [
       {
         path: 'registration',
         component: PatientRegistrationComponent,
+      },
+      {
+        path: 'checkin',
+        component: PatientCheckinComponent,
       },
     ],
   },
