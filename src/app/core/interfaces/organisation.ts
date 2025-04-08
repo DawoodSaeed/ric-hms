@@ -67,3 +67,13 @@ export interface PanelOrg {
   modifiedById: number;
   modifiedOn: string; // ISO date string
 }
+
+export interface PanelPackage {
+  ppid: number;
+  name: string;
+  description: string;
+  branchId: number;
+  status: number;
+  panelPackageDiscount: number;
+
+}

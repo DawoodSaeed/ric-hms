@@ -9,7 +9,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { TypeTableService } from '../../services/type-table.service';
-import { City, dropDown, Religion } from '../../interfaces/typetable';
+import { City, DiscountType, dropDown, Religion } from '../../interfaces/typetable';
 import {
   catchError,
   debounce,
@@ -33,6 +33,8 @@ import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { InputMask } from 'primeng/inputmask';
 import { OrganisationService } from '../../services/organisation.service';
+import { Panel } from 'primeng/panel';
+import { PanelOrg, PanelPackage } from '../../interfaces/organisation';
 
 @Component({
   selector: 'app-patient-registration',
@@ -69,10 +71,13 @@ export class PatientRegistrationComponent implements OnInit {
   patientTypeDropDown$!: Observable<any[]>;
   departmentDropDown$!: Observable<any[]>;
   designationDropDown$!: Observable<any[]>;
+  panelOrgDropDown$!: Observable<any[]>;
+  panelPkgDropDown$!: Observable<any[]>;
   isLoading = signal(false);
   dropDownService = inject(TypeTableService);
   patientService = inject(PatientService);
   organizationService = inject(OrganisationService);
+  
   constructor(
     private confirmationService: ConfirmationService,
     private fb: FormBuilder,
@@ -164,10 +169,29 @@ export class PatientRegistrationComponent implements OnInit {
         }))
       )
     );
-    this.organizationService
-      .getPanelOrg()
-      .subscribe((orgs) => console.log('orgs ', orgs));
+    this.panelOrgDropDown$ = this.patientService.getPanelOrg().pipe(
+      tap((orgs) => console.log('orgssx', orgs)),
+      map((panelorgs: PanelOrg[]) =>
+        panelorgs.map((orgs) => ({
+          label: orgs.name,
+          value: orgs.porgId,
+        }))
+      )
+    );
+    this.panelPkgDropDown$ = this.patientService.getPkgsOrgWise().pipe(
+      tap((orgs) => console.log('orgssx', orgs)),
+      map((panelorgs: PanelPackage[]) =>
+        panelorgs.map((orgs) => ({
+          label: orgs.name,
+          value: orgs.ppid,
+        }))
+      )
+    );
+
+
+
   }
+
   initializeForm() {
     this.patientForm = this.fb.group({
       // Common Fields
@@ -260,6 +284,9 @@ export class PatientRegistrationComponent implements OnInit {
     if (fieldName === 'province') {
       this.dropDownService.setProvinceID(event.value);
     }
+    if (fieldName === 'panelOrg') {
+      this.patientService.setPanelOrgId(event.value);
+    }
   }
   uploadFile(event: any, controlName: string) {
     const file: File = event.files[0];
@@ -306,10 +333,9 @@ export class PatientRegistrationComponent implements OnInit {
 
     if (this.patientForm.valid) {
       let patientName = this.patientForm.get('name')?.value;
-      let patientType=this.patientType
+      let patientType = this.patientType;
       let cnic = this.patientForm.get('cnic')?.value;
-      let mrNo = '123456789876543';//this will come from backend
-
+      let mrNo = '123456789876543'; //this will come from backend
 
       if (this.patientForm.value.pnlEmpCardExpiry) {
         this.patientForm.value.pnlEmpCardExpiry = this.formatDateToYMD(
@@ -346,7 +372,11 @@ export class PatientRegistrationComponent implements OnInit {
               'Patient registered successfully'
             );
             console.log('resss', response);
-            this.patientService.generatePDF(`${patientName}(${patientType})`,mrNo,cnic)
+            this.patientService.generatePDF(
+              `${patientName}(${patientType})`,
+              mrNo,
+              cnic
+            );
           }
         },
         error: (err) => {

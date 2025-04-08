@@ -1,19 +1,26 @@
 import { inject, Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, switchMap, tap } from 'rxjs';
 import { PatientRegistration } from '../interfaces/patient.interface';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment.development';
 import { Component } from '@angular/core';
 import { jsPDF } from 'jspdf';
 import JsBarcode from 'jsbarcode';
+import { PanelOrg, PanelPackage } from '../interfaces/organisation';
 @Injectable({
   providedIn: 'root',
 })
 export class PatientService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl + 'Patient';
+  private panelOrgId = new BehaviorSubject<number>(1);
+  panelOrgId$ = this.panelOrgId.asObservable();
 
   constructor() {}
+
+  setPanelOrgId(orgId: number) {
+    this.panelOrgId.next(orgId);
+  }
 
   addPatient = (patient: PatientRegistration): Observable<any> => {
     return this.http.post<{ message: string; empid: number }>(
@@ -86,5 +93,33 @@ export class PatientService {
     // Open PDF in new tab
     const pdfBlobUrl = doc.output('bloburl');
     window.open(pdfBlobUrl, '_blank');
+  }
+
+  getPanelOrg(): Observable<PanelOrg[]> {
+    return this.http.get<PanelOrg[]>(`${this.apiUrl}/GetPanelOrg`).pipe(
+      map((departments) =>
+        departments
+          .map((org) => ({
+            ...org, // Spread existing properties
+            id: org.porgId, // Add new property 'id'
+          }))
+          .filter((department: PanelOrg) => department.status === 1)
+      )
+    );
+  }
+  getPkgsOrgWise(): Observable<PanelPackage[]> {
+    return this.panelOrgId$.pipe(
+      tap((orgId) => console.log('orgID ', orgId)),
+      switchMap((orgId: number) => {
+        if (!orgId) return of([]);
+
+        return this.http
+          .get<PanelPackage[]>(`${this.apiUrl}/GetPanelPackages`)
+          .pipe(
+            map((response: PanelPackage[]) => response.filter((pkg: PanelPackage) => pkg.ppid === orgId)
+            )
+          );
+      })
+    );
   }
 }

@@ -35,7 +35,7 @@
   <div *ngIf="checkinForm.get('patientTypeId')?.value">
     <label class="block text-lg font-medium text-gray-700">Check in to:</label>
     <div class="flex space-x-4 mt-2">
-      <label class="flex items-center space-x-2 cursor-pointer">
+      <label class="flex ittems-center space-x-2 cursor-pointer">
         <input
           type="radio"
           formControlName="checkInTypeID"
@@ -72,7 +72,7 @@
       <label>{{ field.label }}:</label>
       <input
         pInputText
-        *ngIf="field.type !== 'textarea' && field.type !== 'checkbox'"
+        *ngIf="field.type !== 'textarea' && field.type !== 'checkbox' && field.type !== 'dropdown'"
         type="{{ field.type }}"
           variant="filled"
 
@@ -93,6 +93,15 @@
         formControlName="{{ field.name }}"
         class="h-5 w-5 accent-blue-600 block"
       />
+            <p-select 
+        *ngIf="field.type === 'dropdown'"
+[options]="(field.options$ |async)??[]"
+            [formControlName]="field.name"
+            placeholder="Enter Package"
+            class="w-full"
+            variant="filled"
+            ></p-select>
+            <!-- (onChange)="onValueChange($event,'panelOrg')" -->
     </div>
     <!-- Department & Sub-Department -->
     <div *ngIf="checkinForm.get('deptId')">
