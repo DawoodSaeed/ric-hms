@@ -44,6 +44,7 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { WaitingTimePipe } from '../../../pipes/waiting-time/waiting-time.pipe';
 import { DividerModule } from 'primeng/divider';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-patient-queue',
@@ -59,6 +60,7 @@ import { DividerModule } from 'primeng/divider';
     InputTextModule,
     WaitingTimePipe,
     DividerModule,
+    TooltipModule,
   ],
   templateUrl: './patient-queue.component.html',
   styleUrl: './patient-queue.component.scss',
@@ -119,7 +121,8 @@ export class PatientQueueComponent implements OnInit {
           }),
           finalize(() => this.isVitalLoading.set(false))
         )
-      )
+      ),
+      finalize(() => this.isVitalLoading.set(false))
     );
   }
 
@@ -148,7 +151,6 @@ export class PatientQueueComponent implements OnInit {
 
   resetVitals() {
     this.vitalsForm.reset();
-    this.patientId$.next(-1);
   }
 
   submitVitals() {

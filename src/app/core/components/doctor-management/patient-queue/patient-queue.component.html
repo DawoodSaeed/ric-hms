@@ -74,11 +74,8 @@
             icon="pi pi-eye"
             class="p-button-text p-button-sm mr-2"
             (click)="displayVitals(patient)"
-          ></button>
-          <button
-            pButton
-            icon="pi pi-trash"
-            class="p-button-danger p-button-sm p-button-text"
+            pTooltip="Display vitals"
+            tooltipPosition="bottom"
           ></button>
         </td>
       </tr>
@@ -95,7 +92,9 @@
   (onHide)="displayVitalsDialog.set(false)"
 >
   <ng-template pTemplate="header">
-    <div class="flex justify-between items-center w-[100%]">
+    <div
+      class="flex justify-between items-center w-[100%] border-b border-gray-400"
+    >
       <h2 class="text-lg font-semibold">Patient Vitals</h2>
       <button
         pButton
@@ -248,7 +247,10 @@
   </form>
 
   <p-divider />
-  @if(patientVitals$ | async; as patientVitals){
+
+  <h2 class="text-lg font-semibold">Patient Vitals History</h2>
+  @let patientVitals = patientVitals$ | async; @if(patientVitals &&
+  patientVitals.length){
   <p-table
     [value]="patientVitals"
     [loading]="isVitalLoading()"
@@ -285,6 +287,10 @@
         <td>{{ vital.bsr }}</td>
       </tr>
     </ng-template>
+
+    <!-- Display a message when no data is available -->
   </p-table>
+  }@else {
+  <p colspan="10" class="w-[100%] text-center">No data available</p>
   }
 </p-dialog>
