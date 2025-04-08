@@ -1,0 +1,296 @@
+<app-breadcrumb />
+@let patients = patients$ | async;
+
+<div class="">
+  <h2 class="text-xl font-semibold mb-4">Patients Queue</h2>
+
+  <p-tabView
+    [(activeIndex)]="activeTab"
+    (activeIndexChange)="tabChanged($event)"
+  >
+    <p-tabPanel header="Clinical Practice">
+      <ng-template pTemplate="header">
+        <div class="flex align-items-center gap-2">
+          <span> Clinical Practice </span>
+        </div>
+      </ng-template>
+    </p-tabPanel>
+    <p-tabPanel header="Hold">
+      <ng-template pTemplate="header">
+        <div class="flex align-items-center gap-2">
+          <span> Hold</span>
+        </div>
+      </ng-template>
+    </p-tabPanel>
+    <p-tabPanel header="Consulted">
+      <ng-template pTemplate="header">
+        <div class="flex align-items-center gap-2">
+          <span> Consulted </span>
+        </div>
+      </ng-template>
+    </p-tabPanel>
+    <p-tabPanel header="IPD">
+      <ng-template pTemplate="header">
+        <div class="flex align-items-center gap-2">
+          <span> IPD </span>
+        </div>
+      </ng-template>
+    </p-tabPanel>
+  </p-tabView>
+
+  <!-- for the content -->
+
+  <p-table
+    [value]="patients || []"
+    class="mt-4"
+    [paginator]="false"
+    [rows]="10"
+    [loading]="isLoading()"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Sr.</th>
+        <th>Name</th>
+        <th>MR No</th>
+        <th>Visit No</th>
+        <th>Waiting Time</th>
+        <th>Status</th>
+        <th>Doctor/Department</th>
+        <th>Action</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-patient let-index="rowIndex">
+      <tr>
+        <td>{{ index + 1 }}</td>
+        <td>{{ patient.patientName }}</td>
+        <td>{{ patient.mrNo }}</td>
+        <td>{{ patient.visitNo }}</td>
+        <td>{{ patient.checkInTime | waitingTime }}</td>
+        <td>{{ !!patient.patientCheckInStatusID }}</td>
+        <td>{{ patient.docDeptName }}</td>
+        <td>
+          <button
+            pButton
+            icon="pi pi-eye"
+            class="p-button-text p-button-sm mr-2"
+            (click)="displayVitals(patient)"
+            pTooltip="Display vitals"
+            tooltipPosition="bottom"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- for the vitals -->
+<p-dialog
+  [visible]="displayVitalsDialog()"
+  [modal]="true"
+  [style]="{ width: '80vw' }"
+  closable="false"
+  (onHide)="displayVitalsDialog.set(false)"
+>
+  <ng-template pTemplate="header">
+    <div
+      class="flex justify-between items-center w-[100%] border-b border-gray-400"
+    >
+      <h2 class="text-lg font-semibold">Patient Vitals</h2>
+      <button
+        pButton
+        icon="pi pi-times"
+        class="p-button-danger p-button-sm p-button-text"
+        (click)="displayVitalsDialog.set(false); resetVitals()"
+      ></button>
+    </div>
+  </ng-template>
+
+  <form [formGroup]="vitalsForm">
+    <!-- Form Fields Container -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Temperature Field -->
+      <div class="p-field">
+        <label class="block font-semibold">Temperature (°F)</label>
+        <input
+          pInputText
+          formControlName="temperature"
+          placeholder="Normal Temperature is 93.3-100.4 °F"
+          class="p-inputtext p-component w-full p-2 border rounded-md"
+          type="number"
+        />
+      </div>
+
+      <!-- Pulse Field -->
+      <div class="p-field">
+        <label class="block font-semibold">Pulse (Beats/min)</label>
+        <input
+          pInputText
+          formControlName="pulse"
+          placeholder="Normal Pulse is 50-110 Beats"
+          class="p-inputtext p-component w-full p-2 border rounded-md"
+          type="number"
+        />
+      </div>
+
+      <!-- Systolic BP Field -->
+      <div class="p-field">
+        <label class="block font-semibold"
+          >Blood Pressure Systolic (mm Hg)</label
+        >
+        <input
+          pInputText
+          formControlName="systolicBP"
+          placeholder="Normally less than 120 mm Hg"
+          class="p-inputtext p-component w-full p-2 border rounded-md"
+          type="number"
+        />
+      </div>
+
+      <!-- Diastolic BP Field -->
+      <div class="p-field">
+        <label class="block font-semibold"
+          >Blood Pressure Diastolic (mm Hg)</label
+        >
+        <input
+          pInputText
+          formControlName="diastolicBP"
+          placeholder="Normally less than 80 mm Hg"
+          class="p-inputtext p-component w-full p-2 border rounded-md"
+          type="number"
+        />
+      </div>
+
+      <!-- Weight Field -->
+      <div class="p-field">
+        <label class="block font-semibold">Weight (kg)</label>
+        <input
+          pInputText
+          formControlName="weight"
+          placeholder="Normally 70 kg"
+          class="p-inputtext p-component w-full p-2 border rounded-md"
+          type="number"
+        />
+      </div>
+
+      <!-- SpO2 Field -->
+      <div class="p-field">
+        <label class="block font-semibold">SpO2 (%)</label>
+        <input
+          pInputText
+          formControlName="spO2"
+          placeholder="Normally greater than or equal to 95"
+          class="p-inputtext p-component w-full p-2 border rounded-md"
+          type="number"
+        />
+      </div>
+
+      <!-- Respiratory Rate Field -->
+      <div class="p-field">
+        <label class="block font-semibold"
+          >Respiratory Rate (Breaths/min)</label
+        >
+        <input
+          pInputText
+          formControlName="respiratoryRate"
+          placeholder="8 to 25 breaths per minute"
+          class="p-inputtext p-component w-full p-2 border rounded-md"
+          type="number"
+        />
+      </div>
+
+      <!-- Height Field -->
+      <div class="p-field">
+        <label class="block font-semibold">Height (cm)</label>
+        <input
+          pInputText
+          formControlName="height"
+          placeholder="Height in cm"
+          class="p-inputtext p-component w-full p-2 border rounded-md"
+          type="number"
+        />
+      </div>
+
+      <!-- Head Circumference Field -->
+      <div class="p-field">
+        <label class="block font-semibold">Head Circumference (OFC) (cm)</label>
+        <input
+          pInputText
+          formControlName="headCircumference"
+          placeholder="Head Circumference (OFC) in cm"
+          class="p-inputtext p-component w-full p-2 border rounded-md"
+          type="number"
+        />
+      </div>
+
+      <!-- BSR Field -->
+      <div class="p-field">
+        <label class="block font-semibold">BSR (mg/dl)</label>
+        <input
+          pInputText
+          formControlName="bsr"
+          placeholder="BSR in mg/dl"
+          class="p-inputtext p-component w-full p-2 border rounded-md"
+          type="number"
+        />
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex justify-end mt-4">
+      <p-button
+        label="Reset"
+        styleClass="p-button-danger mr-2"
+        (click)="resetVitals()"
+      ></p-button>
+      <p-button label="Submit" (click)="submitVitals()"></p-button>
+    </div>
+  </form>
+
+  <p-divider />
+
+  <h2 class="text-lg font-semibold">Patient Vitals History</h2>
+  @let patientVitals = patientVitals$ | async; @if(patientVitals &&
+  patientVitals.length){
+  <p-table
+    [value]="patientVitals"
+    [loading]="isVitalLoading()"
+    selectionMode="single"
+    [(selection)]="selectedVital"
+    (onRowSelect)="onVitalSelection($event)"
+    (onRowUnselect)="onVitalSelection($event)"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Temperature</th>
+        <th>Pulse</th>
+        <th>Blood Pressure Systolic</th>
+        <th>Blood Pressure Diastolic</th>
+        <th>SPO2</th>
+        <th>Weight</th>
+        <th>Respiratory Rate</th>
+        <th>Height</th>
+        <th>Head Circumference</th>
+        <th>BSR</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-vital>
+      <tr [pSelectableRow]="vital">
+        <td>{{ vital.temperature }}</td>
+        <td>{{ vital.pulse }}</td>
+        <td>{{ vital.bloodPressureSystolic }}</td>
+        <td>{{ vital.bloodPressureDiastolic }}</td>
+        <td>{{ vital.spo2 }}</td>
+        <td>{{ vital.weight }}</td>
+        <td>{{ vital.respiratoryRate }}</td>
+        <td>{{ vital.height }}</td>
+        <td>{{ vital.headCircumference }}</td>
+        <td>{{ vital.bsr }}</td>
+      </tr>
+    </ng-template>
+
+    <!-- Display a message when no data is available -->
+  </p-table>
+  }@else {
+  <p colspan="10" class="w-[100%] text-center">No data available</p>
+  }
+</p-dialog>

@@ -87,7 +87,6 @@ import { BranchService } from '../../services/branch.service';
     Checkbox,
     Dialog,
     ReactiveFormsModule,
-    Message,
     InputText,
     Select,
     DropdownModule,
@@ -898,22 +897,20 @@ export class RegionManagementComponent implements OnInit {
           },
         });
     } else if (this.dataType === 'Bank') {
-      this.typeTableService
-        .addUpdateBank(this.newBank)
-        .subscribe({
-          next: (data: any) => {
-            console.log(data);
-            if (data) {
-              this.loadData();
-              this.notificationService.showSuccess('Operation successful!');
-              this.displayDialogBox.set(false);
-            }
-          },
-          error: (err) => {
-            console.log(err);
-            this.notificationService.showError(err.error.message);
-          },
-        });
+      this.typeTableService.addUpdateBank(this.newBank).subscribe({
+        next: (data: any) => {
+          console.log(data);
+          if (data) {
+            this.loadData();
+            this.notificationService.showSuccess('Operation successful!');
+            this.displayDialogBox.set(false);
+          }
+        },
+        error: (err) => {
+          console.log(err);
+          this.notificationService.showError(err.error.message);
+        },
+      });
     }
   }
   deleteItemConfirmation(rowData: any) {
