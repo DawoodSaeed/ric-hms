@@ -9,7 +9,12 @@ import { CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { TypeTableService } from '../../services/type-table.service';
-import { City, DiscountType, dropDown, Religion } from '../../interfaces/typetable';
+import {
+  City,
+  DiscountType,
+  dropDown,
+  Religion,
+} from '../../interfaces/typetable';
 import {
   catchError,
   debounce,
@@ -35,6 +40,7 @@ import { InputMask } from 'primeng/inputmask';
 import { OrganisationService } from '../../services/organisation.service';
 import { Panel } from 'primeng/panel';
 import { PanelOrg, PanelPackage } from '../../interfaces/organisation';
+import { Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-patient-registration',
@@ -77,11 +83,12 @@ export class PatientRegistrationComponent implements OnInit {
   dropDownService = inject(TypeTableService);
   patientService = inject(PatientService);
   organizationService = inject(OrganisationService);
-  
+
   constructor(
     private confirmationService: ConfirmationService,
     private fb: FormBuilder,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -187,9 +194,6 @@ export class PatientRegistrationComponent implements OnInit {
         }))
       )
     );
-
-
-
   }
 
   initializeForm() {
@@ -259,13 +263,16 @@ export class PatientRegistrationComponent implements OnInit {
               header: 'Patient Already Registered!',
               icon: 'pi pi-user-check',
               message:
-                'This CNIC is already registered. Do you want to load the patient details?',
-              acceptLabel: 'Yes, Load It',
-              rejectLabel: 'No, Continue New',
+                'This CNIC is already registered. Do you want to checkin the patient?',
+              acceptLabel: 'Proceed to Checkin',
+              rejectLabel: 'No',
               acceptButtonStyleClass: 'p-button-success',
               rejectButtonStyleClass: 'p-button-secondary',
               accept: () => {
                 this.patientForm.patchValue(response);
+                  this.router.navigate(['admin/patient-management/checkin'], {
+                    state: { patientId: response.patientId },
+                  });
               },
             });
           }
@@ -335,7 +342,6 @@ export class PatientRegistrationComponent implements OnInit {
       let patientName = this.patientForm.get('name')?.value;
       let patientType = this.patientType;
       let cnic = this.patientForm.get('cnic')?.value;
-      let mrNo = '123456789876543'; //this will come from backend
 
       if (this.patientForm.value.pnlEmpCardExpiry) {
         this.patientForm.value.pnlEmpCardExpiry = this.formatDateToYMD(
@@ -372,9 +378,15 @@ export class PatientRegistrationComponent implements OnInit {
               'Patient registered successfully'
             );
             console.log('resss', response);
+            // this.router.navigate(['admin/patient-management/checkin'], {
+            //   state: { patientId: response.patientId },
+            // });
+            this.router.navigate(['admin/patient-management/checkin'], {
+              state: { patientId: response.patientId },
+            });
             this.patientService.generatePDF(
               `${patientName}(${patientType})`,
-              mrNo,
+              response.mrNo,
               cnic
             );
           }

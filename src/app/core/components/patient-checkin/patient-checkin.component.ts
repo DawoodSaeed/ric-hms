@@ -1,5 +1,8 @@
-import { DepartmentCategory, DiscountType, PaymentMethod } from './../../interfaces/typetable';
-
+import {
+  DepartmentCategory,
+  DiscountType,
+  PaymentMethod,
+} from './../../interfaces/typetable';
 
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
@@ -17,6 +20,7 @@ import { Select } from 'primeng/select';
 import { Department, SubDepartment } from '../../interfaces/organisation';
 import { DoctormanagementService } from '../../services/doctormanagement.service';
 import { Doctor } from '../../interfaces/doctormanagement';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-patient-checkin',
   templateUrl: './patient-checkin.component.html',
@@ -64,10 +68,11 @@ export class PatientCheckinComponent implements OnInit {
     { name: 'reason', label: 'Reason', type: 'textarea' },
   ];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private router: Router) {}
 
   ngOnInit() {
     this.initForm();
+    
     this.fetchDropdowns();
     // Handle form updates dynamically
     this.checkinForm.get('patientTypeId')?.valueChanges.subscribe(() => {
@@ -96,6 +101,11 @@ export class PatientCheckinComponent implements OnInit {
       patientCondition: [''],
       reason: [''],
     });
+    const patientId = history.state.patientId;
+    console.log('got patientid ', patientId);
+    if (patientId) {
+      this.checkinForm?.get('patientId')?.setValue(patientId);
+    }
   }
   fetchDropdowns() {
     this.discountTypesDropDown$ = this.dropDownService.getDiscountTypes().pipe(
@@ -152,7 +162,6 @@ export class PatientCheckinComponent implements OnInit {
         }))
       )
     );
-  ;
   }
 
   // Function to update form fields dynamically
