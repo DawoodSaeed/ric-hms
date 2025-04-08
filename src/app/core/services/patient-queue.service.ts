@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import {
+  PatientCheckInDetails,
   PatientQueueFilter,
   PatientVitals,
 } from '../interfaces/patients-queue';
@@ -25,7 +26,9 @@ export class PatientQueueService {
   }
 
   // GET: Fetch patient queue with optional filters
-  getPatientQueue(filters: PatientQueueFilter): Observable<any> {
+  getPatientQueue(
+    filters: PatientQueueFilter
+  ): Observable<PatientCheckInDetails[]> {
     let params = new HttpParams();
     if (filters.PatientCheckInStatus !== undefined) {
       params = params.set('PatientCheckInStatus', filters.PatientCheckInStatus);
@@ -40,12 +43,17 @@ export class PatientQueueService {
       params = params.set('DeptID', filters.DeptID);
     }
 
-    return this.http.get(`${this.apiUrl}/GetPatientQueue`, { params });
+    return this.http.get<PatientCheckInDetails[]>(
+      `${this.apiUrl}/GetPatientQueue`,
+      { params }
+    );
   }
 
   // GET: Fetch vitals of a specific patient
-  getPatientVitals(patientId: number): Observable<any> {
+  getPatientVitals(patientId: number): Observable<PatientVitals[]> {
     const params = new HttpParams().set('PatientID', patientId);
-    return this.http.get(`${this.apiUrl}/PatientVitals`, { params });
+    return this.http.get<PatientVitals[]>(`${this.apiUrl}/PatientVitals`, {
+      params,
+    });
   }
 }
