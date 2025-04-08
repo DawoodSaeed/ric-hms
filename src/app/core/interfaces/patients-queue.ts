@@ -43,3 +43,18 @@ export enum PatientCheckInStatusEnum {
   Discharged = 5,
   Referred = 6,
 }
+
+export interface PatientCheckInDetails {
+  checkInTime: string;
+  deptID: number;
+  docDeptName: string;
+  doctorCheckInType: string;
+  doctorID: number | null;
+  mrNo: string;
+  pChkInID: number;
+  patientCheckInStatusID: number;
+  patientID: number;
+  patientName: string;
+  patientTypeID: number;
+  visitNo: string;
+}
