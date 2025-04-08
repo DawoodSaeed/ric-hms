@@ -24,7 +24,8 @@ export class DoctormanagementService {
   http = inject(HttpClient);
   constructor() {}
 
-  getDoctors() {
+  getDoctors():Observable<Doctor[]> {
+    console.log('cpi');
     return this.http.get<Doctor[]>(`${this.API_URL}/AllDoctors`);
   }
 

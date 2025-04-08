@@ -139,6 +139,7 @@ export class TypeTableService {
   }
 
   getDepartmentCategories(): Observable<DepartmentCategory[]> {
+    console.log('calling...,');
     return this.getAll<DepartmentCategory>('DepartmentCategories');
   }
 

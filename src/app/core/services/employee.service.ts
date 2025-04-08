@@ -55,7 +55,7 @@ export class EmployeeService {
   subSpeciality$ = this.subSpecialitySubject.asObservable();
   registeredEmpIDSignal = signal<number | null>(null);
   defaultObj = {
-    empId: this.registeredEmpIDSignal() ?? -4,
+    empId: this.registeredEmpIDSignal() ?? -5,
     createdById: 0,
     createdOn: this.formatDate(new Date().toISOString()),
   };
@@ -89,11 +89,11 @@ export class EmployeeService {
     if (isDelete) {
       employee = {
         ...employee,
-        empId: this.registeredEmpIDSignal() ?? -4,
+        empId: this.registeredEmpIDSignal() ?? -5,
       };
     } else if (isEdit) {
       console.log('updating employee...');
-      employee = { ...employee, empId: this.registeredEmpIDSignal() ?? -4 };
+      employee = { ...employee, empId: this.registeredEmpIDSignal() ?? -5 };
     } else {
       employee = { ...employee, empId: 0 };
     }
@@ -124,12 +124,12 @@ export class EmployeeService {
     console.log('getting awardDetails ',awardDetails);
     if (isDelete) {
       awardDetails.status = 0;
-      awardDetails.empId = this.registeredEmpIDSignal() ?? -4;
+      awardDetails.empId = this.registeredEmpIDSignal() ?? -5;
     } else {
       if (isEdit) {
         awardDetails = {
           ...awardDetails,
-          empId: this.registeredEmpIDSignal() ?? -4,
+          empId: this.registeredEmpIDSignal() ?? -5,
           modifiedById: this.defaultObj.createdById,
           status,
           modifiedOn: new Date().toISOString(),
@@ -141,7 +141,7 @@ export class EmployeeService {
         awardDetails = {
           ...awardDetails,
           ...this.defaultObj,
-          empId: this.registeredEmpIDSignal() ?? -4,
+          empId: this.registeredEmpIDSignal() ?? -5,
 
           empAwrdId,
           status,
@@ -157,7 +157,7 @@ export class EmployeeService {
   getEmployeeAwardDetails = (): void => {
     const params = new HttpParams().set(
       'empId',
-      this.registeredEmpIDSignal() ?? -4
+      this.registeredEmpIDSignal() ?? -5
     );
     this.http
       .get(`${this.apiUrl}/empaward`, { params })
@@ -186,11 +186,11 @@ export class EmployeeService {
   ): Observable<any> => {
     if (isDelete) {
       bankDetails.status = 0;
-      bankDetails.empId = this.registeredEmpIDSignal() ?? -4;
+      bankDetails.empId = this.registeredEmpIDSignal() ?? -5;
     } else if (isEdit) {
       bankDetails = {
         ...bankDetails,
-        empId: this.registeredEmpIDSignal() ?? -4,
+        empId: this.registeredEmpIDSignal() ?? -5,
         modifiedById: this.defaultObj.createdById,
         status,
         modifiedOn: new Date().toISOString(),
@@ -201,7 +201,7 @@ export class EmployeeService {
       bankDetails = {
         ...bankDetails,
         ...this.defaultObj,
-    empId: this.registeredEmpIDSignal() ?? -4,
+    empId: this.registeredEmpIDSignal() ?? -5,
 
         empBankId: 0,
         status,
@@ -213,7 +213,7 @@ export class EmployeeService {
       .pipe(tap(() => this.getEmployeeBankDetails()));
   };
   getEmployeeBankDetails = (): void => {
-    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -4);
+    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -5);
 
     this.http
       .get(`${this.apiUrl}/empbank`, { params }).pipe(
@@ -237,11 +237,11 @@ export class EmployeeService {
     console.log('educationDetails ',educationDetails);
     if (isDelete) {
       educationDetails.status = 0;
-      educationDetails.empId = this.registeredEmpIDSignal() ?? -4;
+      educationDetails.empId = this.registeredEmpIDSignal() ?? -5;
     } else if (isEdit) {
       educationDetails = {
         ...educationDetails,
-        empId: this.registeredEmpIDSignal() ?? -4,
+        empId: this.registeredEmpIDSignal() ?? -5,
         modifiedById: this.defaultObj.createdById,
         status,
         modifiedOn: new Date().toISOString(),
@@ -252,7 +252,7 @@ export class EmployeeService {
       educationDetails = {
         ...educationDetails,
         ...this.defaultObj,
-    empId: this.registeredEmpIDSignal() ?? -4,
+    empId: this.registeredEmpIDSignal() ?? -5,
 
         empEduId: 0,
         status,
@@ -264,7 +264,7 @@ export class EmployeeService {
       .pipe(tap(() => this.getEmployeeEducationDetails()));
   };
   getEmployeeEducationDetails = (): void => {
-    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -4);
+    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -5);
 
     this.http
       .get(`${this.apiUrl}/empeducation`, { params }).pipe(
@@ -287,11 +287,11 @@ export class EmployeeService {
     console.log('getting departmentDetails ',departmentDetails);
     if (isDelete) {
       departmentDetails.status = 0;
-      departmentDetails.empId = this.registeredEmpIDSignal() ?? -4;
+      departmentDetails.empId = this.registeredEmpIDSignal() ?? -5;
     } else if (isEdit) {
       departmentDetails = {
         ...departmentDetails,
-        empId:this.registeredEmpIDSignal() ?? -4,
+        empId:this.registeredEmpIDSignal() ?? -5,
         modifiedById: this.defaultObj.createdById,
         status,
         modifiedOn: new Date().toISOString(),
@@ -302,7 +302,7 @@ export class EmployeeService {
       departmentDetails = {
         ...departmentDetails,
         ...this.defaultObj,
-    empId: this.registeredEmpIDSignal() ?? -4,
+    empId: this.registeredEmpIDSignal() ?? -5,
 
         empDid: 0,
         status,
@@ -314,7 +314,7 @@ export class EmployeeService {
       .pipe(tap(() => this.getEmployeeDepartmentDetails()));
   };
   getEmployeeDepartmentDetails = (): void => {
-    const params = new HttpParams().set('empId', this.registeredEmpIDSignal() ?? -4);
+    const params = new HttpParams().set('empId', this.registeredEmpIDSignal() ?? -5);
 
     this.http
       .get(`${this.apiUrl}/empdept`, { params }).pipe(
@@ -334,11 +334,11 @@ export class EmployeeService {
   ): Observable<any> => {
     if (isDelete) {
       subDeptDetails.status = 0;
-      subDeptDetails.empId =  this.registeredEmpIDSignal() ?? -4;
+      subDeptDetails.empId =  this.registeredEmpIDSignal() ?? -5;
     } else if (isEdit) {
       subDeptDetails = {
         ...subDeptDetails,
-        empId: this.registeredEmpIDSignal() ?? -4,
+        empId: this.registeredEmpIDSignal() ?? -5,
         modifiedById: this.defaultObj.createdById,
         status,
         modifiedOn: new Date().toISOString(),
@@ -349,7 +349,7 @@ export class EmployeeService {
       subDeptDetails = {
         ...subDeptDetails,
         ...this.defaultObj,
-    empId: this.registeredEmpIDSignal() ?? -4,
+    empId: this.registeredEmpIDSignal() ?? -5,
 
         empSubDid: 0,
         status,
@@ -362,7 +362,7 @@ export class EmployeeService {
   };
 
   getEmployeeSubDepartmentDetails = (): void => {
-    const params = new HttpParams().set('empId', this.registeredEmpIDSignal() ?? -4);
+    const params = new HttpParams().set('empId', this.registeredEmpIDSignal() ?? -5);
 
     this.http
       .get(`${this.apiUrl}/empsubdept`, { params }).pipe(
@@ -381,11 +381,11 @@ export class EmployeeService {
   ): Observable<any> => {
     if (isDelete) {
       designationDetails.status = 0;
-      designationDetails.empId = this.registeredEmpIDSignal() ?? -4;
+      designationDetails.empId = this.registeredEmpIDSignal() ?? -5;
     } else if (isEdit) {
       designationDetails = {
         ...designationDetails,
-        empId: this.registeredEmpIDSignal() ?? -4,
+        empId: this.registeredEmpIDSignal() ?? -5,
         modifiedById: this.defaultObj.createdById,
         status,
         modifiedOn: new Date().toISOString(),
@@ -396,7 +396,7 @@ export class EmployeeService {
       designationDetails = {
         ...designationDetails,
         ...this.defaultObj,
-    empId: this.registeredEmpIDSignal() ?? -4,
+    empId: this.registeredEmpIDSignal() ?? -5,
 
         empDesgnId: 0,
         status,
@@ -409,7 +409,7 @@ export class EmployeeService {
   };
 
   getEmployeeDesignationDetails = (): void => {
-    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -4);
+    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -5);
 
     this.http
       .get(`${this.apiUrl}/empdesg`, { params }).pipe(
@@ -430,11 +430,11 @@ export class EmployeeService {
   ): Observable<any> => {
     if (isDelete) {
       expDetails.status = 0;
-      expDetails.empId = this.registeredEmpIDSignal() ?? -4;
+      expDetails.empId = this.registeredEmpIDSignal() ?? -5;
     } else if (isEdit) {
       expDetails = {
         ...expDetails,
-        empId:this.registeredEmpIDSignal() ?? -4,
+        empId:this.registeredEmpIDSignal() ?? -5,
         modifiedById: this.defaultObj.createdById,
         status,
         modifiedOn: new Date().toISOString(),
@@ -445,7 +445,7 @@ export class EmployeeService {
       expDetails = {
         ...expDetails,
         ...this.defaultObj,
-    empId: this.registeredEmpIDSignal() ?? -4,
+    empId: this.registeredEmpIDSignal() ?? -5,
 
         empExpId: 0,
         status,
@@ -458,7 +458,7 @@ export class EmployeeService {
   };
 
   getEmployeeExperienceDetails = (): void => {
-    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -4);
+    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -5);
 
     this.http
       .get(`${this.apiUrl}/empexperience`, { params }).pipe(
@@ -479,11 +479,11 @@ export class EmployeeService {
     console.log('getting facilityDetails ',facilityDetails);
     if (isDelete) {
       facilityDetails.status = 0;
-      facilityDetails.empId =  this.registeredEmpIDSignal() ?? -4;
+      facilityDetails.empId =  this.registeredEmpIDSignal() ?? -5;
     } else if (isEdit) {
       facilityDetails = {
         ...facilityDetails,
-        empId: this.registeredEmpIDSignal() ?? -4,
+        empId: this.registeredEmpIDSignal() ?? -5,
         modifiedById: this.defaultObj.createdById,
         status,
         modifiedOn: new Date().toISOString(),
@@ -494,7 +494,7 @@ export class EmployeeService {
       facilityDetails = {
         ...facilityDetails,
         ...this.defaultObj,
-    empId: this.registeredEmpIDSignal() ?? -4,
+    empId: this.registeredEmpIDSignal() ?? -5,
 
         empFacilityId: 0,
         status,
@@ -507,7 +507,7 @@ console.log('final facilityDetails ',facilityDetails);
   };
 
   getEmployeeFacilityDetails = (): void => {
-    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -4);
+    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -5);
 
     this.http
       .get(`${this.apiUrl}/empfacility`, { params }).pipe(
@@ -539,11 +539,11 @@ console.log('final facilityDetails ',facilityDetails);
   ): Observable<any> => {
     if (isDelete) {
       specialityDetails.status = 0;
-      specialityDetails.empId =  this.registeredEmpIDSignal() ?? -4;
+      specialityDetails.empId =  this.registeredEmpIDSignal() ?? -5;
     } else if (isEdit) {
       specialityDetails = {
         ...specialityDetails,
-        empId:this.registeredEmpIDSignal() ?? -4,
+        empId:this.registeredEmpIDSignal() ?? -5,
         modifiedById: this.defaultObj.createdById,
         status,
         modifiedOn: new Date().toISOString(),
@@ -554,7 +554,7 @@ console.log('final facilityDetails ',facilityDetails);
       specialityDetails = {
         ...specialityDetails,
         ...this.defaultObj,
-    empId: this.registeredEmpIDSignal() ?? -4,
+    empId: this.registeredEmpIDSignal() ?? -5,
 
         empSpId: 0,
         status,
@@ -567,7 +567,7 @@ console.log('final facilityDetails ',facilityDetails);
   };
 
   getEmployeeSpecialityDetails = (): void => {
-    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -4);
+    const params = new HttpParams().set('empId',  this.registeredEmpIDSignal() ?? -5);
 
     this.http
       .get(`${this.apiUrl}/empspeciality`, { params }).pipe(
@@ -587,11 +587,11 @@ console.log('final facilityDetails ',facilityDetails);
   ): Observable<any> => {
     if (isDelete) {
       subSpecialityDetails.status = 0;
-      subSpecialityDetails.empId =  this.registeredEmpIDSignal() ?? -4;
+      subSpecialityDetails.empId =  this.registeredEmpIDSignal() ?? -5;
     } else if (isEdit) {
       subSpecialityDetails = {
         ...subSpecialityDetails,
-        empId:this.registeredEmpIDSignal() ?? -4,
+        empId:this.registeredEmpIDSignal() ?? -5,
         modifiedById: this.defaultObj.createdById,
         status,
         modifiedOn: new Date().toISOString(),
@@ -602,7 +602,7 @@ console.log('final facilityDetails ',facilityDetails);
       subSpecialityDetails = {
         ...subSpecialityDetails,
         ...this.defaultObj,
-    empId: this.registeredEmpIDSignal() ?? -4,
+    empId: this.registeredEmpIDSignal() ?? -5,
 
         empSubSpId: 0,
         status,
@@ -615,7 +615,7 @@ console.log('final facilityDetails ',facilityDetails);
   };
 
   getEmployeeSubSpecialityDetails = (): void => {
-    const params = new HttpParams().set('empId', this.registeredEmpIDSignal() ?? -4);
+    const params = new HttpParams().set('empId', this.registeredEmpIDSignal() ?? -5);
 
     this.http
       .get(`${this.apiUrl}/empsubspeciality`, { params }).pipe(
