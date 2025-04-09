@@ -14,6 +14,7 @@ import { PatientRegistrationComponent } from '../../core/components/patient-regi
 import { DoctorDashboardComponent } from '../doctor/doctor-dashboard.component';
 import { DoctorsComponent } from '../../core/components/doctor-management/doctors/doctors.component';
 import { PatientCheckinComponent } from '../../core/components/patient-checkin/patient-checkin.component';
+import { PatientListComponent } from '../../core/components/patient-list/patient-list.component';
 export const adminRoutes: Routes = [
   {
     path: '',
@@ -258,6 +259,10 @@ export const adminRoutes: Routes = [
       {
         path: 'checkin',
         component: PatientCheckinComponent,
+      },
+      {
+        path: 'patients',
+        component: PatientListComponent,
       },
     ],
   },

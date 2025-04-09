@@ -50,7 +50,10 @@ export class DynamicTableComponent implements OnInit {
   @Input() tableData: any[] = [];
   @Input() tableTitle: string = '';
   @Output() dataEmitter = new EventEmitter<any>();
-  ngOnInit(): void {}
+  ngOnInit(): void {
+console.log('incomming tabledata ',this.tableData);
+
+  }
   getKeys(): any[] {
     return this.tableData.length > 0
       ? Object.keys(this.tableData[0]).filter(
@@ -106,6 +109,9 @@ export class DynamicTableComponent implements OnInit {
   formatStringName(name: string): string {
     if (name === 'empAwrdId') {
       return 'Award ID';
+    }
+    if(name==='dob'){
+      return 'Date of Birth'
     }
     return name
       .replace(/([a-z])([A-Z])/g, '$1 $2') // Insert space before uppercase letters

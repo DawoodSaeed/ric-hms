@@ -9,7 +9,7 @@
     [rowsPerPageOptions]="[5, 10, 20]"
     [paginator]="true"
     sortMode="multiple"
-    [rows]="5"
+    [rows]="tableTitle==='Patients List'?10:5"
     [globalFilterFields]="getKeys()"
     class="w-full rounded-lg overflow-hidden bg-gray-50"
     dataKey="id"
@@ -42,7 +42,7 @@
         >
           {{formatStringName(key) }}
         </th>
-        <th class="px-4 py-3 text-left font-semibold text-base">Action</th>
+        <th *ngIf="tableTitle!=='Patients List'" class="px-4 py-3 text-left font-semibold text-base">Action</th>
       </tr>
     </ng-template>
 
@@ -52,7 +52,7 @@
         <td *ngFor="let key of getKeys()" class="px-4 py-3 text-gray-900 text-base">
                  {{employee[key]}}
         </td>
-        <td class="px-4 py-3 text-gray-900 text-base relative">
+        <td class="px-4 py-3 text-gray-900 text-base relative" *ngIf="tableTitle!=='Patients List'" > 
           <p-speeddial [model]="getActionItems(employee)"    [radius]="30"
           type="semi-circle"
           direction="right"

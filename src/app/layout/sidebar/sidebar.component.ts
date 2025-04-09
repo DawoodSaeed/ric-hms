@@ -343,6 +343,11 @@ export class SidebarComponent implements OnInit {
             icon: 'fas fa-clipboard-list',
             route: '/admin/patient-management/checkin',
           },
+          {
+            label: 'Patients List',
+            icon: 'fas fa-folder',
+            route: '/admin/patient-management/patients',
+          },
         ],
       },
       {

@@ -28,7 +28,10 @@ export class PatientService {
       patient
     );
   };
-
+  getAllPatients=():Observable<PatientRegistration[]>=>{
+return this.http.get<PatientRegistration[]>(`${this.apiUrl}/PatientsList`)
+  }
+// getAllPatients():Observable<Pa>
   getPatientByCnic = (cnic: string): Observable<PatientRegistration> => {
     return this.http
       .get<any>(`${this.apiUrl}/PatientByCNIC/${cnic}`)
