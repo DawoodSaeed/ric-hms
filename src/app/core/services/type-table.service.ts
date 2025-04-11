@@ -62,7 +62,7 @@ export class TypeTableService {
   private provinceID$ = new BehaviorSubject<number | null>(1);
   private specialityID$ = new BehaviorSubject<number | null>(null);
   private subSpecialities$ = new BehaviorSubject<SubSpeciality[]>([]);
-  
+
   setSpecialityID(specialityID: number) {
     console.log('Speciality ID coming:', specialityID);
     this.specialityID$.next(specialityID); // Push new department ID
@@ -413,14 +413,15 @@ export class TypeTableService {
 
   getCitiesByProvinces(): Observable<City[]> {
     return this.provinceID$.pipe(
-      switchMap((provinceId)=>{
-        if(!provinceId) return of([])
+      switchMap((provinceId) => {
+        if (!provinceId) return of([]);
         return this.getAll<City>('Cities').pipe(
-          map(response=>response.filter((city:City)=>city.provinceId===provinceId))
-        )
-        
+          map((response) =>
+            response.filter((city: City) => city.provinceId === provinceId)
+          )
+        );
       })
-    )
+    );
   }
 
   addUpdateCities(city: City): Observable<City> {
@@ -530,5 +531,7 @@ export class TypeTableService {
     return this.http.post(`${this.apiUrl}/Complaints/AddUpdate`, complaint);
   }
 
-  
+  getTimeShifts() {
+    return this.getAll<TimeShift>('TimeShifts');
+  }
 }
