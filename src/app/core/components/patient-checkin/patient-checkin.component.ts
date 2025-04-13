@@ -172,20 +172,24 @@ export class PatientCheckinComponent implements OnInit {
         },
       });
     this.checkinForm = this.fb.group({
-      patientId: [0],
+      patientId: [null],
       patientTypeId: [1, Validators.required], // Walkin / Referral
       checkInTypeID: [1, Validators.required], // Emergency / Department / Doctor
-      amount: [0, Validators.required],
-      paidAmount: [0, Validators.required],
+      amount: [null, Validators.required],
+      paidAmount: [null, Validators.required],
       isDiscount: [false],
-      discountTypeId: [0],
-      discountRate: [0],
-      paymentMethodId: [0],
-      patientCheckInStatusId: [0],
+      discountTypeId: [null],
+      discountRate: [null],
+      paymentMethodId: [null],
+      patientCheckInStatusId: [1],
       bookingRemarks: [''],
       patientCondition: [''],
       reason: [''],
     });
+
+
+
+
     const patientId = history.state.patientId;
     const patientName = history.state.patientName;
     console.log('got patientid ', patientId);
@@ -355,6 +359,16 @@ export class PatientCheckinComponent implements OnInit {
     }
     if (fieldName === 'checkintype') {
       this.selectedCheckInType = checkInStr;
+          this.checkinForm.get('amount')?.reset();
+          this.checkinForm.get('paidAmount')?.reset();
+          this.checkinForm.get('isDiscount')?.reset();
+          this.checkinForm.get('discountTypeId')?.reset();
+          this.checkinForm.get('discountRate')?.reset();
+          this.checkinForm.get('paymentMethodId')?.reset();
+          this.checkinForm.get('bookingRemarks')?.reset();
+          this.checkinForm.get('patientCondition')?.reset();
+          this.checkinForm.get('reason')?.reset();
+
     }
   }
   // Submit function
@@ -380,6 +394,8 @@ export class PatientCheckinComponent implements OnInit {
           this.isLoading.set(false);
         },
       });
+    }else{
+
     }
   }
 }
