@@ -36,6 +36,32 @@ interface Employee {
   cnic: string;
   schedules: RoasterSchedule[];
 }
+
+// Define interfaces for better type safety
+interface RoasterScheduleItem {
+  id: number;
+  name: string | null;
+  description: string | null;
+  date: string; // Keep as string or use Date object if preferred
+  rosterId: number;
+  empId: number;
+  timeShiftId: number | null;
+  createdById: number;
+  createdOn: string;
+  modifiedById: number | null;
+  modifiedOn: string | null;
+  isActive: number;
+  empName: string;
+  cnic: string;
+}
+
+interface GroupedEmployeeSchedule {
+  empId: number;
+  empName: string;
+  cnic: string;
+  schedules: RoasterScheduleItem[]; // Array of schedules for this employee
+}
+
 @Component({
   selector: 'app-assign-staff',
   imports: [
@@ -55,65 +81,111 @@ export class AssignStaffComponent {
   employees = signal<Employee[]>([]);
   countIteration = signal(0);
   timeShifts = signal<TimeShift[]>([]);
+
   constructor(private route: ActivatedRoute) {
-    this.route.params
-      .pipe(
-        tap((params) => console.log('Roaster ID:', params['roasterId'])),
-        switchMap((params) =>
-          this.roasterService.getAllRoasterSchedules(params['roasterId']).pipe(
-            tap((schedules) => {
-              console.log(schedules.length);
-            }),
-            catchError((err) => {
-              console.error('Error fetching schedules:', err);
-              return of([]); // Return an empty array to avoid breaking the stream
-            })
-          )
-        ),
-        mergeMap((schedules) => from(schedules || [])),
-        groupBy((schedule) => schedule.empId),
-        mergeMap((group$) =>
-          group$.pipe(
-            bufferCount(31),
-            map((schedules) => ({
-              empId: group$.key,
-              empName: schedules[0].empName,
-              cnic: schedules[0].cnic,
-              schedules: schedules, // Attach the schedules array
-            }))
-          )
-        ),
-        tap(console.log),
-        scan((acc: RoasterSchedule[], curr: RoasterSchedule) => {
-          acc.push(curr);
-          return acc;
-        }, []),
-        tap(console.log)
-      )
+    // this.route.params
+    //   .pipe(
+    //     tap((params) => console.log('Roaster ID:', params['roasterId'])),
+    //     switchMap((params) =>
+    //       this.roasterService.getAllRoasterSchedules(params['roasterId']).pipe(
+    //         tap((schedules) => {
+    //           console.log(schedules.length);
+    //         }),
+    //         catchError((err) => {
+    //           console.error('Error fetching schedules:', err);
+    //           return of([]); // Return an empty array to avoid breaking the stream
+    //         })
+    //       )
+    //     ),
+    //     mergeMap((schedules) => from(schedules || [])),
+    //     groupBy((schedule) => schedule.empId),
+    //     mergeMap((group$) =>
+    //       group$.pipe(
+    //         bufferCount(31),
+    //         map((schedules) => ({
+    //           empId: group$.key,
+    //           empName: schedules[0].empName,
+    //           cnic: schedules[0].cnic,
+    //           schedules: schedules, // Attach the schedules array
+    //         }))
+    //       )
+    //     ),
+    //     tap(console.log),
+    //     scan((acc: RoasterSchedule[], curr: RoasterSchedule) => {
+    //       acc.push(curr);
+    //       return acc;
+    //     }, []),
+    //     tap(console.log)
+    //   )
+    //   .subscribe({
+    //     next: (value) => {
+    //       this.employees.set(value);
+    //       this.countIteration.update((prev) => prev + 1);
+    //     },
+    //     error: (err) => console.error('Error:', err),
+    //     complete: () => {
+    //       console.log('Complete');
+    //       console.log(this.employees());
+    //     },
+    //   });
+    this.typeTableService
+      .getTimeShifts()
+      .pipe(take(1))
       .subscribe({
         next: (value) => {
-          this.employees.set(value);
-          this.countIteration.update((prev) => prev + 1);
+          this.timeShifts.set(value);
         },
-        error: (err) => console.error('Error:', err),
-        complete: () => {
-          console.log('Complete');
-          console.log(this.employees());
+        error: (err) => {
+          console.error('Error fetching time shifts:', err);
+          this.notifyService.showError('Error fetching time shifts:');
         },
       });
 
-    // this.typeTableService
-    //   .getTimeShifts()
-    //   .pipe(take(1))
-    //   .subscribe({
-    //     next: (value) => {
-    //       this.timeShifts.set(value);
-    //     },
-    //     error: (err) => {
-    //       console.error('Error fetching time shifts:', err);
-    //       this.notifyService.showError('Error fetching time shifts:');
-    //     },
-    //   });
+    this.route.params
+      .pipe(
+        switchMap((params) =>
+          this.roasterService.getAllRoasterSchedules(params['roasterId']).pipe(
+            catchError((err) => {
+              console.error('Error fetching schedules:', err);
+              return of([]); // fallback to empty list
+            })
+          )
+        ),
+        switchMap((schedules) => {
+          console.log('Schedules received:', schedules.length);
+
+          // Emits each schedule as an individual item, then completes
+          return from(schedules).pipe(
+            groupBy((schedule) => schedule.empId),
+            mergeMap((group$) =>
+              group$.pipe(
+                toArray(), // Collect all items in this group
+                map((schedules) => {
+                  console.log('Group Array:', schedules); // ✅ This should now work
+                  return {
+                    empId: group$.key,
+                    empName: schedules[0]?.empName ?? 'N/A',
+                    cnic: schedules[0]?.cnic ?? 'N/A',
+                    schedules,
+                  };
+                })
+              )
+            ),
+            toArray(), // Optionally collect all grouped employees
+            tap((finalGrouped) =>
+              console.log('Final grouped result:', finalGrouped)
+            )
+          );
+        })
+      )
+      .subscribe({
+        next: (groupedEmployees) => {
+          console.log('Final emitted result to subscriber:', groupedEmployees);
+          this.employees.set(groupedEmployees);
+        },
+        error: (err) => console.error('Stream error:', err),
+        complete: () => console.log('Stream completed'),
+      });
   }
 
   getDaysInMonth(dateString: string): number {
