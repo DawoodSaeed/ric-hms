@@ -131,6 +131,7 @@ export class TypeTableService {
   }
 
   getCheckInTypes(): Observable<TypeTable[]> {
+    console.log('getCheckInTypes()');
     return this.getAll<TypeTable>('CheckInType');
   }
 

@@ -5,7 +5,7 @@ import {
 } from './../../interfaces/typetable';
 
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -15,17 +15,34 @@ import { Checkbox } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
 import { TypeTableService } from '../../services/type-table.service';
 import { OrganisationService } from '../../services/organisation.service';
-import { debounceTime, map, Observable, tap } from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  filter,
+  map,
+  Observable,
+  of,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { Select } from 'primeng/select';
 import { Department, SubDepartment } from '../../interfaces/organisation';
 import { DoctormanagementService } from '../../services/doctormanagement.service';
 import { Doctor } from '../../interfaces/doctormanagement';
 import { Router } from '@angular/router';
+import { InputMaskModule } from 'primeng/inputmask';
+import { PatientService } from '../../services/patient.service';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialog } from 'primeng/confirmdialog';
+import { NotificationService } from '../../services/notification.service';
+import { ProgressSpinner } from 'primeng/progressspinner';
+
 @Component({
   selector: 'app-patient-checkin',
   templateUrl: './patient-checkin.component.html',
   styleUrls: ['./patient-checkin.component.css'],
   imports: [
+    ConfirmDialog,
     ReactiveFormsModule,
     CommonModule,
     InputTextModule,
@@ -33,12 +50,17 @@ import { Router } from '@angular/router';
     Checkbox,
     ButtonModule,
     Select,
+    InputMaskModule,
+        ProgressSpinner
   ],
-  providers: [BrowserModule],
+  providers: [BrowserModule, ConfirmationService],
 })
 export class PatientCheckinComponent implements OnInit {
   checkinForm!: FormGroup;
+  cnicForm!: FormGroup;
+  patientService = inject(PatientService);
 
+  refferedFromOutside: boolean = false;
   private dropDownService = inject(TypeTableService);
   private orgDropDownService = inject(OrganisationService);
   private docDropDownService = inject(DoctormanagementService);
@@ -47,11 +69,15 @@ export class PatientCheckinComponent implements OnInit {
   deptDropDown$!: Observable<any[]>;
   subDeptDropDown$!: Observable<any[]>;
   doctorsDropDown$!: Observable<any[]>;
-
+  checkInTypes$!: Observable<any[]>;
+  allowCheckin: boolean = false;
+  isLoading=signal(false)
+  selectedCheckInType: string = 'Emergency';
+  patientName: string = '';
   commonFields: any[] = [
     { name: 'amount', label: 'Amount', type: 'number' },
     { name: 'paidAmount', label: 'Paid Amount', type: 'number' },
-    { name: 'isDiscount', label: 'Is Discount', type: 'checkbox' },
+    { name: 'isDiscount', label: 'Discount', type: 'checkbox' },
     {
       name: 'discountTypeId',
       label: 'Discount Type',
@@ -68,11 +94,16 @@ export class PatientCheckinComponent implements OnInit {
     { name: 'reason', label: 'Reason', type: 'textarea' },
   ];
 
-  constructor(private fb: FormBuilder, private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private confirmationService: ConfirmationService,
+    private notificationService: NotificationService
+  ) {}
 
   ngOnInit() {
     this.initForm();
-    
+
     this.fetchDropdowns();
     // Handle form updates dynamically
     this.checkinForm.get('patientTypeId')?.valueChanges.subscribe(() => {
@@ -86,8 +117,62 @@ export class PatientCheckinComponent implements OnInit {
 
   // Initialize the base form
   initForm() {
+    this.cnicForm = this.fb.group({
+      cnic: [''],
+    });
+    this.cnicForm
+      .get('cnic')
+      ?.valueChanges.pipe(
+        debounceTime(800),
+        filter((cnic: string) => !!cnic && /^\d{5}-\d{7}-\d{1}$/.test(cnic)), // ✅ Only proceed if CNIC is complete and valid
+        switchMap((cnic) =>
+          this.patientService.getPatientByCnic(cnic).pipe(
+            // catcherror to gracefully handle not found
+            catchError((err) => {
+              console.log('caught an eror ', err);
+              this.confirmationService.confirm({
+                header: 'Patient Not Found!',
+                icon: 'pi pi-user-check',
+                message: 'This patient is not registered.',
+                acceptLabel: 'Register Patient',
+                rejectLabel: 'Ok',
+                acceptButtonStyleClass: 'p-button-success',
+                rejectButtonStyleClass: 'p-button-secondary',
+                accept: () => {
+                  this.router.navigate([
+                    'admin/patient-management/registration',
+                  ]);
+                },
+              });
+              return of(null);
+            })
+          )
+        )
+      )
+      .subscribe({
+        next: (response) => {
+          if (response) {
+            this.confirmationService.confirm({
+              header: 'Patient is Registered!',
+              icon: 'pi pi-user-check',
+              message:
+                'This CNIC is registered. Do you want to checkin the patient?',
+              acceptLabel: 'Proceed to Checkin',
+              rejectLabel: 'No',
+              acceptButtonStyleClass: 'p-button-success',
+              rejectButtonStyleClass: 'p-button-secondary',
+              accept: () => {
+                console.log('resss ', response);
+                this.checkinForm.get('patientId')?.setValue(response.patientId);
+                this.patientName = response.name;
+                this.allowCheckin = true;
+              },
+            });
+          }
+        },
+      });
     this.checkinForm = this.fb.group({
-      patientId: [0, Validators.required],
+      patientId: [0],
       patientTypeId: [1, Validators.required], // Walkin / Referral
       checkInTypeID: [1, Validators.required], // Emergency / Department / Doctor
       amount: [0, Validators.required],
@@ -102,9 +187,12 @@ export class PatientCheckinComponent implements OnInit {
       reason: [''],
     });
     const patientId = history.state.patientId;
+    const patientName = history.state.patientName;
     console.log('got patientid ', patientId);
     if (patientId) {
       this.checkinForm?.get('patientId')?.setValue(patientId);
+      this.patientName = patientName;
+      this.allowCheckin = true;
     }
   }
   fetchDropdowns() {
@@ -162,6 +250,7 @@ export class PatientCheckinComponent implements OnInit {
         }))
       )
     );
+    this.checkInTypes$ = this.dropDownService.getCheckInTypes();
   }
 
   // Function to update form fields dynamically
@@ -174,7 +263,6 @@ export class PatientCheckinComponent implements OnInit {
       'doctorId',
       'deptId',
       'subDeptId',
-      'isRefered',
       'isReferedFromOutSide',
       'outSideDocName',
       'referedNotes',
@@ -209,7 +297,6 @@ export class PatientCheckinComponent implements OnInit {
     } else if (patientType === 2) {
       // Referral
       this.addFields({
-        isRefered: [true],
         isReferedFromOutSide: [false],
         outSideDocName: [''],
         referedNotes: [''],
@@ -262,16 +349,37 @@ export class PatientCheckinComponent implements OnInit {
       }
     }
   }
-  onValueChange(event: any, fieldName: string) {
+  onValueChange(event: any, fieldName: string, checkInStr: string = '') {
     if (fieldName === 'department') {
       this.orgDropDownService.setDepartmentID(event.value);
+    }
+    if (fieldName === 'checkintype') {
+      this.selectedCheckInType = checkInStr;
     }
   }
   // Submit function
   onSubmit() {
     if (this.checkinForm.valid) {
       console.log(this.checkinForm.value);
-      // Send data to API
+      this.isLoading.set(true)
+      this.patientService.checkInPatient(this.checkinForm.value).subscribe({
+        next: (response: any) => {
+          console.log(response);
+          if (response) {
+
+            this.notificationService.showSuccess(
+              response.message
+            );
+          }
+        },
+        error: (err) => {
+          this.notificationService.showError(err.error.message);
+          this.isLoading.set(false);
+        },
+        complete: () => {
+          this.isLoading.set(false);
+        },
+      });
     }
   }
 }

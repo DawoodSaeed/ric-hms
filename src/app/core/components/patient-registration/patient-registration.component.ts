@@ -83,6 +83,7 @@ export class PatientRegistrationComponent implements OnInit {
   dropDownService = inject(TypeTableService);
   patientService = inject(PatientService);
   organizationService = inject(OrganisationService);
+  previewImage: string | null = null;
 
   constructor(
     private confirmationService: ConfirmationService,
@@ -251,6 +252,7 @@ export class PatientRegistrationComponent implements OnInit {
           this.patientService.getPatientByCnic(cnic).pipe(
             // catcherror to gracefully handle not found
             catchError((err) => {
+              console.log('caught an eror ', err);
               return of(null);
             })
           )
@@ -270,9 +272,12 @@ export class PatientRegistrationComponent implements OnInit {
               rejectButtonStyleClass: 'p-button-secondary',
               accept: () => {
                 this.patientForm.patchValue(response);
-                  this.router.navigate(['admin/patient-management/checkin'], {
-                    state: { patientId: response.patientId },
-                  });
+                this.router.navigate(['admin/patient-management/checkin'], {
+                  state: {
+                    patientId: response.patientId,
+                    patientName: response.name,
+                  },
+                });
               },
             });
           }
@@ -300,11 +305,13 @@ export class PatientRegistrationComponent implements OnInit {
     if (file) {
       this.convertFileToBase64(file).then((base64: string) => {
         const base64Only = this.stripBase64Prefix(base64);
-        console.log(`Base64 for ${controlName}:`, base64Only);
         this.patientForm.get(controlName)?.setValue(base64Only);
+        // For preview
+        this.previewImage = base64;
       });
     }
   }
+
   // checkCNIC(event:any){
   //   console.log(event.target.value)
   //   let cnic=event.target.value
@@ -312,7 +319,6 @@ export class PatientRegistrationComponent implements OnInit {
   //      .getPatientByCnic(cnic)
   //      .subscribe((response) => console.log('cnic response ', response));
   // };
-
   convertFileToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -337,7 +343,6 @@ export class PatientRegistrationComponent implements OnInit {
   submit() {
     this.isLoading.set(true);
     this.patientForm.markAllAsTouched();
-
     if (this.patientForm.valid) {
       let patientName = this.patientForm.get('name')?.value;
       let patientType = this.patientType;
@@ -386,7 +391,7 @@ export class PatientRegistrationComponent implements OnInit {
             });
             this.patientService.generatePDF(
               `${patientName}(${patientType})`,
-              response.mrNo,
+              response.mrno,
               cnic
             );
           }

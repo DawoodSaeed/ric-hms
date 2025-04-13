@@ -83,6 +83,7 @@
       <div>
         <label>Upload Picture</label>
         <p-fileUpload
+          *ngIf="!previewImage"
           mode="basic"
           name="fileUpload"
           [auto]="true"
@@ -90,6 +91,12 @@
           class="w-full"
           (onSelect)="uploadFile($event, 'picture')"
         ></p-fileUpload>
+        <img
+          *ngIf="previewImage"
+          [src]="previewImage"
+          alt="Preview"
+          class="mt-2 w-16 h-16 object-cover rounded-md"
+        />
       </div>
       <div>
         <label>Gender</label>
@@ -202,7 +209,7 @@
 
       <div>
         <label>City</label>
-         <p-select
+        <p-select
           [options]="(cityDropDown$ | async) ?? []"
           formControlName="cityId"
           placeholder="Enter City"
@@ -367,14 +374,14 @@
           placeholder="Enter Organization ID"
           variant="filled"
         /> -->
-           <p-select
-            [options]="(panelOrgDropDown$ | async) ?? []"
-            formControlName="porgId"
-            placeholder="Enter Panel Org "
-            class="w-full"
-            variant="filled"
-            (onChange)="onValueChange($event,'panelOrg')"
-          ></p-select>
+        <p-select
+          [options]="(panelOrgDropDown$ | async) ?? []"
+          formControlName="porgId"
+          placeholder="Enter Panel Org "
+          class="w-full"
+          variant="filled"
+          (onChange)="onValueChange($event, 'panelOrg')"
+        ></p-select>
       </div>
 
       <div>
@@ -387,14 +394,14 @@
           placeholder="Enter Package ID"
           variant="filled"
         /> -->
-         <p-select
-            [options]="(panelPkgDropDown$ | async) ?? []"
-            formControlName="packId"
-            placeholder="Enter Package"
-            class="w-full"
-            variant="filled"
-            (onChange)="onValueChange($event,'panelOrg')"
-          ></p-select>
+        <p-select
+          [options]="(panelPkgDropDown$ | async) ?? []"
+          formControlName="packId"
+          placeholder="Enter Package"
+          class="w-full"
+          variant="filled"
+          (onChange)="onValueChange($event, 'panelOrg')"
+        ></p-select>
       </div>
     </div>
 

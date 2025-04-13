@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, of, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, switchMap, tap } from 'rxjs';
 import { PatientRegistration } from '../interfaces/patient.interface';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment.development';
@@ -28,10 +28,10 @@ export class PatientService {
       patient
     );
   };
-  getAllPatients=():Observable<PatientRegistration[]>=>{
-return this.http.get<PatientRegistration[]>(`${this.apiUrl}/PatientsList`)
-  }
-// getAllPatients():Observable<Pa>
+  getAllPatients = (): Observable<PatientRegistration[]> => {
+    return this.http.get<PatientRegistration[]>(`${this.apiUrl}/PatientsList`);
+  };
+  // getAllPatients():Observable<Pa>
   getPatientByCnic = (cnic: string): Observable<PatientRegistration> => {
     return this.http
       .get<any>(`${this.apiUrl}/PatientByCNIC/${cnic}`)
@@ -119,10 +119,18 @@ return this.http.get<PatientRegistration[]>(`${this.apiUrl}/PatientsList`)
         return this.http
           .get<PanelPackage[]>(`${this.apiUrl}/GetPanelPackages`)
           .pipe(
-            map((response: PanelPackage[]) => response.filter((pkg: PanelPackage) => pkg.ppid === orgId)
+            map((response: PanelPackage[]) =>
+              response.filter((pkg: PanelPackage) => pkg.ppid === orgId)
             )
           );
       })
     );
   }
+
+  checkInPatient = (patient: any): Observable<any> => {
+    return this.http.post<any>(
+      `${this.apiUrl}/PatientCheckIn`,
+      patient
+    );
+  };
 }
