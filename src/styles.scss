@@ -11,7 +11,9 @@
 body {
   font-family: "Inter";
   color: var(--color);
+  font-size: 16px;
 }
+
 .p-panelmenu-panel {
   border: none !important;
   padding: 0 !important;
@@ -52,7 +54,6 @@ body {
 .p-datatable.p-datatable-lg .p-datatable-header {
   padding: 0.5rem 0rem !important;
 }
-
 
 .custom-confirm-dialog {
   .p-confirm-dialog {
@@ -96,8 +97,7 @@ body {
     background-color: white !important;
     border: none !important;
   }
-    
 }
- .cnicInput input {
-   width: 100%;
- }
+.cnicInput input {
+  width: 100%;
+}
