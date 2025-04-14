@@ -788,7 +788,7 @@
       >
         <label class="font-medium">Discounted Amount</label>
         <span class="w-full p-2 border rounded bg-gray-100">
-          {{ newDepartment.discountedAmount ?? "-" }}
+          {{ newDepartment.discountedAmount || "-" }}
         </span>
       </div>
 
@@ -1105,7 +1105,7 @@
         ></p-checkbox>
       </div>
     </ng-container>
-<!-- Patient Type -->
+    <!-- Patient Type -->
     <ng-container *ngIf="dataType === 'patientTypes'">
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
@@ -1146,7 +1146,7 @@
         ></textarea>
       </div>
     </ng-container>
-     <!-- Patient Checkin status -->
+    <!-- Patient Checkin status -->
     <ng-container *ngIf="dataType === 'patientCheckInStatus'">
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
@@ -1187,7 +1187,7 @@
         ></textarea>
       </div>
     </ng-container>
-        <!-- CheckIn Type -->
+    <!-- CheckIn Type -->
     <ng-container *ngIf="dataType === 'checkInTypes'">
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
@@ -1228,7 +1228,7 @@
         ></textarea>
       </div>
     </ng-container>
-     <!-- Guardian Type -->
+    <!-- Guardian Type -->
     <ng-container *ngIf="dataType === 'guardianTypes'">
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
@@ -1269,7 +1269,7 @@
         ></textarea>
       </div>
     </ng-container>
-      <!-- BloodGroup -->
+    <!-- BloodGroup -->
     <ng-container *ngIf="dataType === 'bloodGroups'">
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
@@ -1310,7 +1310,7 @@
         ></textarea>
       </div>
     </ng-container>
-     <!-- Payment Methods -->
+    <!-- Payment Methods -->
     <ng-container *ngIf="dataType === 'paymentmethods'">
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
@@ -1375,7 +1375,7 @@
         ></textarea>
       </div>
     </ng-container>
-     <!-- DiscountType -->
+    <!-- DiscountType -->
     <ng-container *ngIf="dataType === 'discountTypes'">
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
@@ -1416,7 +1416,7 @@
         ></textarea>
       </div>
     </ng-container>
-      <!-- Charges Types -->
+    <!-- Charges Types -->
     <ng-container *ngIf="dataType === 'chargesTypes'">
       <div
         class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
@@ -1458,70 +1458,76 @@
       </div>
     </ng-container>
     <!-- Bank Form -->
-<ng-container *ngIf="dataType === 'Bank'">
-  <div class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center">
-    <label for="name" class="font-medium">
-      Name <span class="text-red-400 font-bold">*</span>
-    </label>
-    <input
-      pInputText
-      [(ngModel)]="newBank.name"
-      id="name"
-      placeholder="Bank Name"
-      required
-      name="bankName"
-      class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-    />
-  </div>
+    <ng-container *ngIf="dataType === 'Bank'">
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="name" class="font-medium">
+          Name <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newBank.name"
+          id="name"
+          placeholder="Bank Name"
+          required
+          name="bankName"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start">
-    <label for="description" class="font-medium">
-      Description <span class="text-red-400 font-bold">*</span>
-    </label>
-    <textarea
-      pInputTextarea
-      [(ngModel)]="newBank.description"
-      id="description"
-      placeholder="Description"
-      required
-      rows="5"
-      name="bankDescription"
-      class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-    ></textarea>
-  </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-start"
+      >
+        <label for="description" class="font-medium">
+          Description <span class="text-red-400 font-bold">*</span>
+        </label>
+        <textarea
+          pInputTextarea
+          [(ngModel)]="newBank.description"
+          id="description"
+          placeholder="Description"
+          required
+          rows="5"
+          name="bankDescription"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center">
-    <label for="abbrivation" class="font-medium">
-      Abbreviation <span class="text-red-400 font-bold">*</span>
-    </label>
-    <input
-      pInputText
-      [(ngModel)]="newBank.abbrivation"
-      id="abbrivation"
-      placeholder="Abbreviation (e.g., HBL, UBL)"
-      required
-      name="bankAbbrivation"
-      class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-    />
-  </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="abbrivation" class="font-medium">
+          Abbreviation <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newBank.abbrivation"
+          id="abbrivation"
+          placeholder="Abbreviation (e.g., HBL, UBL)"
+          required
+          name="bankAbbrivation"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center">
-    <label for="code" class="font-medium">
-      Code <span class="text-red-400 font-bold">*</span>
-    </label>
-    <input
-      pInputText
-      [(ngModel)]="newBank.code"
-      id="code"
-      placeholder="Bank Code"
-      required
-      name="bankCode"
-      class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-    />
-  </div>
-
- 
-</ng-container>
+      <div
+        class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 mb-4 items-center"
+      >
+        <label for="code" class="font-medium">
+          Code <span class="text-red-400 font-bold">*</span>
+        </label>
+        <input
+          pInputText
+          [(ngModel)]="newBank.code"
+          id="code"
+          placeholder="Bank Code"
+          required
+          name="bankCode"
+          class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+    </ng-container>
 
     <div class="flex justify-end mt-4">
       <button

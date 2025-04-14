@@ -1,0 +1,340 @@
+<div class="min-h-screen bg-gray-100 p-4 flex flex-col md:flex-row gap-4">
+  <!-- Left Panel (Patient + Sidebar + Forms) -->
+  <div class="rounded-md p-4 mb-4 flex flex-col w-full md:w-1/2">
+    <!-- Patient Info -->
+    <div class="bg-white shadow-md p-2 rounded">
+      <h3 class="font-semibold text-gray-800 mb-2">Patient Data</h3>
+      <div class="flex items-center mb-2">
+        <p-avatar icon="pi pi-user" styleClass="mr-2"></p-avatar>
+        <span class="font-semibold">Mr. Aamir (Regular)</span>
+      </div>
+      <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-gray-700">
+        <div><span class="font-medium">CNC No:</span> 16202-3345699-7</div>
+        <div><span class="font-medium">MR No:</span> 0401-25-000012</div>
+        <div><span class="font-medium">Visit No:</span> 2953/3-A/001</div>
+        <div><span class="font-medium">Age:</span> 0 Y 1 M 30</div>
+        <div><span class="font-medium">Time:</span> Mar 13, 2025 02:26</div>
+        <div><span class="font-medium">Cell No:</span> 923118961711</div>
+        <div class="col-span-2">
+          <span class="font-medium">Last Visit:</span> 09:53 at Mar 10, 2025
+          02:26
+        </div>
+        <div><span class="font-medium">City:</span> Rawalpindi</div>
+        <div class="col-span-2">
+          <span class="font-medium">Address:</span> Hospital Lar Village Mara,
+          Teh Topi, Dist Swabi
+        </div>
+        <div class="col-span-2">
+          <span class="font-medium">History:</span>
+          <p-tag
+            value="Smoker"
+            severity="info"
+            rounded="true"
+            class="mr-1"
+          ></p-tag>
+          <p-tag
+            value="Ex-Smoker"
+            severity="success"
+            rounded="true"
+            class="mr-1"
+          ></p-tag>
+          <p-tag
+            value="Diabetic"
+            severity="warn"
+            rounded="true"
+            class="mr-1"
+          ></p-tag>
+          <p-tag value="Hypertension" severity="danger" rounded="true"></p-tag>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar + Forms -->
+    <div
+      class="mt-4 flex flex-col md:flex-row gap-4 bg-white shadow-md p-2 rounded min-h-[400px]"
+    >
+      <div class="w-full md:w-1/5 flex-shrink-0">
+        <p-menu [model]="sidebarItems" styleClass="w-full"></p-menu>
+      </div>
+
+      <div class="p-4 flex-grow">
+        <ng-container [ngSwitch]="activeMenuItem">
+          <!-- Allergy Form -->
+          <div *ngSwitchCase="'allergy'">
+            <h3 class="font-semibold text-gray-800 mb-4">Allergy Form</h3>
+            <div
+              class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4"
+            >
+              <div>
+                <label
+                  for="allergyType"
+                  class="block text-gray-700 text-sm font-bold mb-2"
+                  >Type</label
+                >
+                <p-dropdown
+                  id="allergyType"
+                  [options]="allergyTypes"
+                  [(ngModel)]="selectedAllergyType"
+                  placeholder="Select"
+                  styleClass="w-full"
+                ></p-dropdown>
+              </div>
+              <div>
+                <label
+                  for="allergy"
+                  class="block text-gray-700 text-sm font-bold mb-2"
+                  >Allergy</label
+                >
+                <p-dropdown
+                  id="allergy"
+                  [options]="allergies"
+                  [(ngModel)]="selectedAllergy"
+                  placeholder="Select"
+                  styleClass="w-full"
+                ></p-dropdown>
+              </div>
+              <div class="col-span-2">
+                <label
+                  for="notes"
+                  class="block text-gray-700 text-sm font-bold mb-2"
+                  >Notes</label
+                >
+                <textarea
+                  id="notes"
+                  pTextarea
+                  [(ngModel)]="allergyNotes"
+                  rows="3"
+                  class="w-full"
+                ></textarea>
+              </div>
+              <div>
+                <button
+                  pButton
+                  label="Add Allergy"
+                  class="p-button-sm"
+                ></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chief Complaints -->
+          <div *ngSwitchCase="'chiefComplaints'">
+            <h3 class="font-semibold text-gray-800 mb-4">Chief Complaint</h3>
+            <div class="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
+              <form [formGroup]="complaintForm">
+                <div>
+                  <label
+                    for="complaints"
+                    class="block text-gray-700 text-sm font-bold mb-2"
+                    >Type</label
+                  >
+                  @if(complaints$ | async; as complaints){
+                  <p-multiselect
+                    [(ngModel)]="selectedComplaints"
+                    [options]="complaints"
+                    optionLabel="name"
+                    placeholder="Select Complaints"
+                    [maxSelectedLabels]="3"
+                    styleClass="w-full"
+                    formControlName="complaint"
+                  ></p-multiselect>
+                  }
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Default Case (Allergy Form again) -->
+          <div *ngSwitchDefault>
+            <h3 class="font-semibold text-gray-800 mb-4">Allergy Form</h3>
+            <div
+              class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4"
+            >
+              <div>
+                <label
+                  for="allergyType"
+                  class="block text-gray-700 text-sm font-bold mb-2"
+                  >Type</label
+                >
+                <p-dropdown
+                  id="allergyType"
+                  [options]="allergyTypes"
+                  [(ngModel)]="selectedAllergyType"
+                  placeholder="Select"
+                  styleClass="w-full"
+                ></p-dropdown>
+              </div>
+              <div>
+                <label
+                  for="allergy"
+                  class="block text-gray-700 text-sm font-bold mb-2"
+                  >Allergy</label
+                >
+                <p-dropdown
+                  id="allergy"
+                  [options]="allergies"
+                  [(ngModel)]="selectedAllergy"
+                  placeholder="Select"
+                  styleClass="w-full"
+                ></p-dropdown>
+              </div>
+              <div class="col-span-2">
+                <label
+                  for="notes"
+                  class="block text-gray-700 text-sm font-bold mb-2"
+                  >Notes</label
+                >
+                <textarea
+                  id="notes"
+                  pTextarea
+                  [(ngModel)]="allergyNotes"
+                  rows="3"
+                  class="w-full"
+                ></textarea>
+              </div>
+              <div>
+                <button
+                  pButton
+                  label="Add Allergy"
+                  class="p-button-sm"
+                ></button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel (History + Prescription) -->
+  <div class="p-4 flex flex-col w-full md:w-1/2">
+    <div class="bg-white shadow-md rounded-md p-2">
+      <h3 class="font-semibold text-gray-800 mb-2">Patient History</h3>
+      <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-gray-700 mb-4">
+        <div><span class="font-medium">Vitals:</span></div>
+        <div><span class="font-medium">Temp:</span> 1</div>
+        <div><span class="font-medium">Allergies:</span></div>
+        <div></div>
+        <div><span class="font-medium">Complaints:</span></div>
+        <div></div>
+        <div><span class="font-medium">Diagnosis:</span></div>
+        <div></div>
+        <div><span class="font-medium">Procedures:</span></div>
+        <div></div>
+      </div>
+    </div>
+
+    <div class="mb-4 bg-white shadow-md rounded-md mt-4 p-2">
+      <h3 class="font-semibold text-gray-800 mb-2">Prescription</h3>
+      <div class="flex flex-col gap-4">
+        <!-- Complaint Table -->
+        <div class="mb-2 w-full">
+          <h4 class="font-semibold text-gray-700 mb-1">Complaints</h4>
+
+          @if(complaintForm.get("complaint")?.valueChanges | async; as
+          complaint){
+          <p-table
+            [value]="complaint"
+            [scrollable]="true"
+            scrollHeight="150px"
+            responsiveLayout="scroll"
+            styleClass="w-full"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-complaint>
+              <tr>
+                <td>{{ complaint.name }}</td>
+                <td>{{ complaint.description }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+          }
+        </div>
+
+        <!-- Medicine Table -->
+        <div class="mb-2 w-full">
+          <h4 class="font-semibold text-gray-700 mb-1">Medicine</h4>
+          <p-table
+            [value]="medicinesSmall"
+            [scrollable]="true"
+            scrollHeight="150px"
+            responsiveLayout="scroll"
+            styleClass="w-full"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Medicine</th>
+                <th>Freq</th>
+                <th>Dosage</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-med>
+              <tr>
+                <td>{{ med.name }}</td>
+                <td>{{ med.frequency }}</td>
+                <td>{{ med.dosage }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+        <!-- Disposables -->
+        <div class="mb-2 w-full">
+          <h4 class="font-semibold text-gray-700 mb-1">Disposables</h4>
+          <ul>
+            <li>Disposable Face Mask</li>
+          </ul>
+        </div>
+
+        <!-- Investigations -->
+        <div class="mb-2 w-full">
+          <h4 class="font-semibold text-gray-700 mb-1">Investigations</h4>
+          <ul>
+            <li>CBC</li>
+            <li>RFT</li>
+          </ul>
+        </div>
+
+        <!-- Procedures -->
+        <div class="mb-2 w-full">
+          <h4 class="font-semibold text-gray-700 mb-1">Procedures</h4>
+          <ul>
+            <li>Primary PCI</li>
+          </ul>
+        </div>
+
+        <!-- Diagnosis Table -->
+        <div class="w-full">
+          <h4 class="font-semibold text-gray-700 mb-1">Diagnosis</h4>
+          <p-table
+            [value]="complaintsDiagnosis"
+            [scrollable]="true"
+            scrollHeight="100px"
+            responsiveLayout="scroll"
+            styleClass="w-full"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Complaints</th>
+                <th>Primary</th>
+                <th>Secondary</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-cd>
+              <tr>
+                <td>{{ cd.complaints }}</td>
+                <td>{{ cd.primaryDiagnosis }}</td>
+                <td>{{ cd.secondaryDiagnosis }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
