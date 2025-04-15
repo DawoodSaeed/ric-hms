@@ -17,8 +17,9 @@ import { TagModule } from 'primeng/tag';
 import { Textarea, TextareaModule } from 'primeng/textarea';
 import { TypeTableService } from '../../../services/type-table.service';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { Observable } from 'rxjs';
+import { distinctUntilChanged, Observable, of, startWith } from 'rxjs';
 import { Complaint } from '../../../interfaces/typetable';
+import { Button, ButtonModule } from 'primeng/button';
 
 interface Medicine {
   name: string;
@@ -52,9 +53,10 @@ interface ComplaintsDiagnosis {
     TextareaModule,
     Textarea,
     MultiSelectModule,
+    ButtonModule,
   ],
 })
-export class DoctorPrescriptionComponent implements OnInit, OnChanges {
+export class DoctorPrescriptionComponent implements OnInit {
   sidebarItems: MenuItem[] = [];
   activeMenuItem: string = 'allergy'; // Default active item
 
@@ -133,7 +135,7 @@ export class DoctorPrescriptionComponent implements OnInit, OnChanges {
     },
   ];
 
-  selectedComplaints = '';
+  selectedComplaints$: Observable<Complaint[]> = of([]);
   complaints$!: Observable<Complaint[]>;
 
   complaintForm!: FormGroup;
@@ -212,17 +214,17 @@ export class DoctorPrescriptionComponent implements OnInit, OnChanges {
     this.complaints$ = this.typeTableService.getComplaints();
 
     this.complaintForm = this.formBuilder.group({
-      complaint: ['', Validators.required],
+      complaint: [[], Validators.required], // Initialize with empty array
     });
 
-    this.complaintForm.get('complaint')?.valueChanges.subscribe({
-      next: (data) => {
-        console.log(data);
-      },
-    });
+    this.selectedComplaints$ = this.complaintForm
+      .get('complaint')!
+      .valueChanges.pipe(startWith([] as Complaint[]), distinctUntilChanged());
   }
 
-  ngOnChanges() {
-    console.log(this.selectedComplaints);
+  onAddIconClick(complaint: Complaint, event: Event) {
+    console.log(complaint);
+    event.preventDefault();
+    event.stopPropagation();
   }
 }
